@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Uzbek Trainer</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div>
+        <h1>Uzbek Trainer</h1>
+        <p>Карточки, пары и времена по материалам уроков</p>
+      </div>
+      <div class="stat-strip">
+        <div><span id="statKnown">0</span><small>знаю</small></div>
+        <div><span id="statReview">0</span><small>повтор</small></div>
+        <div><span id="statWords">0</span><small>слов</small></div>
+      </div>
+    </header>
+
+    <nav class="tabs" aria-label="Режимы">
+      <button class="tab active" data-mode="cards">Карточки</button>
+      <button class="tab" data-mode="pairs">Пары</button>
+      <button class="tab" data-mode="tenses">Времена</button>
+    </nav>
+
+    <section class="panel active" id="cardsPanel">
+      <div class="toolbar">
+        <fieldset class="checks">
+          <legend>Слова</legend>
+          <label><input type="checkbox" value="noun" checked> существительные</label>
+          <label><input type="checkbox" value="pronoun" checked> местоимения</label>
+          <label><input type="checkbox" value="verb" checked> глаголы</label>
+          <label><input type="checkbox" value="number" checked> числительные</label>
+          <label><input type="checkbox" value="question" checked> вопросы</label>
+          <label><input type="checkbox" value="other"> другое</label>
+        </fieldset>
+        <div class="control-grid">
+          <label>Карточек
+            <input id="cardLimit" type="number" min="1" max="80" value="10">
+          </label>
+          <label>Направление
+            <select id="cardDirection">
+              <option value="uz-ru">Узбекский -> русский</option>
+              <option value="ru-uz">Русский -> узбекский</option>
+              <option value="mixed">Вперемешку</option>
+            </select>
+          </label>
+          <button id="newCards" class="primary">Новый круг</button>
+        </div>
+      </div>
+
+      <div class="learning-card" id="flashcard" tabindex="0">
+        <div class="badge" id="cardCategory">слово</div>
+        <div class="visual" id="cardVisual">◌</div>
+        <div class="term" id="cardFront">Нажми «Новый круг»</div>
+        <div class="answer hidden" id="cardBack">
+          <strong id="cardAnswer"></strong>
+          <span id="cardPronunciation"></span>
+          <em id="cardHint"></em>
+        </div>
+      </div>
+      <div class="actions">
+        <button id="reviewCard">Повторить</button>
+        <button id="flipCard" class="primary">Перевернуть</button>
+        <button id="knowCard">Знаю</button>
+      </div>
+      <div class="progress-line" id="cardProgress"></div>
+    </section>
+
+    <section class="panel" id="pairsPanel">
+      <div class="toolbar compact">
+        <div class="control-grid">
+          <label>Слов в раунде
+            <input id="pairLimit" type="number" min="2" max="10" value="10">
+          </label>
+          <label>Категория
+            <select id="pairCategory">
+              <option value="all">Все</option>
+              <option value="noun">Существительные</option>
+              <option value="pronoun">Местоимения</option>
+              <option value="verb">Глаголы</option>
+              <option value="number">Числительные</option>
+              <option value="question">Вопросы</option>
+            </select>
+          </label>
+          <button id="newPairs" class="primary">Перемешать</button>
+        </div>
+      </div>
+      <div class="match-board">
+        <div id="ruColumn" class="match-column"></div>
+        <div id="uzColumn" class="match-column"></div>
+      </div>
+      <div class="progress-line" id="pairProgress"></div>
+    </section>
+
+    <section class="panel" id="tensesPanel">
+      <div class="toolbar compact">
+        <div class="control-grid">
+          <label>Время
+            <select id="tenseMode">
+              <option value="mixed">Все пройденные</option>
+              <option value="present">Сейчас: -yap</option>
+              <option value="past">Прошедшее: -di</option>
+              <option value="habitual">Обычно/скоро: -a/-y</option>
+            </select>
+          </label>
+          <label>Формат
+            <select id="tensePolarity">
+              <option value="mixed">Утверждение / отрицание / вопрос</option>
+              <option value="positive">Утверждение</option>
+              <option value="negative">Отрицание</option>
+              <option value="question">Вопрос</option>
+            </select>
+          </label>
+          <button id="newTense" class="primary">Новое предложение</button>
+        </div>
+      </div>
+
+      <div class="tense-task">
+        <div class="sentence-ru" id="tenseRu"></div>
+        <div class="builder">
+          <div class="slot-row">
+            <span class="slot-label">Кто</span>
+            <button class="slot" id="pronounSlot">выбери</button>
+          </div>
+          <div class="verb-build">
+            <span id="verbStem"></span>
+            <div id="suffixSlots" class="suffix-slots"></div>
+          </div>
+        </div>
+        <div class="option-title">Местоимение</div>
+        <div id="pronounOptions" class="option-row"></div>
+        <div class="option-title">Постфиксы глагола</div>
+        <div id="suffixOptions" class="option-row"></div>
+        <div class="tense-result" id="tenseResult"></div>
+      </div>
+    </section>
+  </main>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

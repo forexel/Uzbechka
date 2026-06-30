@@ -148,6 +148,23 @@ h1 {
   gap: 14px;
 }
 
+body.process-mode .topbar,
+body.process-mode .tabs {
+  display: none;
+}
+
+body.process-mode .app {
+  width: min(100% - 16px, 760px);
+  padding-top: 8px;
+}
+
+body.process-mode .panel.active {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  padding: 0;
+}
+
 .setup-head {
   display: flex;
   gap: 12px;
@@ -381,6 +398,10 @@ input[type="number"], select {
   text-align: center;
 }
 
+body.pairs-process .progress-line {
+  display: none;
+}
+
 .match-board {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -530,9 +551,15 @@ input[type="number"], select {
 }
 
 @media (max-width: 760px) {
-  .topbar, .toolbar, .builder, .match-board {
+  .topbar, .toolbar, .builder {
     display: grid;
     grid-template-columns: 1fr;
+  }
+
+  .match-board {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
   }
 
   .topbar {
@@ -544,6 +571,40 @@ input[type="number"], select {
 
   .control-grid, .actions, .process-top {
     grid-template-columns: 1fr;
+  }
+
+  body.process-mode .process-top {
+    grid-template-columns: auto 1fr;
+    gap: 8px;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    padding: 4px 0 8px;
+    background: var(--bg);
+  }
+
+  body.process-mode .ghost {
+    min-height: 34px;
+    padding: 6px 10px;
+    font-size: 14px;
+    background: var(--panel);
+  }
+
+  body.process-mode .round-stats {
+    gap: 6px;
+  }
+
+  body.process-mode .round-stats div {
+    padding: 4px 6px;
+  }
+
+  body.process-mode .round-stats span {
+    font-size: 16px;
+    line-height: 1;
+  }
+
+  body.process-mode .round-stats small {
+    font-size: 10px;
   }
 
   .tabs {
@@ -684,5 +745,21 @@ input[type="number"], select {
 
   .round-stats {
     grid-template-columns: repeat(4, 1fr);
+  }
+
+  body.pairs-process .round-stats.two {
+    grid-template-columns: repeat(2, minmax(58px, 1fr));
+  }
+
+  body.pairs-process .match-column {
+    gap: 7px;
+  }
+
+  body.pairs-process .match-item {
+    min-height: 46px;
+    padding: 8px;
+    font-size: 15px;
+    line-height: 1.15;
+    overflow-wrap: anywhere;
   }
 }

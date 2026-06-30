@@ -27,7 +27,7 @@ let cardIndex = 0;
 let cardFlipped = false;
 let cardKnownRound = 0;
 let cardRepeatRound = 0;
-let currentPair = { ru: null, uz: null, done: 0, total: 0 };
+let currentPair = { ru: null, uz: null, done: 0, total: 0, score: 0 };
 let tenseTask = null;
 let selectedPronoun = null;
 let selectedSuffixes = [];
@@ -62,11 +62,13 @@ function selectedCardTypes() {
 }
 
 function enterProcess(mode) {
+  document.body.classList.add("process-mode", `${mode}-process`);
   $(`${mode}Setup`).classList.add("hidden");
   $(`${mode}Process`).classList.remove("hidden");
 }
 
 function showSetup(mode) {
+  document.body.classList.remove("process-mode", "cards-process", "pairs-process", "tenses-process");
   $(`${mode}Process`).classList.add("hidden");
   $(`${mode}Setup`).classList.remove("hidden");
 }
@@ -149,7 +151,7 @@ function startPairs() {
   const category = $("pairCategory").value;
   const pool = category === "all" ? WORDS : WORDS.filter((word) => word.type === category);
   const round = shuffle(pool).slice(0, limit);
-  currentPair = { ru: null, uz: null, done: 0, total: round.length };
+  currentPair = { ru: null, uz: null, done: 0, total: round.length, score: 0 };
   enterProcess("pairs");
   $("ruColumn").innerHTML = "";
   $("uzColumn").innerHTML = "";
@@ -193,6 +195,7 @@ function checkPair() {
       ru.disabled = true;
       uz.disabled = true;
       currentPair.done += 1;
+      currentPair.score += 1;
       store.bump(ru.dataset.id, "known");
     } else {
       ru.classList.remove("wrong");
@@ -205,9 +208,10 @@ function checkPair() {
 }
 
 function updatePairStats() {
-  $("pairDoneCount").textContent = currentPair.done;
-  $("pairTotalCount").textContent = currentPair.total;
-  $("pairProgress").textContent = `Найдено ${currentPair.done} из ${currentPair.total}`;
+  const round = currentPair.total ? Math.min(currentPair.done + 1, currentPair.total) : 0;
+  $("pairDoneCount").textContent = `${round}/${currentPair.total}`;
+  $("pairTotalCount").textContent = currentPair.score;
+  $("pairProgress").textContent = "";
 }
 
 function verbStem(verb) {
@@ -325,6 +329,7 @@ function checkTenseComplete() {
 
 document.querySelectorAll(".tab").forEach((button) => {
   button.addEventListener("click", () => {
+    document.body.classList.remove("process-mode", "cards-process", "pairs-process", "tenses-process");
     document.querySelectorAll(".tab").forEach((item) => item.classList.remove("active"));
     document.querySelectorAll(".panel").forEach((item) => item.classList.remove("active"));
     button.classList.add("active");

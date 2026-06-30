@@ -25,10 +25,15 @@ const store = {
 let cardDeck = [];
 let cardIndex = 0;
 let cardFlipped = false;
+let cardKnownRound = 0;
+let cardRepeatRound = 0;
 let currentPair = { ru: null, uz: null, done: 0, total: 0 };
 let tenseTask = null;
 let selectedPronoun = null;
 let selectedSuffixes = [];
+let tenseDone = 0;
+let tenseAttempts = 0;
+let tenseAnswered = false;
 
 function categoryName(type) {
   return {
@@ -56,6 +61,16 @@ function selectedCardTypes() {
   return [...document.querySelectorAll(".checks input:checked")].map((item) => item.value);
 }
 
+function enterProcess(mode) {
+  $(`${mode}Setup`).classList.add("hidden");
+  $(`${mode}Process`).classList.remove("hidden");
+}
+
+function showSetup(mode) {
+  $(`${mode}Process`).classList.add("hidden");
+  $(`${mode}Setup`).classList.remove("hidden");
+}
+
 function startCards() {
   const types = selectedCardTypes();
   const limit = Math.max(1, Math.min(80, Number($("cardLimit").value) || 10));
@@ -63,6 +78,9 @@ function startCards() {
   cardDeck = shuffle(pool).slice(0, limit);
   cardIndex = 0;
   cardFlipped = false;
+  cardKnownRound = 0;
+  cardRepeatRound = 0;
+  enterProcess("cards");
   renderCard();
 }
 
@@ -76,6 +94,7 @@ function renderCard() {
   const word = cardDeck[cardIndex];
   $("cardBack").classList.add("hidden");
   cardFlipped = false;
+  updateCardRoundStats();
   if (!word) {
     $("cardCategory").textContent = "готово";
     $("cardVisual").textContent = "✓";
@@ -83,7 +102,7 @@ function renderCard() {
     $("cardAnswer").textContent = "";
     $("cardPronunciation").textContent = "";
     $("cardHint").textContent = "";
-    $("cardProgress").textContent = "Запусти новый круг или поменяй фильтры.";
+    $("cardProgress").textContent = "Круг завершен. Можно вернуться в настройки или начать заново.";
     return;
   }
 
@@ -96,6 +115,13 @@ function renderCard() {
   $("cardPronunciation").textContent = `[${word.pron}]`;
   $("cardHint").textContent = word.hint || "";
   $("cardProgress").textContent = `${cardIndex + 1} из ${cardDeck.length}`;
+}
+
+function updateCardRoundStats() {
+  $("cardDoneCount").textContent = Math.min(cardIndex, cardDeck.length);
+  $("cardTotalCount").textContent = cardDeck.length;
+  $("cardKnownCount").textContent = cardKnownRound;
+  $("cardRepeatCount").textContent = cardRepeatRound;
 }
 
 function flipCard() {
@@ -112,6 +138,8 @@ function markCard(field) {
     return;
   }
   store.bump(word.id, field);
+  if (field === "known") cardKnownRound += 1;
+  if (field === "review") cardRepeatRound += 1;
   cardIndex += 1;
   renderCard();
 }
@@ -122,11 +150,12 @@ function startPairs() {
   const pool = category === "all" ? WORDS : WORDS.filter((word) => word.type === category);
   const round = shuffle(pool).slice(0, limit);
   currentPair = { ru: null, uz: null, done: 0, total: round.length };
+  enterProcess("pairs");
   $("ruColumn").innerHTML = "";
   $("uzColumn").innerHTML = "";
   shuffle(round).forEach((word) => $("ruColumn").appendChild(pairButton(word, "ru")));
   shuffle(round).forEach((word) => $("uzColumn").appendChild(pairButton(word, "uz")));
-  $("pairProgress").textContent = `Найдено 0 из ${round.length}`;
+  updatePairStats();
 }
 
 function pairButton(word, side) {
@@ -171,8 +200,14 @@ function checkPair() {
     }
     currentPair.ru = null;
     currentPair.uz = null;
-    $("pairProgress").textContent = `Найдено ${currentPair.done} из ${currentPair.total}`;
+    updatePairStats();
   }, ok ? 550 : 650);
+}
+
+function updatePairStats() {
+  $("pairDoneCount").textContent = currentPair.done;
+  $("pairTotalCount").textContent = currentPair.total;
+  $("pairProgress").textContent = `Найдено ${currentPair.done} из ${currentPair.total}`;
 }
 
 function verbStem(verb) {
@@ -205,9 +240,11 @@ function startTense() {
   suffixes.push(pronoun[tense]);
   if (polarity === "question") suffixes.push("mi");
 
+  enterProcess("tenses");
   tenseTask = { verb, pronoun, tense, polarity, stem, suffixes };
   selectedPronoun = null;
   selectedSuffixes = [];
+  tenseAnswered = false;
   renderTense();
 }
 
@@ -225,12 +262,14 @@ function renderTense() {
   $("suffixSlots").innerHTML = suffixes.map((_, index) => `<div class="suffix-slot" data-index="${index}">+</div>`).join("");
   $("tenseResult").textContent = "";
   $("tenseResult").className = "tense-result";
+  $("nextTense").classList.add("hidden");
 
   $("pronounOptions").innerHTML = "";
   shuffle(PRONOUNS).forEach((item) => {
     const button = document.createElement("button");
     button.textContent = item.uz;
     button.addEventListener("click", () => {
+      if (tenseAnswered) return;
       selectedPronoun = item.uz;
       $("pronounSlot").textContent = item.uz;
       $("pronounSlot").classList.add("filled");
@@ -251,7 +290,7 @@ function renderTense() {
 }
 
 function chooseSuffix(button, value) {
-  if (!tenseTask || button.classList.contains("used")) return;
+  if (!tenseTask || tenseAnswered || button.classList.contains("used")) return;
   if (selectedSuffixes.length >= tenseTask.suffixes.length) return;
   const index = selectedSuffixes.length;
   selectedSuffixes.push(value);
@@ -263,7 +302,7 @@ function chooseSuffix(button, value) {
 }
 
 function checkTenseComplete() {
-  if (!tenseTask || !selectedPronoun || selectedSuffixes.length !== tenseTask.suffixes.length) return;
+  if (!tenseTask || tenseAnswered || !selectedPronoun || selectedSuffixes.length !== tenseTask.suffixes.length) return;
   const pronounOk = selectedPronoun === tenseTask.pronoun.uz;
   const suffixOk = selectedSuffixes.every((item, index) => item === tenseTask.suffixes[index]);
   const result = $("tenseResult");
@@ -271,11 +310,17 @@ function checkTenseComplete() {
     const uz = `${tenseTask.pronoun.uz} ${surfaceVerb(tenseTask.stem, tenseTask.suffixes)}`;
     result.textContent = `Верно: ${uz}`;
     result.className = "tense-result ok";
+    tenseDone += 1;
   } else {
     const right = `${tenseTask.pronoun.uz} + ${tenseTask.stem} + ${tenseTask.suffixes.join(" + ")}`;
     result.textContent = `Проверь структуру: ${right}`;
     result.className = "tense-result bad";
   }
+  tenseAttempts += 1;
+  tenseAnswered = true;
+  $("tenseDoneCount").textContent = tenseDone;
+  $("tenseTotalCount").textContent = tenseAttempts;
+  $("nextTense").classList.remove("hidden");
 }
 
 document.querySelectorAll(".tab").forEach((button) => {
@@ -294,6 +339,10 @@ $("knowCard").addEventListener("click", () => markCard("known"));
 $("reviewCard").addEventListener("click", () => markCard("review"));
 $("newPairs").addEventListener("click", startPairs);
 $("newTense").addEventListener("click", startTense);
+$("nextTense").addEventListener("click", startTense);
+document.querySelectorAll(".back-setup").forEach((button) => {
+  button.addEventListener("click", () => showSetup(button.dataset.target));
+});
 
 document.addEventListener("keydown", (event) => {
   if (!document.querySelector("#cardsPanel.active")) return;
@@ -306,6 +355,3 @@ document.addEventListener("keydown", (event) => {
 });
 
 renderStats();
-startCards();
-startPairs();
-startTense();

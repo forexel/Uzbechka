@@ -46,6 +46,17 @@ button:disabled {
   opacity: .72;
 }
 
+.wide {
+  width: 100%;
+  min-height: 54px;
+  font-size: 17px;
+  font-weight: 750;
+}
+
+.ghost {
+  background: transparent;
+}
+
 .primary {
   background: var(--green);
   border-color: var(--green);
@@ -127,6 +138,51 @@ h1 {
   display: block;
 }
 
+.setup-screen {
+  display: grid;
+  gap: 16px;
+}
+
+.process-screen {
+  display: grid;
+  gap: 14px;
+}
+
+.setup-head {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.setup-head span {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  background: var(--green);
+  color: white;
+  font-weight: 800;
+  flex: 0 0 auto;
+}
+
+.setup-head h2 {
+  margin: 0;
+  font-size: 25px;
+  letter-spacing: 0;
+}
+
+.setup-head p {
+  margin: 3px 0 0;
+  color: var(--muted);
+}
+
+.setup-controls {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(160px, 1fr));
+  gap: 12px;
+}
+
 .toolbar {
   display: grid;
   grid-template-columns: 1.3fr 1fr;
@@ -153,14 +209,37 @@ legend {
 }
 
 .checks {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 9px 14px;
-  align-content: center;
+  display: grid;
+  gap: 10px;
 }
 
 .checks label {
   white-space: nowrap;
+}
+
+.choice-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.choice-grid label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 54px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: white;
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 650;
+}
+
+.choice-grid input[type="checkbox"] {
+  width: 26px;
+  height: 26px;
+  margin: 0;
+  accent-color: var(--green);
 }
 
 .control-grid {
@@ -210,14 +289,14 @@ input[type="number"], select {
 }
 
 .visual {
-  min-width: 82px;
-  height: 82px;
+  min-width: 104px;
+  height: 104px;
   display: grid;
   place-items: center;
   border-radius: 8px;
   background: var(--green-soft);
   color: var(--green);
-  font-size: 34px;
+  font-size: 52px;
   font-weight: 800;
 }
 
@@ -256,6 +335,43 @@ input[type="number"], select {
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
   margin-top: 12px;
+}
+
+.process-top {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px;
+  align-items: center;
+}
+
+.round-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(58px, 1fr));
+  gap: 8px;
+}
+
+.round-stats.two {
+  grid-template-columns: repeat(2, minmax(70px, 1fr));
+}
+
+.round-stats div {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 10px;
+  text-align: center;
+  background: #fff;
+}
+
+.round-stats span {
+  display: block;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--green);
+}
+
+.round-stats small {
+  color: var(--muted);
+  font-size: 12px;
 }
 
 .progress-line {
@@ -423,7 +539,7 @@ input[type="number"], select {
     align-items: stretch;
   }
 
-  .control-grid, .actions {
+  .control-grid, .setup-controls, .actions, .choice-grid, .process-top {
     grid-template-columns: 1fr;
   }
 
@@ -437,5 +553,37 @@ input[type="number"], select {
 
   .term {
     font-size: 32px;
+  }
+
+  .app {
+    width: min(100% - 20px, 520px);
+    padding-top: 14px;
+  }
+
+  .panel {
+    padding: 14px;
+  }
+
+  .stat-strip {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .learning-card {
+    min-height: calc(100vh - 330px);
+    padding: 22px 16px;
+  }
+
+  .choice-grid label {
+    min-height: 60px;
+    font-size: 16px;
+  }
+
+  .choice-grid input[type="checkbox"] {
+    width: 30px;
+    height: 30px;
+  }
+
+  .round-stats {
+    grid-template-columns: repeat(4, 1fr);
   }
 }

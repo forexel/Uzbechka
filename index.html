@@ -27,9 +27,16 @@
     </nav>
 
     <section class="panel active" id="cardsPanel">
-      <div class="toolbar">
-        <fieldset class="checks">
-          <legend>Слова</legend>
+      <div class="setup-screen" id="cardsSetup">
+        <div class="setup-head">
+          <span>1</span>
+          <div>
+            <h2>Что учить</h2>
+            <p>Выбери типы слов, количество карточек и направление.</p>
+          </div>
+        </div>
+        <fieldset class="checks choice-grid">
+          <legend>Типы слов</legend>
           <label><input type="checkbox" value="noun" checked> существительные</label>
           <label><input type="checkbox" value="pronoun" checked> местоимения</label>
           <label><input type="checkbox" value="verb" checked> глаголы</label>
@@ -37,7 +44,7 @@
           <label><input type="checkbox" value="question" checked> вопросы</label>
           <label><input type="checkbox" value="other"> другое</label>
         </fieldset>
-        <div class="control-grid">
+        <div class="setup-controls">
           <label>Карточек
             <input id="cardLimit" type="number" min="1" max="80" value="10">
           </label>
@@ -48,31 +55,49 @@
               <option value="mixed">Вперемешку</option>
             </select>
           </label>
-          <button id="newCards" class="primary">Новый круг</button>
         </div>
+        <button id="newCards" class="primary wide">Начать обучение</button>
       </div>
 
-      <div class="learning-card" id="flashcard" tabindex="0">
-        <div class="badge" id="cardCategory">слово</div>
-        <div class="visual" id="cardVisual">◌</div>
-        <div class="term" id="cardFront">Нажми «Новый круг»</div>
-        <div class="answer hidden" id="cardBack">
-          <strong id="cardAnswer"></strong>
-          <span id="cardPronunciation"></span>
-          <em id="cardHint"></em>
+      <div class="process-screen hidden" id="cardsProcess">
+        <div class="process-top">
+          <button class="ghost back-setup" data-target="cards">Настройки</button>
+          <div class="round-stats">
+            <div><span id="cardDoneCount">0</span><small>готово</small></div>
+            <div><span id="cardTotalCount">0</span><small>всего</small></div>
+            <div><span id="cardKnownCount">0</span><small>знаю</small></div>
+            <div><span id="cardRepeatCount">0</span><small>повтор</small></div>
+          </div>
         </div>
+        <div class="learning-card" id="flashcard" tabindex="0">
+          <div class="badge" id="cardCategory">слово</div>
+          <div class="visual" id="cardVisual">◌</div>
+          <div class="term" id="cardFront">Нажми «Начать»</div>
+          <div class="answer hidden" id="cardBack">
+            <strong id="cardAnswer"></strong>
+            <span id="cardPronunciation"></span>
+            <em id="cardHint"></em>
+          </div>
+        </div>
+        <div class="actions">
+          <button id="reviewCard">Повторить</button>
+          <button id="flipCard" class="primary">Перевернуть</button>
+          <button id="knowCard">Знаю</button>
+        </div>
+        <div class="progress-line" id="cardProgress"></div>
       </div>
-      <div class="actions">
-        <button id="reviewCard">Повторить</button>
-        <button id="flipCard" class="primary">Перевернуть</button>
-        <button id="knowCard">Знаю</button>
-      </div>
-      <div class="progress-line" id="cardProgress"></div>
     </section>
 
     <section class="panel" id="pairsPanel">
-      <div class="toolbar compact">
-        <div class="control-grid">
+      <div class="setup-screen" id="pairsSetup">
+        <div class="setup-head">
+          <span>2</span>
+          <div>
+            <h2>Пары слов</h2>
+            <p>До 10 слов: русский и узбекский столбики перемешаны.</p>
+          </div>
+        </div>
+        <div class="setup-controls">
           <label>Слов в раунде
             <input id="pairLimit" type="number" min="2" max="10" value="10">
           </label>
@@ -86,19 +111,36 @@
               <option value="question">Вопросы</option>
             </select>
           </label>
-          <button id="newPairs" class="primary">Перемешать</button>
         </div>
+        <button id="newPairs" class="primary wide">Начать пары</button>
       </div>
-      <div class="match-board">
-        <div id="ruColumn" class="match-column"></div>
-        <div id="uzColumn" class="match-column"></div>
+
+      <div class="process-screen hidden" id="pairsProcess">
+        <div class="process-top">
+          <button class="ghost back-setup" data-target="pairs">Настройки</button>
+          <div class="round-stats two">
+            <div><span id="pairDoneCount">0</span><small>найдено</small></div>
+            <div><span id="pairTotalCount">0</span><small>всего</small></div>
+          </div>
+        </div>
+        <div class="match-board">
+          <div id="ruColumn" class="match-column"></div>
+          <div id="uzColumn" class="match-column"></div>
+        </div>
+        <div class="progress-line" id="pairProgress"></div>
       </div>
-      <div class="progress-line" id="pairProgress"></div>
     </section>
 
     <section class="panel" id="tensesPanel">
-      <div class="toolbar compact">
-        <div class="control-grid">
+      <div class="setup-screen" id="tensesSetup">
+        <div class="setup-head">
+          <span>3</span>
+          <div>
+            <h2>Времена</h2>
+            <p>Собирай местоимение и постфиксы глагола в правильном порядке.</p>
+          </div>
+        </div>
+        <div class="setup-controls">
           <label>Время
             <select id="tenseMode">
               <option value="mixed">Все пройденные</option>
@@ -115,27 +157,37 @@
               <option value="question">Вопрос</option>
             </select>
           </label>
-          <button id="newTense" class="primary">Новое предложение</button>
         </div>
+        <button id="newTense" class="primary wide">Начать времена</button>
       </div>
 
-      <div class="tense-task">
-        <div class="sentence-ru" id="tenseRu"></div>
-        <div class="builder">
-          <div class="slot-row">
-            <span class="slot-label">Кто</span>
-            <button class="slot" id="pronounSlot">выбери</button>
-          </div>
-          <div class="verb-build">
-            <span id="verbStem"></span>
-            <div id="suffixSlots" class="suffix-slots"></div>
+      <div class="process-screen hidden" id="tensesProcess">
+        <div class="process-top">
+          <button class="ghost back-setup" data-target="tenses">Настройки</button>
+          <div class="round-stats two">
+            <div><span id="tenseDoneCount">0</span><small>собрано</small></div>
+            <div><span id="tenseTotalCount">0</span><small>попыток</small></div>
           </div>
         </div>
-        <div class="option-title">Местоимение</div>
-        <div id="pronounOptions" class="option-row"></div>
-        <div class="option-title">Постфиксы глагола</div>
-        <div id="suffixOptions" class="option-row"></div>
-        <div class="tense-result" id="tenseResult"></div>
+        <div class="tense-task">
+          <div class="sentence-ru" id="tenseRu"></div>
+          <div class="builder">
+            <div class="slot-row">
+              <span class="slot-label">Кто</span>
+              <button class="slot" id="pronounSlot">выбери</button>
+            </div>
+            <div class="verb-build">
+              <span id="verbStem"></span>
+              <div id="suffixSlots" class="suffix-slots"></div>
+            </div>
+          </div>
+          <div class="option-title">Местоимение</div>
+          <div id="pronounOptions" class="option-row"></div>
+          <div class="option-title">Постфиксы глагола</div>
+          <div id="suffixOptions" class="option-row"></div>
+          <div class="tense-result" id="tenseResult"></div>
+          <button id="nextTense" class="primary wide hidden">Следующее предложение</button>
+        </div>
       </div>
     </section>
   </main>

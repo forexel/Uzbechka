@@ -169,6 +169,57 @@ const WORDS = [
   hint: w[5]
 }));
 
+const WORD_VISUALS = {
+  "kirmoq": "🚪", "chiqmoq": "🚶", "kutmoq": "⏳", "oʻtirmoq": "🪑",
+  "ishlamoq": "💼", "yashamoq": "🏠", "ichmoq": "🥤", "yemoq": "🍽️",
+  "bermoq": "🤲", "boʻlmoq": "✅", "qaytmoq": "↩️", "koʻrmoq": "👁️",
+  "koʻrsatmoq": "👉", "koʻtarmoq": "🏋️", "qaramoq": "👀", "boʻyamoq": "🎨",
+  "bekitmoq": "🧰", "yashirmoq": "🙈", "sanamoq": "🔢", "saqlamoq": "🔒",
+  "surmoq": "📦", "soʻramoq": "❓", "tanlamoq": "☑️", "termoq": "🫐",
+  "yigʻmoq": "🧩", "tugatmoq": "🏁", "bajarmoq": "💪", "javob bermoq": "💬",
+  "oʻtmoq": "➡️", "rejalashtirmoq": "🗓️", "ruxsat bermoq": "🟢", "qilmoq": "🛠️",
+  "uchrashmoq": "🤝", "tasdiqlamoq": "✅", "yechmoq": "🧩", "jonga tegmoq": "😤",
+  "koʻzdan kechirmoq": "🔍",
+
+  "rahbar": "👔", "boshliq": "🧑‍💼", "ishchi": "👷", "mehmon": "🧳",
+  "hujjat": "📄", "foyda": "📈", "pul": "💵", "ish": "💼",
+  "ofis": "🏢", "uy": "🏠", "koʻcha": "🛣️", "bogʻ": "🌳",
+  "devor": "🧱", "yoʻl": "🛤️", "sayohat": "✈️", "ovqat": "🍲",
+  "kitob": "📖", "stol": "🪑", "stul": "🪑", "kafe": "☕",
+  "qahva": "☕", "choy": "🍵", "non": "🍞", "kompyuter": "💻",
+  "narsa": "📦", "masala": "🧩", "reja": "🗒️", "maktab": "🏫",
+  "mashina": "🚗", "daraxt": "🌳", "komanda": "👥", "odam": "🧍",
+  "kishi": "👤", "maosh": "💰", "oylik": "💸", "sotuv": "🛍️",
+  "qoʻngʻiroq": "☎️", "yil": "📅",
+
+  "men": "🧍", "sen": "👉", "u": "👤", "biz": "👥", "siz": "🤵", "ular": "👥",
+  "menga": "🤲", "senga": "👉", "unga": "👤", "bizga": "👥", "sizga": "🤵",
+  "ularga": "👥", "meni": "🧍", "seni": "👉", "uni": "👤", "menda": "🎒", "sizda": "💼",
+
+  "nima": "❓", "nimani": "❓", "kim": "👤", "kimni": "👤", "nega": "🤔",
+  "nimaga": "🤔", "qachon": "🕒", "qayerda": "📍", "qayerga": "➡️",
+  "qayerdan": "⬅️", "qanday": "🧭", "qancha": "🔢", "nechta": "🔢",
+
+  "nol": "0️⃣", "bir": "1️⃣", "ikki": "2️⃣", "uch": "3️⃣", "toʻrt": "4️⃣",
+  "besh": "5️⃣", "olti": "6️⃣", "yetti": "7️⃣", "sakkiz": "8️⃣", "toʻqqiz": "9️⃣",
+  "oʻn": "🔟", "yigirma": "20", "oʻttiz": "30", "qirq": "40", "ellik": "50",
+  "oltmish": "60", "yetmish": "70", "sakson": "80", "toʻqson": "90", "yuz": "💯",
+  "ming": "1000",
+
+  "hamma": "👥", "hamma narsa": "📦", "katta": "🐘", "kichkina": "🔹",
+  "yaxshi": "👍", "yomon": "👎", "qiziq": "🤔", "qiziqarli": "📚",
+  "uzoq": "🛤️", "yillik": "📆", "bugun": "📍", "bugungi": "📍",
+  "kecha": "🌙", "ertalab": "🌅", "hozir": "⏱️", "hozirgina": "⚡",
+  "oxirgi": "🏁", "marta": "🔁", "haqida": "💭", "uchun": "🎯",
+  "emas": "❌", "bor": "✅", "yoʻq": "🚫", "Salom!": "👋",
+  "Rahmat": "🙏", "Yaxshimisiz?": "😊", "Ishlar qanday?": "💬",
+  "Boʻladi!": "👌", "Qarang!": "👀"
+};
+
+WORDS.forEach((word) => {
+  word.visual = WORD_VISUALS[word.uz] || word.visual;
+});
+
 const PRONOUNS = [
   { uz: "men", ru: "я", present: "man", past: "m", habitual: "man" },
   { uz: "sen", ru: "ты", present: "san", past: "ng", habitual: "san" },

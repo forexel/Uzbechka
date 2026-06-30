@@ -531,24 +531,32 @@ input[type="number"], select {
 
 @media (max-width: 760px) {
   .topbar, .toolbar, .builder, .match-board {
-    grid-template-columns: 1fr;
     display: grid;
+    grid-template-columns: 1fr;
   }
 
   .topbar {
-    align-items: stretch;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
   }
 
-  .control-grid, .setup-controls, .actions, .choice-grid, .process-top {
+  .control-grid, .actions, .process-top {
     grid-template-columns: 1fr;
   }
 
   .tabs {
     overflow-x: auto;
+    gap: 6px;
+    margin-bottom: 8px;
   }
 
   .tab {
     flex: 1 0 auto;
+    min-height: 34px;
+    padding: 6px 10px;
+    font-size: 14px;
   }
 
   .term {
@@ -556,16 +564,103 @@ input[type="number"], select {
   }
 
   .app {
-    width: min(100% - 20px, 520px);
-    padding-top: 14px;
+    width: min(100% - 14px, 520px);
+    padding-top: 7px;
+    padding-bottom: 12px;
   }
 
   .panel {
-    padding: 14px;
+    padding: 9px;
+  }
+
+  h1 {
+    font-size: 22px;
+    line-height: 1.05;
+  }
+
+  .topbar p {
+    display: none;
   }
 
   .stat-strip {
     grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+    min-width: 130px;
+  }
+
+  .stat-strip div {
+    padding: 4px 5px;
+  }
+
+  .stat-strip span {
+    font-size: 15px;
+    line-height: 1;
+  }
+
+  .stat-strip small {
+    font-size: 10px;
+  }
+
+  .setup-screen {
+    gap: 8px;
+  }
+
+  .setup-head {
+    gap: 8px;
+  }
+
+  .setup-head span {
+    width: 30px;
+    height: 30px;
+    font-size: 14px;
+  }
+
+  .setup-head h2 {
+    font-size: 20px;
+    line-height: 1.1;
+  }
+
+  .setup-head p {
+    font-size: 12px;
+    line-height: 1.2;
+    margin-top: 1px;
+  }
+
+  fieldset {
+    padding: 5px;
+  }
+
+  legend {
+    font-size: 11px;
+  }
+
+  .checks {
+    gap: 6px;
+  }
+
+  .choice-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .setup-controls {
+    grid-template-columns: 86px 1fr;
+    gap: 8px;
+  }
+
+  label {
+    font-size: 12px;
+  }
+
+  input[type="number"], select {
+    min-height: 36px;
+    margin-top: 3px;
+    padding: 6px 8px;
+    font-size: 14px;
+  }
+
+  .wide {
+    min-height: 42px;
+    font-size: 15px;
   }
 
   .learning-card {
@@ -574,13 +669,17 @@ input[type="number"], select {
   }
 
   .choice-grid label {
-    min-height: 60px;
-    font-size: 16px;
+    min-height: 38px;
+    padding: 6px 7px;
+    gap: 7px;
+    font-size: 13px;
+    font-weight: 650;
   }
 
   .choice-grid input[type="checkbox"] {
-    width: 30px;
-    height: 30px;
+    width: 22px;
+    height: 22px;
+    flex: 0 0 auto;
   }
 
   .round-stats {

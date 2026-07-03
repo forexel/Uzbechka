@@ -59,7 +59,7 @@
           <label><input type="checkbox" value="question" checked> вопросы</label>
           <label><input type="checkbox" value="other"> другое</label>
         </fieldset>
-        <button id="newCards" class="primary wide">Начать обучение</button>
+        <button id="newCards" class="primary wide lesson-start">Начать урок</button>
       </div>
 
       <div class="process-screen hidden" id="cardsProcess">
@@ -83,7 +83,7 @@
           </div>
         </div>
         <div class="actions">
-          <button id="reviewCard">Повторить</button>
+          <button id="reviewCard">Не знаю</button>
           <button id="flipCard" class="primary">Перевернуть</button>
           <button id="knowCard">Знаю</button>
         </div>
@@ -102,7 +102,7 @@
         </div>
         <div class="setup-controls">
           <label>Слов в раунде
-            <input id="pairLimit" type="number" min="2" max="10" value="10">
+            <input id="pairLimit" type="number" min="2" max="7" value="7">
           </label>
           <label>Категория
             <select id="pairCategory">
@@ -115,7 +115,7 @@
             </select>
           </label>
         </div>
-        <button id="newPairs" class="primary wide">Начать пары</button>
+        <button id="newPairs" class="primary wide lesson-start">Начать урок</button>
       </div>
 
       <div class="process-screen hidden" id="pairsProcess">
@@ -132,6 +132,7 @@
         </div>
         <div class="result-card hidden" id="pairResult">
           <h2>Раунд завершен</h2>
+          <p class="result-score" id="pairResultScore">100/100</p>
           <div class="result-grid">
             <div><span id="pairResultFound">10/10</span><small>найдено</small></div>
             <div><span id="pairResultErrors">0</span><small>ошибки</small></div>
@@ -156,15 +157,13 @@
             <p>Собирай местоимение и постфиксы глагола в правильном порядке.</p>
           </div>
         </div>
-        <div class="setup-controls">
-          <label>Время
-            <select id="tenseMode">
-              <option value="mixed">Все пройденные</option>
-              <option value="present">Сейчас: -yap</option>
-              <option value="past">Прошедшее: -di</option>
-              <option value="habitual">Обычно/скоро: -a/-y</option>
-            </select>
-          </label>
+        <fieldset class="checks choice-grid tense-checks">
+          <legend>Времена</legend>
+          <label><input type="checkbox" name="tenseMode" value="present" checked> сейчас: -yap</label>
+          <label><input type="checkbox" name="tenseMode" value="past" checked> прошедшее: -di</label>
+          <label><input type="checkbox" name="tenseMode" value="habitual" checked> обычно/скоро: -a/-y</label>
+        </fieldset>
+        <div class="setup-controls single">
           <label>Формат
             <select id="tensePolarity">
               <option value="mixed">Утверждение / отрицание / вопрос</option>
@@ -175,7 +174,7 @@
             </select>
           </label>
         </div>
-        <button id="newTense" class="primary wide">Начать времена</button>
+        <button id="newTense" class="primary wide lesson-start">Начать урок</button>
       </div>
 
       <div class="process-screen hidden" id="tensesProcess">
@@ -202,6 +201,23 @@
           <div id="suffixOptions" class="option-row"></div>
           <div class="tense-result" id="tenseResult"></div>
           <button id="nextTense" class="primary wide hidden">Следующее предложение</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="lesson-result hidden" id="lessonResult">
+      <div class="result-card result-summary">
+        <p class="result-kicker" id="lessonResultType">Результат</p>
+        <h2 id="lessonResultScore">100/100</h2>
+        <p id="lessonResultNote">Лучший результат сегодня.</p>
+        <div class="result-grid">
+          <div><span id="lessonResultTime">0:00</span><small>время</small></div>
+          <div><span id="lessonResultErrors">0</span><small>ошибки</small></div>
+          <div><span id="lessonResultDone">10</span><small>закреплено</small></div>
+        </div>
+        <div class="result-actions">
+          <button id="lessonAgain" class="primary">Еще урок</button>
+          <button id="lessonHome">Вернуться на главную</button>
         </div>
       </div>
     </section>

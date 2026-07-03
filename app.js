@@ -49,6 +49,7 @@ let cardIndex = 0;
 let cardFlipped = false;
 let cardKnownRound = 0;
 let cardRepeatRound = 0;
+let cardStartedAt = 0;
 let currentPair = { ru: null, uz: null, done: 0, total: 0, errors: 0, startedAt: 0, savedResult: false };
 let tenseTask = null;
 let selectedPronoun = null;
@@ -56,6 +57,9 @@ let selectedSuffixes = [];
 let tenseDone = 0;
 let tenseAttempts = 0;
 let tenseAnswered = false;
+let tenseRound = 0;
+let tenseStartedAt = 0;
+let lastLessonMode = "cards";
 
 function categoryName(type) {
   return {
@@ -77,6 +81,45 @@ function renderStats() {
   $("statKnown").textContent = totals.known;
   $("statReview").textContent = totals.review;
   $("statWords").textContent = WORDS.length;
+}
+
+function lessonName(mode) {
+  return {
+    cards: "Карточки",
+    pairs: "Пары",
+    tenses: "Времена"
+  }[mode] || "Урок";
+}
+
+function scoreFromErrors(errors, total) {
+  const penalty = total > 0 ? Math.ceil((errors / total) * 100) : errors * 10;
+  return Math.max(0, Math.min(100, 100 - penalty));
+}
+
+function showLessonResult({ mode, total, errors, durationMs, done }) {
+  lastLessonMode = mode;
+  document.body.classList.remove("process-mode", "cards-process", "pairs-process", "tenses-process");
+  document.body.classList.add("result-mode");
+  document.querySelectorAll(".process-screen").forEach((item) => item.classList.add("hidden"));
+  document.querySelectorAll(".setup-screen").forEach((item) => item.classList.remove("hidden"));
+  document.querySelectorAll(".panel").forEach((item) => item.classList.remove("active"));
+  $("lessonResult").classList.remove("hidden");
+  const score = scoreFromErrors(errors, total);
+  $("lessonResultType").textContent = `${lessonName(mode)} · результат`;
+  $("lessonResultScore").textContent = `${score}/100`;
+  $("lessonResultNote").textContent = score === 100
+    ? "Лучший результат сегодня."
+    : score >= 80
+      ? "Один из лучших результатов сегодня."
+      : "Есть что повторить в следующем круге.";
+  $("lessonResultTime").textContent = formatDuration(durationMs);
+  $("lessonResultErrors").textContent = errors;
+  $("lessonResultDone").textContent = done;
+}
+
+function hideLessonResult() {
+  document.body.classList.remove("result-mode");
+  $("lessonResult").classList.add("hidden");
 }
 
 function showAuthError(message) {
@@ -168,17 +211,24 @@ function logout() {
 }
 
 function selectedCardTypes() {
-  return [...document.querySelectorAll(".checks input:checked")].map((item) => item.value);
+  return [...document.querySelectorAll("#cardsSetup .checks input:checked")].map((item) => item.value);
 }
 
 function enterProcess(mode) {
+  hideLessonResult();
+  lastLessonMode = mode;
   document.body.classList.add("process-mode", `${mode}-process`);
   $(`${mode}Setup`).classList.add("hidden");
   $(`${mode}Process`).classList.remove("hidden");
 }
 
 function showSetup(mode) {
+  hideLessonResult();
   document.body.classList.remove("process-mode", "cards-process", "pairs-process", "tenses-process");
+  document.querySelectorAll(".panel").forEach((item) => item.classList.remove("active"));
+  document.querySelectorAll(".tab").forEach((item) => item.classList.remove("active"));
+  document.querySelector(`.tab[data-mode="${mode}"]`)?.classList.add("active");
+  $(`${mode}Panel`).classList.add("active");
   $(`${mode}Process`).classList.add("hidden");
   $(`${mode}Setup`).classList.remove("hidden");
 }
@@ -192,6 +242,7 @@ function startCards() {
   cardFlipped = false;
   cardKnownRound = 0;
   cardRepeatRound = 0;
+  cardStartedAt = Date.now();
   enterProcess("cards");
   renderCard();
 }
@@ -203,6 +254,7 @@ function cardDirection() {
 function renderCard() {
   const word = cardDeck[cardIndex];
   $("cardBack").classList.add("hidden");
+  $("flashcard").classList.remove("flipped");
   cardFlipped = false;
   updateCardRoundStats();
   if (!word) {
@@ -212,7 +264,13 @@ function renderCard() {
     $("cardAnswer").textContent = "";
     $("cardPronunciation").textContent = "";
     $("cardHint").textContent = "";
-    $("cardProgress").textContent = "Круг завершен. Можно вернуться в настройки или начать заново.";
+    showLessonResult({
+      mode: "cards",
+      total: cardDeck.length,
+      errors: cardRepeatRound,
+      durationMs: Date.now() - cardStartedAt,
+      done: cardKnownRound
+    });
     return;
   }
 
@@ -232,19 +290,22 @@ function updateCardRoundStats() {
   $("cardTotalCount").textContent = cardDeck.length;
   $("cardKnownCount").textContent = cardKnownRound;
   $("cardRepeatCount").textContent = cardRepeatRound;
+  $("knowCard").disabled = !cardFlipped || !cardDeck[cardIndex];
+  $("reviewCard").disabled = !cardFlipped || !cardDeck[cardIndex];
 }
 
 function flipCard() {
   if (!cardDeck[cardIndex]) return;
-  cardFlipped = true;
-  $("cardBack").classList.remove("hidden");
+  cardFlipped = !cardFlipped;
+  $("cardBack").classList.toggle("hidden", !cardFlipped);
+  $("flashcard").classList.toggle("flipped", cardFlipped);
+  updateCardRoundStats();
 }
 
 function markCard(field) {
   const word = cardDeck[cardIndex];
   if (!word) return;
   if (!cardFlipped) {
-    flipCard();
     return;
   }
   store.bump(word.id, field);
@@ -255,7 +316,7 @@ function markCard(field) {
 }
 
 function startPairs() {
-  const limit = Math.max(2, Math.min(10, Number($("pairLimit").value) || 10));
+  const limit = Math.max(2, Math.min(7, Number($("pairLimit").value) || 7));
   const category = $("pairCategory").value;
   const pool = category === "all" ? WORDS : WORDS.filter((word) => word.type === category);
   const round = shuffle(pool).slice(0, limit);
@@ -370,11 +431,18 @@ function showPairResult() {
   $("pairResultFound").textContent = `${result.found}/${result.total}`;
   $("pairResultErrors").textContent = result.errors;
   $("pairResultTime").textContent = formatDuration(result.durationMs);
-  $("pairResultBest").textContent = pairBestText(result, sameDayBefore);
+  const score = scoreFromErrors(result.errors, result.total);
+  $("pairResultScore").textContent = `${score}/100`;
+  $("pairResultBest").textContent = `${score}/100. ${pairBestText(result, sameDayBefore)}`;
   $("pairBoard").classList.add("hidden");
   $("pairResult").classList.remove("hidden");
   store.data._pairResults = [...allResults, result].slice(-100);
   store.save();
+}
+
+function selectedTenseModes() {
+  const checked = [...document.querySelectorAll('input[name="tenseMode"]:checked')].map((item) => item.value);
+  return checked.length ? checked : Object.keys(TENSES);
 }
 
 function verbStem(verb) {
@@ -413,13 +481,29 @@ function buildRussianSentence(template, pronoun, pronounIndex, tense, polarity) 
 }
 
 function startTense() {
+  if (!document.body.classList.contains("tenses-process")) {
+    tenseRound = 0;
+    tenseDone = 0;
+    tenseAttempts = 0;
+    tenseStartedAt = Date.now();
+  }
+  if (tenseRound >= 10) {
+    showLessonResult({
+      mode: "tenses",
+      total: tenseAttempts || 10,
+      errors: Math.max(0, tenseAttempts - tenseDone),
+      durationMs: Date.now() - tenseStartedAt,
+      done: tenseDone
+    });
+    return;
+  }
   const template = shuffle(TENSE_SENTENCE_PARTS)[0];
   const verb = WORDS.find((word) => word.uz === template.verb);
   const pronounIndex = Math.floor(Math.random() * PRONOUNS.length);
   const pronoun = PRONOUNS[pronounIndex];
-  const tenseValue = $("tenseMode").value;
+  const tenseValues = selectedTenseModes();
   const polarityValue = $("tensePolarity").value;
-  const tense = tenseValue === "mixed" ? shuffle(Object.keys(TENSES))[0] : tenseValue;
+  const tense = shuffle(tenseValues)[0];
   const polarity = polarityValue === "mixed" ? shuffle(["positive", "negative", "question", "negativeQuestion"])[0] : polarityValue;
   const stem = verbStem(verb.uz);
   const suffixes = [];
@@ -447,6 +531,8 @@ function renderTense() {
   $("tenseResult").textContent = "";
   $("tenseResult").className = "tense-result";
   $("nextTense").classList.add("hidden");
+  $("tenseDoneCount").textContent = `${tenseRound + 1}/10`;
+  $("tenseTotalCount").textContent = Math.max(0, tenseAttempts - tenseDone);
 
   $("pronounOptions").innerHTML = "";
   shuffle(PRONOUNS).forEach((item) => {
@@ -501,14 +587,17 @@ function checkTenseComplete() {
     result.className = "tense-result bad";
   }
   tenseAttempts += 1;
+  tenseRound += 1;
   tenseAnswered = true;
-  $("tenseDoneCount").textContent = tenseDone;
-  $("tenseTotalCount").textContent = tenseAttempts;
+  $("tenseDoneCount").textContent = `${Math.min(tenseRound, 10)}/10`;
+  $("tenseTotalCount").textContent = Math.max(0, tenseAttempts - tenseDone);
   $("nextTense").classList.remove("hidden");
+  $("nextTense").textContent = tenseRound >= 10 ? "Показать результат" : "Следующее предложение";
 }
 
 document.querySelectorAll(".tab").forEach((button) => {
   button.addEventListener("click", () => {
+    hideLessonResult();
     document.body.classList.remove("process-mode", "cards-process", "pairs-process", "tenses-process");
     document.querySelectorAll(".tab").forEach((item) => item.classList.remove("active"));
     document.querySelectorAll(".panel").forEach((item) => item.classList.remove("active"));
@@ -526,6 +615,15 @@ $("newPairs").addEventListener("click", startPairs);
 $("pairAgain").addEventListener("click", startPairs);
 $("newTense").addEventListener("click", startTense);
 $("nextTense").addEventListener("click", startTense);
+$("lessonAgain").addEventListener("click", () => {
+  const mode = lastLessonMode;
+  hideLessonResult();
+  showSetup(mode);
+  if (mode === "cards") startCards();
+  if (mode === "pairs") startPairs();
+  if (mode === "tenses") startTense();
+});
+$("lessonHome").addEventListener("click", () => showSetup(lastLessonMode));
 $("authSubmitBtn").addEventListener("click", authRequest);
 $("authSwitchBtn").addEventListener("click", () => {
   auth.mode = auth.mode === "register" ? "login" : "register";

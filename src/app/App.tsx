@@ -8,6 +8,7 @@ import { WORDS, type Word, type WordType } from "./words";
 // ─── Types ─────────────────────────────────────────────────────────────────
 type Screen = "login" | "register" | "home" | "flashcard" | "pairs" | "tenses" | "result";
 type LessonType = "flashcard" | "pairs" | "tenses";
+type TenseMode = "present_yap" | "past_di" | "present_future";
 
 interface ResultData {
   lessonType: LessonType;
@@ -70,6 +71,7 @@ const FLASHCARDS: LearningWord[] = WORDS.map((word) => ({
 const PAIRS_WORDS = FLASHCARDS;
 
 interface TensesEx {
+  tense: TenseMode;
   ru: string;
   uz_stem: string;
   pronouns: string[];
@@ -81,16 +83,24 @@ interface TensesEx {
 }
 
 const TENSES_EX: TensesEx[] = [
-  { ru: "Я читаю книгу.", uz_stem: "kitob o'qi", pronouns: ["men","sen","u","biz"], correct_pronoun: "men", chips: ["yap","man","san","di","miz"], correct_chips: ["yap","man"] },
-  { ru: "Ты идёшь домой.", uz_stem: "uyga yur", pronouns: ["men","sen","u","biz"], correct_pronoun: "sen", chips: ["yap","man","san","di","miz"], correct_chips: ["yap","san"] },
-  { ru: "Он не читает.", uz_stem: "o'qi", pronouns: ["men","sen","u","siz"], correct_pronoun: "u", chips: ["ma","yap","ti","man","di"], correct_chips: ["ma","yap","ti"], negative: true },
-  { ru: "Мы идём в школу.", uz_stem: "maktabga bor", pronouns: ["men","sen","biz","siz"], correct_pronoun: "biz", chips: ["yap","miz","man","di","san"], correct_chips: ["yap","miz"] },
-  { ru: "Разве ты не читаешь?", uz_stem: "o'qi", pronouns: ["men","sen","u","siz"], correct_pronoun: "sen", chips: ["ma","yap","san","man","di"], correct_chips: ["ma","yap","san"], negative: true, question: true },
-  { ru: "Вы работаете здесь.", uz_stem: "bu yerda ishla", pronouns: ["men","u","biz","siz"], correct_pronoun: "siz", chips: ["yap","siz","miz","man","di"], correct_chips: ["yap","siz"] },
-  { ru: "Я не иду домой.", uz_stem: "uyga bor", pronouns: ["men","sen","u","biz"], correct_pronoun: "men", chips: ["ma","yap","man","san","di"], correct_chips: ["ma","yap","man"], negative: true },
-  { ru: "Он читает газету.", uz_stem: "gazeta o'qi", pronouns: ["men","sen","u","siz"], correct_pronoun: "u", chips: ["yap","ti","man","san","di"], correct_chips: ["yap","ti"] },
-  { ru: "Ты не работаешь?", uz_stem: "ishla", pronouns: ["men","sen","u","biz"], correct_pronoun: "sen", chips: ["ma","yap","san","man","di"], correct_chips: ["ma","yap","san"], negative: true, question: true },
-  { ru: "Мы не знаем этого.", uz_stem: "buni bil", pronouns: ["men","sen","biz","siz"], correct_pronoun: "biz", chips: ["ma","yap","miz","man","di"], correct_chips: ["ma","yap","miz"], negative: true },
+  { tense: "present_yap", ru: "Я читаю книгу.", uz_stem: "kitob o'qi", pronouns: ["men","sen","u","biz"], correct_pronoun: "men", chips: ["yap","man","san","di","miz"], correct_chips: ["yap","man"] },
+  { tense: "present_yap", ru: "Ты идёшь домой.", uz_stem: "uyga yur", pronouns: ["men","sen","u","biz"], correct_pronoun: "sen", chips: ["yap","man","san","di","miz"], correct_chips: ["yap","san"] },
+  { tense: "present_yap", ru: "Он не читает.", uz_stem: "o'qi", pronouns: ["men","sen","u","siz"], correct_pronoun: "u", chips: ["ma","yap","ti","man","di"], correct_chips: ["ma","yap","ti"], negative: true },
+  { tense: "present_yap", ru: "Мы идём в школу.", uz_stem: "maktabga bor", pronouns: ["men","sen","biz","siz"], correct_pronoun: "biz", chips: ["yap","miz","man","di","san"], correct_chips: ["yap","miz"] },
+  { tense: "present_yap", ru: "Разве ты не читаешь?", uz_stem: "o'qi", pronouns: ["men","sen","u","siz"], correct_pronoun: "sen", chips: ["ma","yap","san","mi","di"], correct_chips: ["ma","yap","san","mi"], negative: true, question: true },
+  { tense: "present_yap", ru: "Вы работаете здесь.", uz_stem: "bu yerda ishla", pronouns: ["men","u","biz","siz"], correct_pronoun: "siz", chips: ["yap","siz","miz","man","di"], correct_chips: ["yap","siz"] },
+  { tense: "present_yap", ru: "Я не иду домой.", uz_stem: "uyga bor", pronouns: ["men","sen","u","biz"], correct_pronoun: "men", chips: ["ma","yap","man","san","di"], correct_chips: ["ma","yap","man"], negative: true },
+  { tense: "present_yap", ru: "Он читает газету.", uz_stem: "gazeta o'qi", pronouns: ["men","sen","u","siz"], correct_pronoun: "u", chips: ["yap","ti","man","san","di"], correct_chips: ["yap","ti"] },
+  { tense: "present_yap", ru: "Ты не работаешь?", uz_stem: "ishla", pronouns: ["men","sen","u","biz"], correct_pronoun: "sen", chips: ["ma","yap","san","mi","di"], correct_chips: ["ma","yap","san","mi"], negative: true, question: true },
+  { tense: "present_yap", ru: "Мы не знаем этого.", uz_stem: "buni bil", pronouns: ["men","sen","biz","siz"], correct_pronoun: "biz", chips: ["ma","yap","miz","man","di"], correct_chips: ["ma","yap","miz"], negative: true },
+  { tense: "past_di", ru: "Я считал деньги.", uz_stem: "pul sana", pronouns: ["men","sen","u","siz"], correct_pronoun: "men", chips: ["di","m","ng","ngiz","yap"], correct_chips: ["di","m"] },
+  { tense: "past_di", ru: "Вы ели ужин?", uz_stem: "kechki ovqat ye", pronouns: ["men","sen","u","siz"], correct_pronoun: "siz", chips: ["di","ngiz","mi","man","yap"], correct_chips: ["di","ngiz","mi"], question: true },
+  { tense: "past_di", ru: "Он вернулся из офиса.", uz_stem: "ofisdan qayt", pronouns: ["men","sen","u","biz"], correct_pronoun: "u", chips: ["di","m","ng","miz","yap"], correct_chips: ["di"] },
+  { tense: "past_di", ru: "Мы не сохранили документ.", uz_stem: "hujjat saqla", pronouns: ["men","sen","biz","siz"], correct_pronoun: "biz", chips: ["ma","di","k","ngiz","miz"], correct_chips: ["ma","di","k"], negative: true },
+  { tense: "present_future", ru: "Мы встретимся после урока.", uz_stem: "darsdan keyin uchrash", pronouns: ["men","sen","biz","siz"], correct_pronoun: "biz", chips: ["a","miz","man","di","yap"], correct_chips: ["a","miz"] },
+  { tense: "present_future", ru: "Вы решите задачу?", uz_stem: "masala yech", pronouns: ["men","sen","u","siz"], correct_pronoun: "siz", chips: ["a","siz","mi","di","yap"], correct_chips: ["a","siz","mi"], question: true },
+  { tense: "present_future", ru: "Я не пойду домой.", uz_stem: "uyga bor", pronouns: ["men","sen","u","biz"], correct_pronoun: "men", chips: ["ma","y","man","di","yap"], correct_chips: ["ma","y","man"], negative: true },
+  { tense: "present_future", ru: "Ты пьёшь чай?", uz_stem: "choy ich", pronouns: ["men","sen","u","siz"], correct_pronoun: "sen", chips: ["a","san","mi","di","man"], correct_chips: ["a","san","mi"], question: true },
 ];
 
 const CATEGORY_DEFS: { id: WordType; label: string }[] = [
@@ -100,6 +110,12 @@ const CATEGORY_DEFS: { id: WordType; label: string }[] = [
   { id: "number", label: "Числительные" },
   { id: "question", label: "Вопросительные слова" },
   { id: "other", label: "Другое" },
+];
+
+const TENSE_MODE_DEFS: { id: TenseMode; label: string; desc: string }[] = [
+  { id: "present_yap", label: "Настоящее -yap", desc: "qilyapman, boryapsiz" },
+  { id: "past_di", label: "Прошедшее -di", desc: "qildim, yedingizmi" },
+  { id: "present_future", label: "Настоящее-будущее", desc: "boraman, yechasiz" },
 ];
 
 // ─── Utils ─────────────────────────────────────────────────────────────────
@@ -443,9 +459,10 @@ function RegisterScreen({ onRegister, onGo }: { onRegister: (payload: AuthPayloa
 }
 
 // ─── Home ──────────────────────────────────────────────────────────────────
-function HomeScreen({ onStart, username, progress }: { onStart: (t: LessonType) => void; username: string; progress: Record<string, unknown> }) {
+function HomeScreen({ onStart, username, progress }: { onStart: (t: LessonType, tenseModes?: TenseMode[]) => void; username: string; progress: Record<string, unknown> }) {
   const [method, setMethod]   = useState<LessonType>("flashcard");
   const [cats, setCats]       = useState(new Set<WordType>(["noun", "verb"]));
+  const [tenseModes, setTenseModes] = useState(new Set<TenseMode>(["present_yap", "past_di"]));
   const results = progressResults(progress);
   const known = knownWordIds(progress);
   const excellent = results.filter((result) => result.score >= 90).length;
@@ -456,6 +473,12 @@ function HomeScreen({ onStart, username, progress }: { onStart: (t: LessonType) 
 
   const toggle = (id: WordType) =>
     setCats(prev => {
+      const n = new Set(prev);
+      if (n.has(id)) { if (n.size > 1) n.delete(id); } else n.add(id);
+      return n;
+    });
+  const toggleTense = (id: TenseMode) =>
+    setTenseModes(prev => {
       const n = new Set(prev);
       if (n.has(id)) { if (n.size > 1) n.delete(id); } else n.add(id);
       return n;
@@ -525,46 +548,81 @@ function HomeScreen({ onStart, username, progress }: { onStart: (t: LessonType) 
           </div>
         </section>
 
-        {/* Categories */}
-        <section>
-          <h2 className="text-xs font-bold text-zinc-400 uppercase tracking-widest mb-3">Что учить</h2>
-          <div className="flex flex-col gap-2">
-            {categories.map(cat => {
-              const sel = cats.has(cat.id);
-              return (
-                <button
-                  key={cat.id}
-                  onClick={() => toggle(cat.id)}
-                  className={cn(
-                    "flex items-center gap-4 p-4 rounded-2xl border-2 bg-white transition-all text-left",
-                    sel ? "border-emerald-400 bg-emerald-50/60" : "border-zinc-100 hover:border-zinc-200"
-                  )}
-                >
-                  <div className={cn(
-                    "w-5 h-5 rounded-md border-2 flex items-center justify-center flex-shrink-0 transition-all",
-                    sel ? "bg-emerald-600 border-emerald-600" : "border-zinc-300 bg-white"
-                  )}>
-                    {sel && <Check className="w-3 h-3 text-white" strokeWidth={3} />}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between mb-1.5">
-                      <span className={cn("text-sm font-semibold", sel ? "text-zinc-800" : "text-zinc-500")}>{cat.label}</span>
-                      <span className="text-xs text-zinc-400 ml-2 flex-shrink-0 font-mono">{cat.learned}/{cat.total}</span>
+        {method === "tenses" ? (
+          <section>
+            <h2 className="text-xs font-bold text-zinc-400 uppercase tracking-widest mb-3">Какие времена учить</h2>
+            <div className="flex flex-col gap-2">
+              {TENSE_MODE_DEFS.map(item => {
+                const sel = tenseModes.has(item.id);
+                const total = TENSES_EX.filter(ex => ex.tense === item.id).length;
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => toggleTense(item.id)}
+                    className={cn(
+                      "flex items-center gap-4 p-4 rounded-2xl border-2 bg-white transition-all text-left",
+                      sel ? "border-emerald-400 bg-emerald-50/60" : "border-zinc-100 hover:border-zinc-200"
+                    )}
+                  >
+                    <div className={cn(
+                      "w-5 h-5 rounded-md border-2 flex items-center justify-center flex-shrink-0 transition-all",
+                      sel ? "bg-emerald-600 border-emerald-600" : "border-zinc-300 bg-white"
+                    )}>
+                      {sel && <Check className="w-3 h-3 text-white" strokeWidth={3} />}
                     </div>
-                    <Bar value={cat.learned} max={cat.total} green={sel} />
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-        </section>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className={cn("text-sm font-semibold", sel ? "text-zinc-800" : "text-zinc-500")}>{item.label}</span>
+                        <span className="text-xs text-zinc-400 ml-2 flex-shrink-0 font-mono">{total}</span>
+                      </div>
+                      <p className="text-xs text-zinc-400 leading-tight">{item.desc}</p>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+        ) : (
+          <section>
+            <h2 className="text-xs font-bold text-zinc-400 uppercase tracking-widest mb-3">Что учить</h2>
+            <div className="flex flex-col gap-2">
+              {categories.map(cat => {
+                const sel = cats.has(cat.id);
+                return (
+                  <button
+                    key={cat.id}
+                    onClick={() => toggle(cat.id)}
+                    className={cn(
+                      "flex items-center gap-4 p-4 rounded-2xl border-2 bg-white transition-all text-left",
+                      sel ? "border-emerald-400 bg-emerald-50/60" : "border-zinc-100 hover:border-zinc-200"
+                    )}
+                  >
+                    <div className={cn(
+                      "w-5 h-5 rounded-md border-2 flex items-center justify-center flex-shrink-0 transition-all",
+                      sel ? "bg-emerald-600 border-emerald-600" : "border-zinc-300 bg-white"
+                    )}>
+                      {sel && <Check className="w-3 h-3 text-white" strokeWidth={3} />}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className={cn("text-sm font-semibold", sel ? "text-zinc-800" : "text-zinc-500")}>{cat.label}</span>
+                        <span className="text-xs text-zinc-400 ml-2 flex-shrink-0 font-mono">{cat.learned}/{cat.total}</span>
+                      </div>
+                      <Bar value={cat.learned} max={cat.total} green={sel} />
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+        )}
 
         <div
           className="fixed inset-x-0 bottom-0 z-20 bg-[#F7F6F1]/95 px-5 pt-3 backdrop-blur-sm border-t border-zinc-100"
           style={{ paddingBottom: "calc(16px + env(safe-area-inset-bottom))" }}
         >
           <div className="max-w-2xl mx-auto">
-            <Btn full size="lg" onClick={() => onStart(method)}>
+            <Btn full size="lg" onClick={() => onStart(method, Array.from(tenseModes))}>
               <Zap className="w-5 h-5" /> Начать урок
             </Btn>
           </div>
@@ -840,15 +898,19 @@ function PairsLesson({ onComplete }: { onComplete: (r: ResultData) => void }) {
 }
 
 // ─── Tenses Lesson ─────────────────────────────────────────────────────────
-function TensesLesson({ onComplete }: { onComplete: (r: ResultData) => void }) {
+function TensesLesson({ onComplete, modes }: { onComplete: (r: ResultData) => void; modes: TenseMode[] }) {
+  const [exercises] = useState(() => {
+    const selected = TENSES_EX.filter(ex => modes.includes(ex.tense));
+    return shuffle(selected.length ? selected : TENSES_EX).slice(0, 10);
+  });
   const [idx, setIdx]         = useState(0);
   const [pronoun, setPronoun] = useState<string | null>(null);
   const [chips, setChips]     = useState<string[]>([]);
   const [checked, setChecked] = useState(false);
   const [errors, setErrors]   = useState(0);
   const t0 = useRef(Date.now());
-  const TOTAL = TENSES_EX.length;
-  const ex = TENSES_EX[idx];
+  const TOTAL = exercises.length;
+  const ex = exercises[idx];
 
   function reset() { setPronoun(null); setChips([]); setChecked(false); }
 
@@ -1068,6 +1130,7 @@ function ResultScreen({ result, onAgain, onHome }: { result: ResultData; onAgain
 export default function App() {
   const [screen, setScreen]         = useState<Screen>(() => localStorage.getItem("uzbek-trainer-token") ? "home" : "login");
   const [lessonType, setLessonType] = useState<LessonType>("flashcard");
+  const [selectedTenseModes, setSelectedTenseModes] = useState<TenseMode[]>(["present_yap", "past_di"]);
   const [result, setResult]         = useState<ResultData | null>(null);
   const [token, setToken]           = useState(() => localStorage.getItem("uzbek-trainer-token") || "");
   const [username, setUsername]     = useState(() => localStorage.getItem("uzbek-trainer-username") || "");
@@ -1095,7 +1158,11 @@ export default function App() {
     setScreen("home");
   }
 
-  function startLesson(t: LessonType) { setLessonType(t); setScreen(t); }
+  function startLesson(t: LessonType, tenseModes?: TenseMode[]) {
+    setLessonType(t);
+    if (t === "tenses" && tenseModes?.length) setSelectedTenseModes(tenseModes);
+    setScreen(t);
+  }
   function finish(r: ResultData) {
     setResult(r);
     setScreen("result");
@@ -1124,7 +1191,7 @@ export default function App() {
   if (screen === "home")     return <HomeScreen     onStart={startLesson} username={username} progress={progress} />;
   if (screen === "flashcard") return <FlashcardLesson onComplete={finish} />;
   if (screen === "pairs")    return <PairsLesson    onComplete={finish} />;
-  if (screen === "tenses")   return <TensesLesson   onComplete={finish} />;
+  if (screen === "tenses")   return <TensesLesson   onComplete={finish} modes={selectedTenseModes} />;
   if (screen === "result" && result)
     return <ResultScreen result={result} onAgain={() => setScreen(lessonType)} onHome={() => setScreen("home")} />;
   return null;

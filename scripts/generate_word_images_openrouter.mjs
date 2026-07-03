@@ -9,6 +9,8 @@ const limit = Number(process.env.LIMIT || "5");
 const offset = Number(process.env.OFFSET || "0");
 const onlyMissing = process.env.OVERWRITE !== "1";
 const requestedModel = process.env.OPENROUTER_IMAGE_MODEL || "";
+const timeoutMs = Number(process.env.OPENROUTER_TIMEOUT_MS || "180000");
+const maxAttempts = Number(process.env.OPENROUTER_IMAGE_ATTEMPTS || "3");
 
 function parseEnv(path) {
   const env = {};
@@ -107,6 +109,8 @@ async function generate(word, apiKey, model) {
     },
   };
 
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
   const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
     method: "POST",
     headers: {
@@ -116,7 +120,9 @@ async function generate(word, apiKey, model) {
       "X-Title": "Uzbechka word image generator",
     },
     body: JSON.stringify(body),
+    signal: controller.signal,
   });
+  clearTimeout(timer);
 
   const rawText = await response.text();
   let raw;
@@ -155,7 +161,28 @@ for (const word of batch) {
     continue;
   }
   console.log(`generate ${word.id} ${word.uz}`);
-  const imageBytes = await generate(word, apiKey, model);
-  writeFileSync(target, imageBytes);
+  let lastError = null;
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    try {
+      const imageBytes = await generate(word, apiKey, model);
+      writeFileSync(target, imageBytes);
+      lastError = null;
+      break;
+    } catch (error) {
+      lastError = error;
+      console.error(`attempt ${attempt}/${maxAttempts} failed for ${word.id}: ${error.message}`);
+      if (attempt < maxAttempts) {
+        await new Promise((resolve) => setTimeout(resolve, 1500 * attempt));
+      }
+    }
+  }
+  if (lastError) {
+    console.error(`failed ${word.id} ${word.uz}: ${lastError.message}`);
+    if (lastError.message.includes("HTTP 402")) {
+      console.error("OpenRouter credits are exhausted. Stopping batch.");
+      process.exitCode = 1;
+      break;
+    }
+  }
 }
 console.log(`Done. Images saved to ${outDir}`);

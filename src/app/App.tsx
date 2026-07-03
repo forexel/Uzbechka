@@ -482,10 +482,13 @@ function AbstractCard({ card }: { card: typeof FLASHCARDS[0] }) {
 }
 
 function CardImage({ card }: { card: typeof FLASHCARDS[0] }) {
-  if (!card.img) return <AbstractCard card={card} />;
+  const [failed, setFailed] = useState(false);
+  const src = card.img ? img(card.img) : `/word-images/${card.id}.png`;
+  useEffect(() => setFailed(false), [src]);
+  if (failed) return <AbstractCard card={card} />;
   return (
     <div className="w-full aspect-[4/3] rounded-3xl overflow-hidden bg-zinc-100">
-      <img src={img(card.img)} alt={card.uz} className="w-full h-full object-cover" />
+      <img src={src} alt={card.uz} className="w-full h-full object-cover" onError={() => setFailed(true)} />
     </div>
   );
 }

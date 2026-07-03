@@ -534,6 +534,59 @@ body.pairs-process .progress-line {
   color: #77736a;
 }
 
+.result-card {
+  display: grid;
+  gap: 14px;
+  min-height: calc(100vh - 86px);
+  align-content: center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  padding: 18px;
+  text-align: center;
+}
+
+.result-card h2 {
+  margin: 0;
+  font-size: 28px;
+}
+
+.result-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.result-grid div {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: white;
+  padding: 12px 8px;
+}
+
+.result-grid span {
+  display: block;
+  color: var(--green);
+  font-size: 26px;
+  font-weight: 800;
+}
+
+.result-grid small,
+.result-card p {
+  color: var(--muted);
+}
+
+.result-card p {
+  margin: 0;
+  font-size: 15px;
+}
+
+.result-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
 .tense-task {
   display: grid;
   gap: 14px;
@@ -911,6 +964,27 @@ body.pairs-process .progress-line {
     font-size: 15px;
     line-height: 1.15;
     overflow-wrap: anywhere;
+  }
+
+  .result-card {
+    min-height: calc(100vh - 58px);
+    padding: 14px;
+  }
+
+  .result-card h2 {
+    font-size: 24px;
+  }
+
+  .result-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .result-grid div {
+    padding: 9px;
+  }
+
+  .result-grid span {
+    font-size: 22px;
   }
 
   .sentence-ru {

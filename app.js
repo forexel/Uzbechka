@@ -48,7 +48,7 @@ let cardIndex = 0;
 let cardFlipped = false;
 let cardKnownRound = 0;
 let cardRepeatRound = 0;
-let currentPair = { ru: null, uz: null, done: 0, total: 0, score: 0 };
+let currentPair = { ru: null, uz: null, done: 0, total: 0, errors: 0, startedAt: 0, savedResult: false };
 let tenseTask = null;
 let selectedPronoun = null;
 let selectedSuffixes = [];
@@ -253,8 +253,10 @@ function startPairs() {
   const category = $("pairCategory").value;
   const pool = category === "all" ? WORDS : WORDS.filter((word) => word.type === category);
   const round = shuffle(pool).slice(0, limit);
-  currentPair = { ru: null, uz: null, done: 0, total: round.length, score: 0 };
+  currentPair = { ru: null, uz: null, done: 0, total: round.length, errors: 0, startedAt: Date.now(), savedResult: false };
   enterProcess("pairs");
+  $("pairBoard").classList.remove("hidden");
+  $("pairResult").classList.add("hidden");
   $("ruColumn").innerHTML = "";
   $("uzColumn").innerHTML = "";
   shuffle(round).forEach((word) => $("ruColumn").appendChild(pairButton(word, "ru")));
@@ -297,23 +299,76 @@ function checkPair() {
       ru.disabled = true;
       uz.disabled = true;
       currentPair.done += 1;
-      currentPair.score += 1;
       store.bump(ru.dataset.id, "known");
     } else {
+      currentPair.errors += 1;
       ru.classList.remove("wrong");
       uz.classList.remove("wrong");
     }
     currentPair.ru = null;
     currentPair.uz = null;
     updatePairStats();
+    if (currentPair.done === currentPair.total) showPairResult();
   }, ok ? 550 : 650);
 }
 
 function updatePairStats() {
   const round = currentPair.total ? Math.min(currentPair.done + 1, currentPair.total) : 0;
   $("pairDoneCount").textContent = `${round}/${currentPair.total}`;
-  $("pairTotalCount").textContent = currentPair.score;
+  $("pairTotalCount").textContent = currentPair.errors;
   $("pairProgress").textContent = "";
+}
+
+function todayKey() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function formatDuration(ms) {
+  const seconds = Math.max(0, Math.round(ms / 1000));
+  const minutes = Math.floor(seconds / 60);
+  const rest = String(seconds % 60).padStart(2, "0");
+  return `${minutes}:${rest}`;
+}
+
+function comparePairResult(a, b) {
+  if (a.errors !== b.errors) return a.errors - b.errors;
+  return a.durationMs - b.durationMs;
+}
+
+function pairBestText(result, sameDayResults) {
+  const sorted = [...sameDayResults].sort(comparePairResult);
+  const best = sorted[0];
+  if (!best || comparePairResult(result, best) < 0) return "Это лучший результат сегодня.";
+  const withCurrent = [...sameDayResults, result].sort(comparePairResult);
+  const rank = withCurrent.indexOf(result) + 1;
+  if (rank <= 3) return "Это один из лучших результатов сегодня.";
+  return `Лучший сегодня: ${best.errors} ошибок, ${formatDuration(best.durationMs)}.`;
+}
+
+function showPairResult() {
+  if (currentPair.savedResult) return;
+  currentPair.savedResult = true;
+  const result = {
+    date: todayKey(),
+    total: currentPair.total,
+    found: currentPair.done,
+    errors: currentPair.errors,
+    durationMs: Date.now() - currentPair.startedAt
+  };
+  const allResults = Array.isArray(store.data._pairResults) ? store.data._pairResults : [];
+  const sameDayBefore = allResults.filter((item) => item.date === result.date && item.total === result.total);
+  $("pairResultFound").textContent = `${result.found}/${result.total}`;
+  $("pairResultErrors").textContent = result.errors;
+  $("pairResultTime").textContent = formatDuration(result.durationMs);
+  $("pairResultBest").textContent = pairBestText(result, sameDayBefore);
+  $("pairBoard").classList.add("hidden");
+  $("pairResult").classList.remove("hidden");
+  store.data._pairResults = [...allResults, result].slice(-100);
+  store.save();
 }
 
 function verbStem(verb) {
@@ -462,6 +517,7 @@ $("flashcard").addEventListener("click", flipCard);
 $("knowCard").addEventListener("click", () => markCard("known"));
 $("reviewCard").addEventListener("click", () => markCard("review"));
 $("newPairs").addEventListener("click", startPairs);
+$("pairAgain").addEventListener("click", startPairs);
 $("newTense").addEventListener("click", startTense);
 $("nextTense").addEventListener("click", startTense);
 $("loginBtn").addEventListener("click", () => authRequest("/api/login"));

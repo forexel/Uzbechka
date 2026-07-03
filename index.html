@@ -135,12 +135,25 @@
           <button class="ghost back-setup" data-target="pairs">Назад</button>
           <div class="round-stats two">
             <div><span id="pairDoneCount">1/10</span><small>раунд</small></div>
-            <div><span id="pairTotalCount">0</span><small>очки</small></div>
+            <div><span id="pairTotalCount">0</span><small>ошибки</small></div>
           </div>
         </div>
-        <div class="match-board">
+        <div class="match-board" id="pairBoard">
           <div id="ruColumn" class="match-column"></div>
           <div id="uzColumn" class="match-column"></div>
+        </div>
+        <div class="result-card hidden" id="pairResult">
+          <h2>Раунд завершен</h2>
+          <div class="result-grid">
+            <div><span id="pairResultFound">10/10</span><small>найдено</small></div>
+            <div><span id="pairResultErrors">0</span><small>ошибки</small></div>
+            <div><span id="pairResultTime">0:00</span><small>время</small></div>
+          </div>
+          <p id="pairResultBest"></p>
+          <div class="result-actions">
+            <button id="pairAgain" class="primary">Еще раунд</button>
+            <button class="back-setup" data-target="pairs">Настройки</button>
+          </div>
         </div>
         <div class="progress-line" id="pairProgress"></div>
       </div>

@@ -123,6 +123,9 @@ function img(id: string, w = 600, h = 450) {
 function fmtTime(s: number) {
   return `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, "0")}`;
 }
+function score100(errors: number, total = 10) {
+  return Math.max(0, Math.min(100, 100 - Math.ceil((errors / total) * 100)));
+}
 function shuffle<T>(arr: T[]): T[] {
   return [...arr].sort(() => Math.random() - 0.5);
 }
@@ -557,7 +560,7 @@ function FlashcardLesson({ onComplete }: { onComplete: (r: ResultData) => void }
       lessonType: "flashcard",
       timeSeconds: Math.round((Date.now() - t0.current) / 1000),
       errors: e,
-      score: Math.max(1, Math.min(5, Math.round(5 - e * 0.5))),
+      score: score100(e, total),
       wordsReinforced: k,
     });
   }
@@ -585,12 +588,6 @@ function FlashcardLesson({ onComplete }: { onComplete: (r: ResultData) => void }
       <ProgressStrip value={idx} max={total} />
 
       <div className="flex-1 flex flex-col max-w-md mx-auto w-full px-5 py-5 gap-5">
-        <div className="text-center">
-          <span className="text-xs font-semibold text-zinc-400 bg-zinc-100 px-3 py-1 rounded-full">
-            {dir ? "Узбекский → Русский" : "Русский → Узбекский"}
-          </span>
-        </div>
-
         {/* Card */}
         <div className="flex-1 min-h-[380px]" style={{ perspective: "1200px" }}>
           <div
@@ -705,7 +702,7 @@ function PairsLesson({ onComplete }: { onComplete: (r: ResultData) => void }) {
         if (newMatched >= PAIRS_WORDS.length) {
           setTimeout(() => {
             if (round + 1 >= TOTAL) {
-              onComplete({ lessonType: "pairs", timeSeconds: Math.round((Date.now() - t0.current) / 1000), errors, score: score + 10, wordsReinforced: 7 });
+              onComplete({ lessonType: "pairs", timeSeconds: Math.round((Date.now() - t0.current) / 1000), errors, score: score100(errors, TOTAL), wordsReinforced: 7 });
             } else {
               setRound(r => r + 1);
             }
@@ -814,7 +811,7 @@ function TensesLesson({ onComplete }: { onComplete: (r: ResultData) => void }) {
         lessonType: "tenses",
         timeSeconds: Math.round((Date.now() - t0.current) / 1000),
         errors,
-        score: Math.max(1, Math.min(5, Math.round(5 - errors * 0.6))),
+        score: score100(errors, TOTAL),
         wordsReinforced: idx + 1,
       });
     } else {
@@ -970,7 +967,7 @@ function TensesLesson({ onComplete }: { onComplete: (r: ResultData) => void }) {
 
 // ─── Result ────────────────────────────────────────────────────────────────
 function ResultScreen({ result, onAgain, onHome }: { result: ResultData; onAgain: () => void; onHome: () => void }) {
-  const isBest = result.score >= 4;
+  const isBest = result.score >= 90;
   const names: Record<LessonType, string> = { flashcard: "Карточки", pairs: "Пары", tenses: "Времена" };
 
   return (
@@ -979,21 +976,13 @@ function ResultScreen({ result, onAgain, onHome }: { result: ResultData; onAgain
         {/* Score card */}
         <div className="bg-white rounded-3xl p-8 text-center border border-zinc-100 shadow-sm">
           <p className="text-xs font-bold text-zinc-400 uppercase tracking-widest mb-5">{names[result.lessonType]} · результат</p>
-          <div className="flex justify-center gap-1.5 mb-4">
-            {Array.from({ length: 5 }, (_, i) => (
-              <Star
-                key={i}
-                className={cn("w-9 h-9 transition-all", i < result.score ? "text-amber-400 fill-amber-400" : "text-zinc-200 fill-zinc-100")}
-              />
-            ))}
-          </div>
           <div className="text-5xl font-bold text-zinc-900">
-            {result.score}<span className="text-2xl text-zinc-400 font-normal">/5</span>
+            {result.score}<span className="text-2xl text-zinc-400 font-normal">/100</span>
           </div>
           {isBest && (
             <div className="inline-flex items-center gap-1.5 bg-amber-50 text-amber-700 text-sm font-semibold px-4 py-1.5 rounded-full mt-4 border border-amber-200">
               <Star className="w-3.5 h-3.5 fill-amber-500" />
-              {result.score === 5 ? "Лучший результат сегодня!" : "Один из лучших!"}
+              {result.score === 100 ? "Лучший результат сегодня!" : "Один из лучших!"}
             </div>
           )}
         </div>

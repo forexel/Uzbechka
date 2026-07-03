@@ -1702,5 +1702,635 @@ export const WORDS: Word[] = [
     "ru": "везде спокойно, повсюду мир",
     "visual": "🕊️",
     "hint": "Фраза урока 5"
+  },
+  {
+    "id": "a1-188",
+    "type": "other",
+    "uz": "ha",
+    "pron": "ха",
+    "ru": "да",
+    "visual": "✅",
+    "hint": "A1: согласие"
+  },
+  {
+    "id": "a1-189",
+    "type": "other",
+    "uz": "iltimos",
+    "pron": "илтимос",
+    "ru": "пожалуйста",
+    "visual": "🙏",
+    "hint": "A1: вежливость"
+  },
+  {
+    "id": "a1-190",
+    "type": "other",
+    "uz": "uzr",
+    "pron": "узр",
+    "ru": "извините",
+    "visual": "🙇",
+    "hint": "A1: извинение"
+  },
+  {
+    "id": "a1-191",
+    "type": "other",
+    "uz": "xayr",
+    "pron": "хайр",
+    "ru": "до свидания",
+    "visual": "👋",
+    "hint": "A1: прощание"
+  },
+  {
+    "id": "a1-192",
+    "type": "noun",
+    "uz": "oila",
+    "pron": "оила",
+    "ru": "семья",
+    "visual": "👨‍👩‍👧",
+    "hint": "A1: семья"
+  },
+  {
+    "id": "a1-193",
+    "type": "noun",
+    "uz": "ota",
+    "pron": "ота",
+    "ru": "отец",
+    "visual": "👨",
+    "hint": "A1: семья"
+  },
+  {
+    "id": "a1-194",
+    "type": "noun",
+    "uz": "ona",
+    "pron": "она",
+    "ru": "мать",
+    "visual": "👩",
+    "hint": "A1: семья"
+  },
+  {
+    "id": "a1-195",
+    "type": "noun",
+    "uz": "aka",
+    "pron": "ака",
+    "ru": "старший брат",
+    "visual": "👨",
+    "hint": "A1: семья"
+  },
+  {
+    "id": "a1-196",
+    "type": "noun",
+    "uz": "uka",
+    "pron": "ука",
+    "ru": "младший брат",
+    "visual": "👦",
+    "hint": "A1: семья"
+  },
+  {
+    "id": "a1-197",
+    "type": "noun",
+    "uz": "opa",
+    "pron": "опа",
+    "ru": "старшая сестра",
+    "visual": "👩",
+    "hint": "A1: семья"
+  },
+  {
+    "id": "a1-198",
+    "type": "noun",
+    "uz": "singil",
+    "pron": "сингил",
+    "ru": "младшая сестра",
+    "visual": "👧",
+    "hint": "A1: семья"
+  },
+  {
+    "id": "a1-199",
+    "type": "noun",
+    "uz": "bola",
+    "pron": "бола",
+    "ru": "ребенок",
+    "visual": "🧒",
+    "hint": "A1: люди"
+  },
+  {
+    "id": "a1-200",
+    "type": "noun",
+    "uz": "erkak",
+    "pron": "эркак",
+    "ru": "мужчина",
+    "visual": "👨",
+    "hint": "A1: люди"
+  },
+  {
+    "id": "a1-201",
+    "type": "noun",
+    "uz": "ayol",
+    "pron": "аёл",
+    "ru": "женщина",
+    "visual": "👩",
+    "hint": "A1: люди"
+  },
+  {
+    "id": "a1-202",
+    "type": "noun",
+    "uz": "doʻst",
+    "pron": "дуст",
+    "ru": "друг",
+    "visual": "🤝",
+    "hint": "A1: люди"
+  },
+  {
+    "id": "a1-203",
+    "type": "noun",
+    "uz": "ism",
+    "pron": "исм",
+    "ru": "имя",
+    "visual": "🏷️",
+    "hint": "A1: знакомство"
+  },
+  {
+    "id": "a1-204",
+    "type": "noun",
+    "uz": "til",
+    "pron": "тил",
+    "ru": "язык",
+    "visual": "🗣️",
+    "hint": "A1: язык"
+  },
+  {
+    "id": "a1-205",
+    "type": "noun",
+    "uz": "shahar",
+    "pron": "шахар",
+    "ru": "город",
+    "visual": "🏙️",
+    "hint": "A1: место"
+  },
+  {
+    "id": "a1-206",
+    "type": "noun",
+    "uz": "mamlakat",
+    "pron": "мамлакат",
+    "ru": "страна",
+    "visual": "🗺️",
+    "hint": "A1: место"
+  },
+  {
+    "id": "a1-207",
+    "type": "noun",
+    "uz": "doʻkon",
+    "pron": "дукон",
+    "ru": "магазин",
+    "visual": "🏪",
+    "hint": "A1: место"
+  },
+  {
+    "id": "a1-208",
+    "type": "noun",
+    "uz": "bozor",
+    "pron": "бозор",
+    "ru": "рынок",
+    "visual": "🛒",
+    "hint": "A1: место"
+  },
+  {
+    "id": "a1-209",
+    "type": "noun",
+    "uz": "mehmonxona",
+    "pron": "мехмонхона",
+    "ru": "гостиница",
+    "visual": "🏨",
+    "hint": "A1: место"
+  },
+  {
+    "id": "a1-210",
+    "type": "noun",
+    "uz": "bekat",
+    "pron": "бекат",
+    "ru": "остановка",
+    "visual": "🚏",
+    "hint": "A1: транспорт"
+  },
+  {
+    "id": "a1-211",
+    "type": "noun",
+    "uz": "aeroport",
+    "pron": "аэропорт",
+    "ru": "аэропорт",
+    "visual": "✈️",
+    "hint": "A1: транспорт"
+  },
+  {
+    "id": "a1-212",
+    "type": "noun",
+    "uz": "suv",
+    "pron": "сув",
+    "ru": "вода",
+    "visual": "💧",
+    "hint": "A1: еда и напитки"
+  },
+  {
+    "id": "a1-213",
+    "type": "noun",
+    "uz": "sut",
+    "pron": "сут",
+    "ru": "молоко",
+    "visual": "🥛",
+    "hint": "A1: еда и напитки"
+  },
+  {
+    "id": "a1-214",
+    "type": "noun",
+    "uz": "olma",
+    "pron": "олма",
+    "ru": "яблоко",
+    "visual": "🍎",
+    "hint": "A1: еда"
+  },
+  {
+    "id": "a1-215",
+    "type": "noun",
+    "uz": "meva",
+    "pron": "мева",
+    "ru": "фрукт",
+    "visual": "🍇",
+    "hint": "A1: еда"
+  },
+  {
+    "id": "a1-216",
+    "type": "noun",
+    "uz": "sabzavot",
+    "pron": "сабзавот",
+    "ru": "овощ",
+    "visual": "🥕",
+    "hint": "A1: еда"
+  },
+  {
+    "id": "a1-217",
+    "type": "noun",
+    "uz": "tuxum",
+    "pron": "тухум",
+    "ru": "яйцо",
+    "visual": "🥚",
+    "hint": "A1: еда"
+  },
+  {
+    "id": "a1-218",
+    "type": "noun",
+    "uz": "guruch",
+    "pron": "гуруч",
+    "ru": "рис",
+    "visual": "🍚",
+    "hint": "A1: еда"
+  },
+  {
+    "id": "a1-219",
+    "type": "noun",
+    "uz": "shoʻrva",
+    "pron": "шурва",
+    "ru": "суп",
+    "visual": "🍲",
+    "hint": "A1: еда"
+  },
+  {
+    "id": "a1-220",
+    "type": "noun",
+    "uz": "tuz",
+    "pron": "туз",
+    "ru": "соль",
+    "visual": "🧂",
+    "hint": "A1: еда"
+  },
+  {
+    "id": "a1-221",
+    "type": "noun",
+    "uz": "shakar",
+    "pron": "шакар",
+    "ru": "сахар",
+    "visual": "🍬",
+    "hint": "A1: еда"
+  },
+  {
+    "id": "a1-222",
+    "type": "noun",
+    "uz": "bosh",
+    "pron": "бош",
+    "ru": "голова",
+    "visual": "🙂",
+    "hint": "A1: тело"
+  },
+  {
+    "id": "a1-223",
+    "type": "noun",
+    "uz": "qoʻl",
+    "pron": "кул",
+    "ru": "рука",
+    "visual": "✋",
+    "hint": "A1: тело"
+  },
+  {
+    "id": "a1-224",
+    "type": "noun",
+    "uz": "oyoq",
+    "pron": "оёк",
+    "ru": "нога",
+    "visual": "🦶",
+    "hint": "A1: тело"
+  },
+  {
+    "id": "a1-225",
+    "type": "noun",
+    "uz": "koʻz",
+    "pron": "куз",
+    "ru": "глаз",
+    "visual": "👁️",
+    "hint": "A1: тело"
+  },
+  {
+    "id": "a1-226",
+    "type": "noun",
+    "uz": "quloq",
+    "pron": "кулок",
+    "ru": "ухо",
+    "visual": "👂",
+    "hint": "A1: тело"
+  },
+  {
+    "id": "a1-227",
+    "type": "noun",
+    "uz": "ogʻiz",
+    "pron": "огиз",
+    "ru": "рот",
+    "visual": "👄",
+    "hint": "A1: тело"
+  },
+  {
+    "id": "a1-228",
+    "type": "other",
+    "uz": "oq",
+    "pron": "ок",
+    "ru": "белый",
+    "visual": "⚪",
+    "hint": "A1: цвет"
+  },
+  {
+    "id": "a1-229",
+    "type": "other",
+    "uz": "qora",
+    "pron": "кора",
+    "ru": "черный",
+    "visual": "⚫",
+    "hint": "A1: цвет"
+  },
+  {
+    "id": "a1-230",
+    "type": "other",
+    "uz": "qizil",
+    "pron": "кизил",
+    "ru": "красный",
+    "visual": "🔴",
+    "hint": "A1: цвет"
+  },
+  {
+    "id": "a1-231",
+    "type": "other",
+    "uz": "koʻk",
+    "pron": "кук",
+    "ru": "синий, голубой",
+    "visual": "🔵",
+    "hint": "A1: цвет"
+  },
+  {
+    "id": "a1-232",
+    "type": "other",
+    "uz": "yashil",
+    "pron": "яшил",
+    "ru": "зеленый",
+    "visual": "🟢",
+    "hint": "A1: цвет"
+  },
+  {
+    "id": "a1-233",
+    "type": "other",
+    "uz": "sariq",
+    "pron": "сарик",
+    "ru": "желтый",
+    "visual": "🟡",
+    "hint": "A1: цвет"
+  },
+  {
+    "id": "a1-234",
+    "type": "other",
+    "uz": "yangi",
+    "pron": "янги",
+    "ru": "новый",
+    "visual": "✨",
+    "hint": "A1: качество"
+  },
+  {
+    "id": "a1-235",
+    "type": "other",
+    "uz": "eski",
+    "pron": "эски",
+    "ru": "старый",
+    "visual": "📦",
+    "hint": "A1: качество"
+  },
+  {
+    "id": "a1-236",
+    "type": "other",
+    "uz": "chiroyli",
+    "pron": "чиройли",
+    "ru": "красивый",
+    "visual": "🌸",
+    "hint": "A1: качество"
+  },
+  {
+    "id": "a1-237",
+    "type": "other",
+    "uz": "issiq",
+    "pron": "иссик",
+    "ru": "горячий, жарко",
+    "visual": "🔥",
+    "hint": "A1: качество"
+  },
+  {
+    "id": "a1-238",
+    "type": "other",
+    "uz": "sovuq",
+    "pron": "совук",
+    "ru": "холодный, холодно",
+    "visual": "❄️",
+    "hint": "A1: качество"
+  },
+  {
+    "id": "a1-239",
+    "type": "other",
+    "uz": "tez",
+    "pron": "тез",
+    "ru": "быстро, быстрый",
+    "visual": "⚡",
+    "hint": "A1: наречие"
+  },
+  {
+    "id": "a1-240",
+    "type": "other",
+    "uz": "sekin",
+    "pron": "секин",
+    "ru": "медленно, медленный",
+    "visual": "⏳",
+    "hint": "A1: наречие"
+  },
+  {
+    "id": "a1-241",
+    "type": "other",
+    "uz": "ertaga",
+    "pron": "эртага",
+    "ru": "завтра",
+    "visual": "📅",
+    "hint": "A1: время"
+  },
+  {
+    "id": "a1-242",
+    "type": "other",
+    "uz": "kechqurun",
+    "pron": "кечкурун",
+    "ru": "вечером",
+    "visual": "🌆",
+    "hint": "A1: время"
+  },
+  {
+    "id": "a1-243",
+    "type": "noun",
+    "uz": "tun",
+    "pron": "тун",
+    "ru": "ночь",
+    "visual": "🌙",
+    "hint": "A1: время"
+  },
+  {
+    "id": "a1-244",
+    "type": "noun",
+    "uz": "hafta",
+    "pron": "хафта",
+    "ru": "неделя",
+    "visual": "📆",
+    "hint": "A1: время"
+  },
+  {
+    "id": "a1-245",
+    "type": "noun",
+    "uz": "oy",
+    "pron": "ой",
+    "ru": "месяц",
+    "visual": "🗓️",
+    "hint": "A1: время"
+  },
+  {
+    "id": "a1-246",
+    "type": "verb",
+    "uz": "bormoq",
+    "pron": "бормок",
+    "ru": "идти, ехать",
+    "visual": "🚶",
+    "hint": "A1: движение"
+  },
+  {
+    "id": "a1-247",
+    "type": "verb",
+    "uz": "kelmoq",
+    "pron": "келмок",
+    "ru": "приходить",
+    "visual": "➡️",
+    "hint": "A1: движение"
+  },
+  {
+    "id": "a1-248",
+    "type": "verb",
+    "uz": "olmoq",
+    "pron": "олмок",
+    "ru": "брать, получать",
+    "visual": "🤲",
+    "hint": "A1: действие"
+  },
+  {
+    "id": "a1-249",
+    "type": "verb",
+    "uz": "aytmoq",
+    "pron": "айтмок",
+    "ru": "говорить, сказать",
+    "visual": "💬",
+    "hint": "A1: речь"
+  },
+  {
+    "id": "a1-250",
+    "type": "verb",
+    "uz": "bilmoq",
+    "pron": "билмок",
+    "ru": "знать",
+    "visual": "🧠",
+    "hint": "A1: знание"
+  },
+  {
+    "id": "a1-251",
+    "type": "verb",
+    "uz": "tushunmoq",
+    "pron": "тушунмок",
+    "ru": "понимать",
+    "visual": "💡",
+    "hint": "A1: понимание"
+  },
+  {
+    "id": "a1-252",
+    "type": "verb",
+    "uz": "gapirmoq",
+    "pron": "гапирмок",
+    "ru": "разговаривать",
+    "visual": "🗨️",
+    "hint": "A1: речь"
+  },
+  {
+    "id": "a1-253",
+    "type": "verb",
+    "uz": "yozmoq",
+    "pron": "ёзмок",
+    "ru": "писать",
+    "visual": "✍️",
+    "hint": "A1: учеба"
+  },
+  {
+    "id": "a1-254",
+    "type": "verb",
+    "uz": "oʻqimoq",
+    "pron": "укимок",
+    "ru": "читать, учиться",
+    "visual": "📖",
+    "hint": "A1: учеба"
+  },
+  {
+    "id": "a1-255",
+    "type": "verb",
+    "uz": "tinglamoq",
+    "pron": "тингламок",
+    "ru": "слушать",
+    "visual": "🎧",
+    "hint": "A1: восприятие"
+  },
+  {
+    "id": "a1-256",
+    "type": "verb",
+    "uz": "ochmoq",
+    "pron": "очмок",
+    "ru": "открывать",
+    "visual": "🔓",
+    "hint": "A1: действие"
+  },
+  {
+    "id": "a1-257",
+    "type": "verb",
+    "uz": "yopmoq",
+    "pron": "ёпмок",
+    "ru": "закрывать",
+    "visual": "🔒",
+    "hint": "A1: действие"
   }
 ];

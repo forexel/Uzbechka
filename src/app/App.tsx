@@ -457,7 +457,28 @@ function AbstractCard({ card }: { card: typeof FLASHCARDS[0] }) {
       </div>
     );
   }
-  return null;
+  const palette = card.cat === "verb"
+    ? { from: "#ECFDF5", to: "#D1FAE5", ink: "#059669", soft: "#A7F3D0" }
+    : card.cat === "noun"
+      ? { from: "#EFF6FF", to: "#DBEAFE", ink: "#2563EB", soft: "#BFDBFE" }
+      : { from: "#FFF7ED", to: "#FFEDD5", ink: "#EA580C", soft: "#FED7AA" };
+  const label = card.cat === "verb" ? "действие" : card.cat === "noun" ? "предмет" : "образ";
+  return (
+    <div
+      className="w-full aspect-[4/3] rounded-3xl flex items-center justify-center overflow-hidden border border-white/70"
+      style={{ background: `linear-gradient(135deg, ${palette.from}, ${palette.to})` }}
+    >
+      <svg viewBox="0 0 240 180" className="w-full h-full" role="img" aria-label={card.ru}>
+        <circle cx="54" cy="42" r="28" fill={palette.soft} opacity="0.55" />
+        <circle cx="190" cy="136" r="38" fill={palette.soft} opacity="0.45" />
+        <rect x="48" y="42" width="144" height="96" rx="28" fill="white" opacity="0.72" />
+        <text x="120" y="98" textAnchor="middle" fontSize="56" dominantBaseline="middle">{card.visual || "·"}</text>
+        <text x="120" y="136" textAnchor="middle" fontSize="11" fill={palette.ink} fontWeight="800" letterSpacing="1">
+          {label.toUpperCase()}
+        </text>
+      </svg>
+    </div>
+  );
 }
 
 function CardImage({ card }: { card: typeof FLASHCARDS[0] }) {
@@ -828,11 +849,11 @@ function FlashcardLesson({ onComplete }: { onComplete: (r: ResultData) => void }
       />
       <ProgressStrip value={idx} max={total} />
 
-      <div className="flex-1 flex flex-col max-w-md mx-auto w-full px-5 py-5 gap-5">
+      <div className="flex-1 flex flex-col items-center justify-center max-w-md mx-auto w-full px-5 py-6 gap-5">
         {/* Card */}
-        <div className="flex-1 min-h-[380px]" style={{ perspective: "1200px" }}>
+        <div className="w-full min-h-[430px] max-h-[560px] h-[min(64dvh,560px)]" style={{ perspective: "1200px" }}>
           <div
-            className="relative w-full h-full cursor-pointer transition-[transform] duration-500"
+            className="relative w-full h-full cursor-pointer transition-[transform] duration-500 drop-shadow-sm"
             style={{
               transformStyle: "preserve-3d",
               transform: flipped ? "rotateY(180deg)" : "rotateY(0deg)",
@@ -840,16 +861,17 @@ function FlashcardLesson({ onComplete }: { onComplete: (r: ResultData) => void }
             onClick={() => setFlipped(value => !value)}
           >
             {/* Front */}
-            <div className="absolute inset-0 bg-white rounded-3xl border border-zinc-100 shadow-sm flex flex-col overflow-hidden"
+            <div className="absolute inset-0 bg-white rounded-[28px] border border-zinc-100 shadow-[0_16px_48px_rgba(24,24,27,0.08)] flex flex-col overflow-hidden"
               style={{ backfaceVisibility: "hidden" }}>
               <div className="p-4"><CardImage card={card} /></div>
               <div className="flex-1 flex flex-col items-center justify-center px-6 pb-6 gap-2">
-                <p className="text-3xl font-bold text-zinc-900 text-center">{dir ? card.uz : card.ru}</p>
+                <p className="text-xs font-bold text-zinc-400 uppercase tracking-widest">{dir ? "Uzbek" : "Русский"}</p>
+                <p className="text-3xl font-bold text-zinc-900 text-center leading-tight">{dir ? card.uz : card.ru}</p>
                 <p className="text-sm text-zinc-400">Нажми, чтобы перевернуть</p>
               </div>
             </div>
             {/* Back */}
-            <div className="absolute inset-0 bg-white rounded-3xl border border-emerald-100 shadow-sm flex flex-col overflow-hidden"
+            <div className="absolute inset-0 bg-white rounded-[28px] border border-emerald-100 shadow-[0_16px_48px_rgba(5,150,105,0.12)] flex flex-col overflow-hidden"
               style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}>
               <div className="p-4"><CardImage card={card} /></div>
               <div className="flex-1 flex flex-col items-center justify-center px-6 pb-6 gap-1">

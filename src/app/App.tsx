@@ -82,26 +82,107 @@ interface TensesEx {
   question?: boolean;
 }
 
-const TENSES_EX: TensesEx[] = [
-  { tense: "present_yap", ru: "Я читаю книгу.", uz_stem: "kitob o'qi", pronouns: ["men","sen","u","biz"], correct_pronoun: "men", chips: ["yap","man","san","di","miz"], correct_chips: ["yap","man"] },
-  { tense: "present_yap", ru: "Ты идёшь домой.", uz_stem: "uyga yur", pronouns: ["men","sen","u","biz"], correct_pronoun: "sen", chips: ["yap","man","san","di","miz"], correct_chips: ["yap","san"] },
-  { tense: "present_yap", ru: "Он не читает.", uz_stem: "o'qi", pronouns: ["men","sen","u","siz"], correct_pronoun: "u", chips: ["ma","yap","ti","man","di"], correct_chips: ["ma","yap","ti"], negative: true },
-  { tense: "present_yap", ru: "Мы идём в школу.", uz_stem: "maktabga bor", pronouns: ["men","sen","biz","siz"], correct_pronoun: "biz", chips: ["yap","miz","man","di","san"], correct_chips: ["yap","miz"] },
-  { tense: "present_yap", ru: "Разве ты не читаешь?", uz_stem: "o'qi", pronouns: ["men","sen","u","siz"], correct_pronoun: "sen", chips: ["ma","yap","san","mi","di"], correct_chips: ["ma","yap","san","mi"], negative: true, question: true },
-  { tense: "present_yap", ru: "Вы работаете здесь.", uz_stem: "bu yerda ishla", pronouns: ["men","u","biz","siz"], correct_pronoun: "siz", chips: ["yap","siz","miz","man","di"], correct_chips: ["yap","siz"] },
-  { tense: "present_yap", ru: "Я не иду домой.", uz_stem: "uyga bor", pronouns: ["men","sen","u","biz"], correct_pronoun: "men", chips: ["ma","yap","man","san","di"], correct_chips: ["ma","yap","man"], negative: true },
-  { tense: "present_yap", ru: "Он читает газету.", uz_stem: "gazeta o'qi", pronouns: ["men","sen","u","siz"], correct_pronoun: "u", chips: ["yap","ti","man","san","di"], correct_chips: ["yap","ti"] },
-  { tense: "present_yap", ru: "Ты не работаешь?", uz_stem: "ishla", pronouns: ["men","sen","u","biz"], correct_pronoun: "sen", chips: ["ma","yap","san","mi","di"], correct_chips: ["ma","yap","san","mi"], negative: true, question: true },
-  { tense: "present_yap", ru: "Мы не знаем этого.", uz_stem: "buni bil", pronouns: ["men","sen","biz","siz"], correct_pronoun: "biz", chips: ["ma","yap","miz","man","di"], correct_chips: ["ma","yap","miz"], negative: true },
-  { tense: "past_di", ru: "Я считал деньги.", uz_stem: "pul sana", pronouns: ["men","sen","u","siz"], correct_pronoun: "men", chips: ["di","m","ng","ngiz","yap"], correct_chips: ["di","m"] },
-  { tense: "past_di", ru: "Вы ели ужин?", uz_stem: "kechki ovqat ye", pronouns: ["men","sen","u","siz"], correct_pronoun: "siz", chips: ["di","ngiz","mi","man","yap"], correct_chips: ["di","ngiz","mi"], question: true },
-  { tense: "past_di", ru: "Он вернулся из офиса.", uz_stem: "ofisdan qayt", pronouns: ["men","sen","u","biz"], correct_pronoun: "u", chips: ["di","m","ng","miz","yap"], correct_chips: ["di"] },
-  { tense: "past_di", ru: "Мы не сохранили документ.", uz_stem: "hujjat saqla", pronouns: ["men","sen","biz","siz"], correct_pronoun: "biz", chips: ["ma","di","k","ngiz","miz"], correct_chips: ["ma","di","k"], negative: true },
-  { tense: "present_future", ru: "Мы встретимся после урока.", uz_stem: "darsdan keyin uchrash", pronouns: ["men","sen","biz","siz"], correct_pronoun: "biz", chips: ["a","miz","man","di","yap"], correct_chips: ["a","miz"] },
-  { tense: "present_future", ru: "Вы решите задачу?", uz_stem: "masala yech", pronouns: ["men","sen","u","siz"], correct_pronoun: "siz", chips: ["a","siz","mi","di","yap"], correct_chips: ["a","siz","mi"], question: true },
-  { tense: "present_future", ru: "Я не пойду домой.", uz_stem: "uyga bor", pronouns: ["men","sen","u","biz"], correct_pronoun: "men", chips: ["ma","y","man","di","yap"], correct_chips: ["ma","y","man"], negative: true },
-  { tense: "present_future", ru: "Ты пьёшь чай?", uz_stem: "choy ich", pronouns: ["men","sen","u","siz"], correct_pronoun: "sen", chips: ["a","san","mi","di","man"], correct_chips: ["a","san","mi"], question: true },
+const PRONOUNS = [
+  { uz: "men", ru: "Я", present: "man", past: "m", future: "man" },
+  { uz: "sen", ru: "Ты", present: "san", past: "ng", future: "san" },
+  { uz: "u", ru: "Он/она", present: "ti", past: "", future: "di" },
+  { uz: "biz", ru: "Мы", present: "miz", past: "k", future: "miz" },
+  { uz: "siz", ru: "Вы", present: "siz", past: "ngiz", future: "siz" },
 ];
+
+const RU_VERBS: Record<string, { present: string; past: string; future: string }> = {
+  "oʻqi": { present: "читает", past: "читал", future: "прочитает" },
+  "yoz": { present: "пишет", past: "писал", future: "напишет" },
+  "ich": { present: "пьет", past: "пил", future: "выпьет" },
+  "ye": { present: "ест", past: "ел", future: "съест" },
+  "ishla": { present: "работает", past: "работал", future: "будет работать" },
+  "saqla": { present: "сохраняет", past: "сохранил", future: "сохранит" },
+  "sana": { present: "считает", past: "считал", future: "посчитает" },
+  "koʻr": { present: "видит", past: "видел", future: "увидит" },
+  "soʻra": { present: "спрашивает", past: "спросил", future: "спросит" },
+  "tanla": { present: "выбирает", past: "выбрал", future: "выберет" },
+  "yech": { present: "решает", past: "решил", future: "решит" },
+  "bor": { present: "идет", past: "ходил", future: "пойдет" },
+  "qayt": { present: "возвращается", past: "вернулся", future: "вернется" },
+  "kel": { present: "приходит", past: "пришел", future: "придет" },
+  "kut": { present: "ждет", past: "ждал", future: "подождет" },
+  "yasha": { present: "живет", past: "жил", future: "будет жить" },
+  "uchrash": { present: "встречается", past: "встретился", future: "встретится" },
+};
+
+function firstRu(text: string) {
+  return text.split(",")[0].trim().toLowerCase();
+}
+
+function verbStem(verb: string) {
+  if (verb === "yemoq") return "ye";
+  return verb.replace(/moq$/i, "");
+}
+
+function sentenceCase(text: string) {
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
+function ruVerb(stem: string, tense: TenseMode) {
+  const forms = RU_VERBS[stem];
+  if (!forms) return tense === "past_di" ? "сделал действие" : tense === "present_future" ? "сделает действие" : "делает действие";
+  if (tense === "past_di") return forms.past;
+  if (tense === "present_future") return forms.future;
+  return forms.present;
+}
+
+function makeTenseChips(correct: string[], mode: TenseMode) {
+  const extras = mode === "past_di"
+    ? ["di", "m", "ng", "ngiz", "k", "mi", "ma"]
+    : mode === "present_future"
+      ? ["a", "y", "man", "san", "di", "miz", "siz", "mi", "ma"]
+      : ["ma", "yap", "man", "san", "ti", "miz", "siz", "mi", "di"];
+  return Array.from(new Set([...correct, ...shuffle(extras).slice(0, 5)]));
+}
+
+function buildTenseBank(size = 10000): TensesEx[] {
+  const verbs = WORDS.filter(word => word.type === "verb").map(word => ({ ...word, stem: verbStem(word.uz) }));
+  const nouns = WORDS.filter(word => word.type === "noun");
+  const fallbackNouns = nouns.length ? nouns : WORDS.filter(word => word.type !== "verb");
+  const modes: TenseMode[] = ["present_yap", "past_di", "present_future"];
+
+  return Array.from({ length: size }, (_, i) => {
+    const mode = modes[i % modes.length];
+    const pronoun = PRONOUNS[i % PRONOUNS.length];
+    const verb = verbs[(i * 17 + 3) % verbs.length];
+    const object = fallbackNouns[(i * 29 + 7) % fallbackNouns.length];
+    const negative = i % 5 === 2;
+    const question = i % 4 === 1;
+    const objectRu = firstRu(object.ru);
+    const objectUz = object.uz;
+    const actionRu = ruVerb(verb.stem, mode);
+    const ruCore = `${pronoun.ru} ${negative ? "не " : ""}${actionRu} ${objectRu}`;
+    const ru = `${sentenceCase(ruCore)}${question ? "?" : "."}`;
+
+    const personChip = mode === "past_di" ? pronoun.past : mode === "present_future" ? pronoun.future : pronoun.present;
+    const correct = mode === "past_di"
+      ? [...(negative ? ["ma"] : []), "di", ...(personChip ? [personChip] : []), ...(question ? ["mi"] : [])]
+      : mode === "present_future"
+        ? [...(negative ? ["ma", "y"] : [verb.stem.endsWith("a") ? "y" : "a"]), personChip, ...(question ? ["mi"] : [])]
+        : [...(negative ? ["ma"] : []), "yap", personChip, ...(question ? ["mi"] : [])];
+
+    const wrongPronouns = shuffle(PRONOUNS.filter(p => p.uz !== pronoun.uz).map(p => p.uz)).slice(0, 3);
+
+    return {
+      tense: mode,
+      ru,
+      uz_stem: `${objectUz} ${verb.stem}`,
+      pronouns: shuffle([pronoun.uz, ...wrongPronouns]),
+      correct_pronoun: pronoun.uz,
+      chips: makeTenseChips(correct, mode),
+      correct_chips: correct,
+      negative,
+      question,
+    };
+  });
+}
+
+const TENSES_EX: TensesEx[] = buildTenseBank();
 
 const CATEGORY_DEFS: { id: WordType; label: string }[] = [
   { id: "noun", label: "Существительные" },
@@ -905,18 +986,27 @@ function TensesLesson({ onComplete, modes }: { onComplete: (r: ResultData) => vo
   });
   const [idx, setIdx]         = useState(0);
   const [pronoun, setPronoun] = useState<string | null>(null);
-  const [chips, setChips]     = useState<string[]>([]);
+  const [affixSlots, setAffixSlots] = useState<(string | null)[]>([]);
+  const [dragItem, setDragItem] = useState<{ kind: "pronoun" | "affix"; value: string } | null>(null);
   const [checked, setChecked] = useState(false);
   const [errors, setErrors]   = useState(0);
   const t0 = useRef(Date.now());
   const TOTAL = exercises.length;
   const ex = exercises[idx];
+  const slots = affixSlots.length === ex.correct_chips.length
+    ? affixSlots
+    : Array.from({ length: ex.correct_chips.length }, () => null);
 
-  function reset() { setPronoun(null); setChips([]); setChecked(false); }
+  function reset(nextIdx = idx) {
+    setPronoun(null);
+    setAffixSlots(Array.from({ length: exercises[nextIdx].correct_chips.length }, () => null));
+    setChecked(false);
+    setDragItem(null);
+  }
 
   function check() {
     setChecked(true);
-    const ok = pronoun === ex.correct_pronoun && JSON.stringify(chips) === JSON.stringify(ex.correct_chips);
+    const ok = pronoun === ex.correct_pronoun && JSON.stringify(slots) === JSON.stringify(ex.correct_chips);
     if (!ok) setErrors(e => e + 1);
   }
 
@@ -930,21 +1020,41 @@ function TensesLesson({ onComplete, modes }: { onComplete: (r: ResultData) => vo
         wordsReinforced: idx + 1,
       });
     } else {
-      setIdx(i => i + 1);
-      reset();
+      const nextIdx = idx + 1;
+      setIdx(nextIdx);
+      reset(nextIdx);
     }
   }
 
-  function toggleChip(c: string) {
+  function placePronoun(value: string) {
     if (checked) return;
-    setChips(prev => prev.includes(c) ? prev.filter(x => x !== c) : [...prev, c]);
+    setPronoun(value);
+  }
+
+  function placeAffix(index: number, value: string) {
+    if (checked) return;
+    setAffixSlots(prev => {
+      const base = prev.length === ex.correct_chips.length ? prev : Array.from({ length: ex.correct_chips.length }, () => null);
+      const nextSlots = base.map(slot => slot === value ? null : slot);
+      nextSlots[index] = value;
+      return nextSlots;
+    });
+  }
+
+  function dropPronoun() {
+    if (dragItem?.kind === "pronoun") placePronoun(dragItem.value);
+    setDragItem(null);
+  }
+
+  function dropAffix(index: number) {
+    if (dragItem?.kind === "affix") placeAffix(index, dragItem.value);
+    setDragItem(null);
   }
 
   const pOk  = checked && pronoun === ex.correct_pronoun;
   const pBad = checked && pronoun !== ex.correct_pronoun;
-  const cOk  = checked && JSON.stringify(chips) === JSON.stringify(ex.correct_chips);
-
-  const verbDisplay = chips.length > 0 ? chips.join("") : "___";
+  const cOk  = checked && JSON.stringify(slots) === JSON.stringify(ex.correct_chips);
+  const allFilled = Boolean(pronoun) && slots.every(Boolean);
 
   return (
     <div className="min-h-[100dvh] bg-[#F7F6F1] flex flex-col">
@@ -973,7 +1083,12 @@ function TensesLesson({ onComplete, modes }: { onComplete: (r: ResultData) => vo
           <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-3">По-узбекски — заполни пропуски</p>
           <div className="flex flex-wrap items-center gap-2 text-base">
             {/* Pronoun slot */}
-            <span className={cn(
+            <button
+              type="button"
+              onClick={() => !checked && setPronoun(null)}
+              onDragOver={(event) => event.preventDefault()}
+              onDrop={dropPronoun}
+              className={cn(
               "inline-flex items-center justify-center min-w-[72px] px-3 py-1.5 rounded-xl border-2 font-bold text-sm transition-all",
               !pronoun        ? "border-dashed border-zinc-300 text-zinc-400"
               : pOk           ? "border-emerald-400 bg-emerald-50 text-emerald-700"
@@ -981,25 +1096,40 @@ function TensesLesson({ onComplete, modes }: { onComplete: (r: ResultData) => vo
               :                 "border-amber-400 bg-amber-50 text-amber-800"
             )}>
               {pronoun ?? "___"}
-            </span>
+            </button>
 
             <span className="text-zinc-700 font-semibold">{ex.uz_stem}</span>
 
-            {/* Verb affix slot */}
-            <span className={cn(
-              "inline-flex items-center justify-center min-w-[80px] px-3 py-1.5 rounded-xl border-2 font-mono font-bold text-sm transition-all",
-              chips.length === 0 ? "border-dashed border-zinc-300 text-zinc-400"
-              : cOk              ? "border-emerald-400 bg-emerald-50 text-emerald-700"
-              : checked          ? "border-red-400 bg-red-50 text-red-600"
-              :                    "border-amber-400 bg-amber-50 text-amber-700"
-            )}>
-              {verbDisplay}
-            </span>
+            {slots.map((slot, slotIndex) => {
+              const slotOk = checked && slot === ex.correct_chips[slotIndex];
+              const slotBad = checked && slot !== ex.correct_chips[slotIndex];
+              return (
+                <button
+                  key={slotIndex}
+                  type="button"
+                  onClick={() => !checked && setAffixSlots(prev => {
+                    const base = prev.length === ex.correct_chips.length ? prev : slots;
+                    return base.map((value, index) => index === slotIndex ? null : value);
+                  })}
+                  onDragOver={(event) => event.preventDefault()}
+                  onDrop={() => dropAffix(slotIndex)}
+                  className={cn(
+                    "inline-flex items-center justify-center min-w-[54px] px-3 py-1.5 rounded-xl border-2 font-mono font-bold text-sm transition-all",
+                    !slot       ? "border-dashed border-zinc-300 text-zinc-400"
+                    : slotOk    ? "border-emerald-400 bg-emerald-50 text-emerald-700"
+                    : slotBad   ? "border-red-400 bg-red-50 text-red-600"
+                    :             "border-amber-400 bg-amber-50 text-amber-700"
+                  )}
+                >
+                  {slot ? `-${slot}-` : "___"}
+                </button>
+              );
+            })}
 
             {ex.question && <span className="text-zinc-700 font-semibold">?</span>}
           </div>
 
-          {checked && !cOk && (
+          {checked && (!cOk || pBad) && (
             <p className="text-xs text-emerald-600 mt-3 font-semibold">
               Правильно: {ex.correct_pronoun} {ex.uz_stem}{ex.correct_chips.join("")}{ex.question ? "?" : "."}
             </p>
@@ -1013,9 +1143,12 @@ function TensesLesson({ onComplete, modes }: { onComplete: (r: ResultData) => vo
             {ex.pronouns.map(p => (
               <button
                 key={p}
-                onClick={() => !checked && setPronoun(p === pronoun ? null : p)}
+                draggable={!checked}
+                onDragStart={() => setDragItem({ kind: "pronoun", value: p })}
+                onDragEnd={() => setDragItem(null)}
+                onClick={() => placePronoun(p)}
                 className={cn(
-                  "px-5 py-2.5 rounded-xl border-2 font-bold text-sm transition-all",
+                  "px-5 py-2.5 rounded-xl border-2 font-bold text-sm transition-all cursor-grab active:cursor-grabbing",
                   checked && p === ex.correct_pronoun
                     ? "border-emerald-400 bg-emerald-50 text-emerald-700"
                     : checked && p === pronoun && p !== ex.correct_pronoun
@@ -1036,19 +1169,26 @@ function TensesLesson({ onComplete, modes }: { onComplete: (r: ResultData) => vo
           <p className="text-xs font-bold text-zinc-400 mb-2">Аффиксы глагола</p>
           <div className="flex flex-wrap gap-2">
             {ex.chips.map(c => {
-              const isSel = chips.includes(c);
+              const isSel = slots.includes(c);
               const isCorrect = ex.correct_chips.includes(c);
               const isWrong = checked && isSel && !isCorrect;
               const isRight = checked && isSel && isCorrect;
               return (
                 <button
                   key={c}
-                  onClick={() => toggleChip(c)}
+                  draggable={!checked && !isSel}
+                  onDragStart={() => setDragItem({ kind: "affix", value: c })}
+                  onDragEnd={() => setDragItem(null)}
+                  onClick={() => {
+                    if (isSel) return;
+                    const emptyIndex = slots.findIndex(slot => !slot);
+                    if (emptyIndex >= 0) placeAffix(emptyIndex, c);
+                  }}
                   className={cn(
-                    "px-4 py-2 rounded-xl border-2 font-mono font-semibold text-sm transition-all",
+                    "px-4 py-2 rounded-xl border-2 font-mono font-semibold text-sm transition-all cursor-grab active:cursor-grabbing",
                     isWrong  ? "border-red-400 bg-red-50 text-red-600"
                     : isRight ? "border-emerald-400 bg-emerald-50 text-emerald-700"
-                    : isSel   ? "border-amber-400 bg-amber-50 text-amber-700"
+                    : isSel   ? "border-zinc-100 bg-zinc-50 text-zinc-300 cursor-default"
                     :           "border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300"
                   )}
                 >
@@ -1057,16 +1197,16 @@ function TensesLesson({ onComplete, modes }: { onComplete: (r: ResultData) => vo
               );
             })}
           </div>
-          {chips.length > 0 && !checked && (
+          {slots.some(Boolean) && !checked && (
             <p className="text-[11px] text-zinc-400 mt-2">
-              Порядок: {chips.map(c => `-${c}-`).join(" + ")}
+              Перетащи аффиксы в квадратики в правильном порядке. Нажатие оставлено как запасной вариант на мобильном.
             </p>
           )}
         </div>
 
         <div className="mt-auto" style={{ paddingBottom: "calc(24px + env(safe-area-inset-bottom))" }}>
           {!checked ? (
-            <Btn full size="lg" disabled={!pronoun || chips.length === 0} onClick={check}>
+            <Btn full size="lg" disabled={!allFilled} onClick={check}>
               Проверить
             </Btn>
           ) : (

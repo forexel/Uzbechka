@@ -114,6 +114,10 @@ function firstRu(text: string) {
   return text.split(",")[0].trim().toLowerCase();
 }
 
+function cleanPhrase(text: string) {
+  return text.replace(/[!?.,]+$/g, "").trim();
+}
+
 function verbStem(verb: string) {
   if (verb === "yemoq") return "ye";
   return verb.replace(/moq$/i, "");
@@ -140,28 +144,76 @@ function makeTenseChips(correct: string[], mode: TenseMode) {
   return Array.from(new Set([...correct, ...shuffle(extras).slice(0, 5)]));
 }
 
+function typedWords(type: WordType) {
+  return WORDS.filter(word => word.type === type);
+}
+
+function pick<T>(items: T[], index: number) {
+  return items[Math.abs(index) % items.length];
+}
+
+function makeObjectPhrase(i: number, nouns: Word[], numbers: Word[], pronouns: Word[]) {
+  const noun = pick(nouns, i * 29 + 7);
+  const number = pick(numbers, i * 11 + 5);
+  const pronounObject = pick(pronouns.filter(word => /ni$|ga$|da$/.test(word.uz)), i * 13 + 1);
+  const pattern = i % 5;
+
+  if (pattern === 0) {
+    return { uz: noun.uz, ru: firstRu(noun.ru) };
+  }
+  if (pattern === 1) {
+    return { uz: `${number.uz} ${noun.uz}`, ru: `${firstRu(number.ru)} ${firstRu(noun.ru)}` };
+  }
+  if (pattern === 2 && pronounObject) {
+    return { uz: pronounObject.uz, ru: firstRu(pronounObject.ru) };
+  }
+  if (pattern === 3) {
+    return { uz: `${noun.uz} haqida`, ru: `про ${firstRu(noun.ru)}` };
+  }
+  return { uz: noun.uz, ru: firstRu(noun.ru) };
+}
+
+function makeModifierPhrase(i: number, mode: TenseMode, others: Word[], questions: Word[]) {
+  const currentWords = others.filter(word => ["hozir", "bugun", "ertalab", "hozirgina"].includes(word.uz));
+  const pastWords = others.filter(word => ["kecha", "oʻtgan hafta", "darsdan keyin", "darsdan oldin"].includes(word.uz));
+  const regularWords = others.filter(word => ["har kuni", "koʻp", "oz", "kam"].includes(word.uz));
+  const questionWords = questions.filter(word => ["qachon", "qayerda", "qayerga", "nimaga", "nega"].includes(word.uz));
+  const base = mode === "present_yap"
+    ? (currentWords.length ? currentWords : others)
+    : mode === "past_di"
+      ? (pastWords.length ? pastWords : others)
+      : (regularWords.length ? regularWords : others);
+  const word = pick(base, i * 19 + 3);
+
+  if (i % 4 === 1 && questionWords.length) {
+    const q = pick(questionWords, i * 23 + 2);
+    return { uz: q.uz, ru: firstRu(q.ru) };
+  }
+
+  return { uz: cleanPhrase(word.uz), ru: firstRu(word.ru) };
+}
+
 function buildTenseBank(size = 10000): TensesEx[] {
-  const verbs = WORDS.filter(word => word.type === "verb").map(word => ({ ...word, stem: verbStem(word.uz) }));
-  const nouns = WORDS.filter(word => word.type === "noun");
-  const fallbackNouns = nouns.length ? nouns : WORDS.filter(word => word.type !== "verb");
+  const verbs = typedWords("verb").map(word => ({ ...word, stem: verbStem(word.uz) }));
+  const nouns = typedWords("noun");
+  const pronouns = typedWords("pronoun");
+  const questions = typedWords("question");
+  const numbers = typedWords("number");
+  const others = typedWords("other");
   const modes: TenseMode[] = ["present_yap", "past_di", "present_future"];
 
   return Array.from({ length: size }, (_, i) => {
     const mode = modes[i % modes.length];
     const pronoun = PRONOUNS[i % PRONOUNS.length];
     const verb = verbs[(i * 17 + 3) % verbs.length];
-    const object = fallbackNouns[(i * 29 + 7) % fallbackNouns.length];
     const negative = i % 5 === 2;
     const question = i % 4 === 1;
-    const objectRu = firstRu(object.ru);
-    const objectUz = object.uz;
+    const object = makeObjectPhrase(i, nouns, numbers, pronouns);
+    const modifier = makeModifierPhrase(i, mode, others, questions);
     const actionRu = ruVerb(verb.stem, mode);
-    const timeCue = mode === "present_yap"
-      ? "сейчас "
-      : mode === "past_di"
-        ? (i % 2 === 0 ? "вчера " : "на прошлом уроке ")
-        : (i % 2 === 0 ? "обычно " : "завтра ");
-    const ruCore = `${pronoun.ru} ${timeCue}${negative ? "не " : ""}${actionRu} ${objectRu}`;
+    const ruCore = question && ["когда", "где", "куда", "почему"].includes(modifier.ru)
+      ? `${modifier.ru} ${pronoun.ru.toLowerCase()} ${negative ? "не " : ""}${actionRu} ${object.ru}`
+      : `${pronoun.ru} ${modifier.ru} ${negative ? "не " : ""}${actionRu} ${object.ru}`;
     const ru = `${sentenceCase(ruCore)}${question ? "?" : "."}`;
 
     const personChip = mode === "past_di" ? pronoun.past : mode === "present_future" ? pronoun.future : pronoun.present;
@@ -176,7 +228,7 @@ function buildTenseBank(size = 10000): TensesEx[] {
     return {
       tense: mode,
       ru,
-      uz_stem: `${objectUz} ${verb.stem}`,
+      uz_stem: `${modifier.uz} ${object.uz} ${verb.stem}`.replace(/\s+/g, " ").trim(),
       pronouns: shuffle([pronoun.uz, ...wrongPronouns]),
       correct_pronoun: pronoun.uz,
       chips: makeTenseChips(correct, mode),

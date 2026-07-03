@@ -9,10 +9,26 @@ const shuffle = (items) => {
 };
 
 const store = {
-  key: "uzbek-trainer-progress-v1",
-  data: JSON.parse(localStorage.getItem("uzbek-trainer-progress-v1") || "{}"),
-  save() {
-    localStorage.setItem(this.key, JSON.stringify(this.data));
+  data: {},
+  async save() {
+    if (!auth.token) {
+      renderStats();
+      renderAuth();
+      return;
+    }
+    try {
+      const response = await fetch("/api/progress", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${auth.token}`
+        },
+        body: JSON.stringify({ progress: this.data })
+      });
+      if (!response.ok) throw new Error("save failed");
+    } catch {
+      showAuthError("Не удалось сохранить прогресс на сервере.");
+    }
     renderStats();
   },
   bump(id, field) {
@@ -20,6 +36,11 @@ const store = {
     this.data[id][field] += 1;
     this.save();
   }
+};
+
+const auth = {
+  token: localStorage.getItem("uzbek-trainer-token") || "",
+  username: localStorage.getItem("uzbek-trainer-username") || ""
 };
 
 let cardDeck = [];
@@ -55,6 +76,83 @@ function renderStats() {
   $("statKnown").textContent = totals.known;
   $("statReview").textContent = totals.review;
   $("statWords").textContent = WORDS.length;
+}
+
+function showAuthError(message) {
+  $("authError").textContent = message || "";
+}
+
+function renderAuth() {
+  if (auth.token && auth.username) {
+    $("authTitle").textContent = auth.username;
+    $("authStatus").textContent = "Прогресс сохраняется на сервере.";
+    $("authForm").classList.add("hidden");
+    $("logoutBtn").classList.remove("hidden");
+  } else {
+    $("authTitle").textContent = "Вход";
+    $("authStatus").textContent = "Прогресс сохраняется после входа.";
+    $("authForm").classList.remove("hidden");
+    $("logoutBtn").classList.add("hidden");
+  }
+}
+
+async function authRequest(path) {
+  showAuthError("");
+  const username = $("authUsername").value.trim();
+  const password = $("authPassword").value;
+  try {
+    const response = await fetch(path, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password })
+    });
+    const payload = await response.json();
+    if (!response.ok) throw new Error(payload.error || "Ошибка входа.");
+    auth.token = payload.token;
+    auth.username = payload.username;
+    localStorage.setItem("uzbek-trainer-token", auth.token);
+    localStorage.setItem("uzbek-trainer-username", auth.username);
+    store.data = payload.progress || {};
+    $("authPassword").value = "";
+    renderAuth();
+    renderStats();
+  } catch (error) {
+    showAuthError(error.message);
+  }
+}
+
+async function initAuth() {
+  renderAuth();
+  if (!auth.token) {
+    renderStats();
+    return;
+  }
+  try {
+    const response = await fetch("/api/progress", {
+      headers: { "Authorization": `Bearer ${auth.token}` }
+    });
+    if (!response.ok) throw new Error();
+    const payload = await response.json();
+    store.data = payload.progress || {};
+  } catch {
+    auth.token = "";
+    auth.username = "";
+    localStorage.removeItem("uzbek-trainer-token");
+    localStorage.removeItem("uzbek-trainer-username");
+    showAuthError("Сессия истекла, войдите снова.");
+  }
+  renderAuth();
+  renderStats();
+}
+
+function logout() {
+  auth.token = "";
+  auth.username = "";
+  store.data = {};
+  localStorage.removeItem("uzbek-trainer-token");
+  localStorage.removeItem("uzbek-trainer-username");
+  renderAuth();
+  renderStats();
 }
 
 function selectedCardTypes() {
@@ -362,6 +460,9 @@ $("reviewCard").addEventListener("click", () => markCard("review"));
 $("newPairs").addEventListener("click", startPairs);
 $("newTense").addEventListener("click", startTense);
 $("nextTense").addEventListener("click", startTense);
+$("loginBtn").addEventListener("click", () => authRequest("/api/login"));
+$("registerBtn").addEventListener("click", () => authRequest("/api/register"));
+$("logoutBtn").addEventListener("click", logout);
 document.querySelectorAll(".back-setup").forEach((button) => {
   button.addEventListener("click", () => showSetup(button.dataset.target));
 });
@@ -376,4 +477,4 @@ document.addEventListener("keydown", (event) => {
   if (event.code === "ArrowLeft") markCard("review");
 });
 
-renderStats();
+initAuth();

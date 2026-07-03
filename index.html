@@ -20,6 +20,21 @@
       </div>
     </header>
 
+    <section class="auth-panel" id="authPanel">
+      <div>
+        <strong id="authTitle">Вход</strong>
+        <span id="authStatus">Прогресс сохраняется после входа.</span>
+      </div>
+      <div class="auth-form" id="authForm">
+        <input id="authUsername" autocomplete="username" placeholder="логин">
+        <input id="authPassword" autocomplete="current-password" type="password" placeholder="пароль">
+        <button id="loginBtn" class="primary">Войти</button>
+        <button id="registerBtn">Регистрация</button>
+      </div>
+      <button id="logoutBtn" class="hidden">Выйти</button>
+      <div class="auth-error" id="authError"></div>
+    </section>
+
     <nav class="tabs" aria-label="Режимы">
       <button class="tab active" data-mode="cards">Карточки</button>
       <button class="tab" data-mode="pairs">Пары</button>

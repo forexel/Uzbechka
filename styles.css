@@ -119,6 +119,54 @@ h1 {
   margin-bottom: 14px;
 }
 
+.auth-panel {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 12px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+}
+
+.auth-panel strong {
+  display: block;
+  font-size: 15px;
+}
+
+.auth-panel span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.auth-form {
+  display: flex;
+  gap: 8px;
+}
+
+.auth-form input {
+  width: 118px;
+  min-height: 38px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 7px 9px;
+}
+
+.auth-form button,
+#logoutBtn {
+  min-height: 38px;
+  padding: 7px 10px;
+}
+
+.auth-error {
+  grid-column: 1 / -1;
+  color: var(--red);
+  font-size: 12px;
+  min-height: 0;
+}
+
 .tab.active {
   background: var(--ink);
   color: white;
@@ -149,6 +197,7 @@ h1 {
 }
 
 body.process-mode .topbar,
+body.process-mode .auth-panel,
 body.process-mode .tabs {
   display: none;
 }
@@ -635,6 +684,40 @@ body.pairs-process .progress-line {
     overflow-x: auto;
     gap: 6px;
     margin-bottom: 8px;
+  }
+
+  .auth-panel {
+    grid-template-columns: 1fr;
+    gap: 6px;
+    padding: 7px;
+    margin-bottom: 8px;
+  }
+
+  .auth-panel strong {
+    font-size: 13px;
+  }
+
+  .auth-panel span {
+    font-size: 11px;
+  }
+
+  .auth-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+
+  .auth-form input {
+    width: 100%;
+    min-height: 34px;
+    font-size: 13px;
+  }
+
+  .auth-form button,
+  #logoutBtn {
+    min-height: 34px;
+    padding: 6px 8px;
+    font-size: 13px;
   }
 
   .tab {

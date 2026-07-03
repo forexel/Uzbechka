@@ -12,6 +12,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parent
+STATIC_ROOT = ROOT / "dist" if (ROOT / "dist").exists() else ROOT
 DB_PATH = Path(os.environ.get("UZBEK_TRAINER_DB", ROOT / "data" / "uzbek_trainer.sqlite3"))
 ITERATIONS = 180_000
 
@@ -71,7 +72,7 @@ def token_hash(token):
 
 class Handler(SimpleHTTPRequestHandler):
   def __init__(self, *args, **kwargs):
-    super().__init__(*args, directory=str(ROOT), **kwargs)
+    super().__init__(*args, directory=str(STATIC_ROOT), **kwargs)
 
   def end_headers(self):
     self.send_header("X-Content-Type-Options", "nosniff")

@@ -84,13 +84,15 @@ function showAuthError(message) {
 
 function renderAuth() {
   if (auth.token && auth.username) {
+    document.body.classList.add("authenticated");
     $("authTitle").textContent = auth.username;
     $("authStatus").textContent = "Прогресс сохраняется на сервере.";
     $("authForm").classList.add("hidden");
     $("logoutBtn").classList.remove("hidden");
   } else {
+    document.body.classList.remove("authenticated", "process-mode", "cards-process", "pairs-process", "tenses-process");
     $("authTitle").textContent = "Вход";
-    $("authStatus").textContent = "Прогресс сохраняется после входа.";
+    $("authStatus").textContent = "Войдите или зарегистрируйтесь, чтобы открыть тренажер.";
     $("authForm").classList.remove("hidden");
     $("logoutBtn").classList.add("hidden");
   }
@@ -151,6 +153,8 @@ function logout() {
   store.data = {};
   localStorage.removeItem("uzbek-trainer-token");
   localStorage.removeItem("uzbek-trainer-username");
+  document.querySelectorAll(".process-screen").forEach((item) => item.classList.add("hidden"));
+  document.querySelectorAll(".setup-screen").forEach((item) => item.classList.remove("hidden"));
   renderAuth();
   renderStats();
 }

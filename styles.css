@@ -167,6 +167,49 @@ h1 {
   min-height: 0;
 }
 
+body:not(.authenticated) .topbar,
+body:not(.authenticated) .tabs,
+body:not(.authenticated) .panel {
+  display: none;
+}
+
+body:not(.authenticated) .app {
+  width: min(100% - 28px, 430px);
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 18px 0;
+}
+
+body:not(.authenticated) .auth-panel {
+  width: 100%;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin: 0;
+  padding: 18px;
+  box-shadow: var(--shadow);
+}
+
+body:not(.authenticated) .auth-panel strong {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 30px;
+}
+
+body:not(.authenticated) .auth-panel span {
+  font-size: 14px;
+}
+
+body:not(.authenticated) .auth-form {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+body:not(.authenticated) .auth-form input,
+body:not(.authenticated) .auth-form button {
+  width: 100%;
+  min-height: 44px;
+}
+
 .tab.active {
   background: var(--ink);
   color: white;

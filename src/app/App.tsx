@@ -3,6 +3,7 @@ import {
   ArrowLeft, Eye, EyeOff, Check, RotateCcw, Clock,
   Star, AlertCircle, BookOpen, Zap, X,
 } from "lucide-react";
+import { WORDS, type Word, type WordType } from "./words";
 
 // ─── Types ─────────────────────────────────────────────────────────────────
 type Screen = "login" | "register" | "home" | "flashcard" | "pairs" | "tenses" | "result";
@@ -14,6 +15,7 @@ interface ResultData {
   errors: number;
   score: number;
   wordsReinforced: number;
+  wordIds?: string[];
 }
 
 interface AuthPayload {
@@ -54,31 +56,18 @@ async function saveProgress(token: string, progress: Record<string, unknown>) {
 }
 
 // ─── Data ──────────────────────────────────────────────────────────────────
-const FLASHCARDS = [
-  { id: 1, uz: "kitob", ru: "книга",   pron: "ki-TOB",   hint: "Предмет для чтения",       cat: "noun",     img: "1481627834876-b7833e8f5570" },
-  { id: 2, uz: "uy",    ru: "дом",     pron: "UY",        hint: "Место, где живут",          cat: "noun",     img: "1568605114967-8130f3a36994" },
-  { id: 3, uz: "olma",  ru: "яблоко",  pron: "OL-ma",     hint: "Красный или зелёный фрукт", cat: "noun",     img: "1568702846914-96b305d2aaeb" },
-  { id: 4, uz: "yurmoq",ru: "идти",    pron: "YUR-moq",   hint: "Передвигаться пешком",      cat: "verb",     img: "1571019613454-1cb2f99b2d8b" },
-  { id: 5, uz: "o'qimoq",ru:"читать",  pron: "o'QI-moq",  hint: "Воспринимать текст",        cat: "verb",     img: "1456513080510-7bf3a84b82f8" },
-  { id: 6, uz: "men",   ru: "я",       pron: "MEN",        hint: "1-е лицо, единственное ч.", cat: "pronoun",  img: null },
-  { id: 7, uz: "sen",   ru: "ты",      pron: "SEN",        hint: "2-е лицо, единственное ч.", cat: "pronoun",  img: null },
-  { id: 8, uz: "besh",  ru: "пять",    pron: "BESH",       hint: "Число 5",                   cat: "num",      img: null },
-  { id: 9, uz: "qanday",ru: "как",     pron: "qan-DAY",    hint: "Вопрос о способе",          cat: "question", img: null },
-  { id: 10, uz: "tez",  ru: "быстро",  pron: "TEZ",        hint: "С большой скоростью",       cat: "other",    img: "1502101872923-d48509bef386" },
-];
+interface LearningWord extends Word {
+  cat: WordType | "num";
+  img: string | null;
+}
 
-// 1=uz→ru, 0=ru→uz, mixed
-const CARD_DIRS = [1, 0, 1, 1, 0, 1, 0, 1, 0, 1];
+const FLASHCARDS: LearningWord[] = WORDS.map((word) => ({
+  ...word,
+  cat: word.type === "number" ? "num" : word.type,
+  img: null,
+}));
 
-const PAIRS_WORDS = [
-  { id: 1, uz: "kitob",  ru: "книга" },
-  { id: 2, uz: "uy",     ru: "дом" },
-  { id: 3, uz: "olma",   ru: "яблоко" },
-  { id: 4, uz: "men",    ru: "я" },
-  { id: 5, uz: "sen",    ru: "ты" },
-  { id: 6, uz: "tez",    ru: "быстро" },
-  { id: 7, uz: "yurmoq", ru: "идти" },
-];
+const PAIRS_WORDS = FLASHCARDS;
 
 interface TensesEx {
   ru: string;
@@ -104,13 +93,13 @@ const TENSES_EX: TensesEx[] = [
   { ru: "Мы не знаем этого.", uz_stem: "buni bil", pronouns: ["men","sen","biz","siz"], correct_pronoun: "biz", chips: ["ma","yap","miz","man","di"], correct_chips: ["ma","yap","miz"], negative: true },
 ];
 
-const CATEGORIES = [
-  { id: "nouns",     label: "Существительные",      learned: 9,  total: 11 },
-  { id: "pronouns",  label: "Местоимения",           learned: 5,  total: 8  },
-  { id: "verbs",     label: "Глаголы",               learned: 6,  total: 14 },
-  { id: "numerals",  label: "Числительные",          learned: 3,  total: 10 },
-  { id: "questions", label: "Вопросительные слова",  learned: 4,  total: 7  },
-  { id: "other",     label: "Другое",                learned: 2,  total: 9  },
+const CATEGORY_DEFS: { id: WordType; label: string }[] = [
+  { id: "noun", label: "Существительные" },
+  { id: "pronoun", label: "Местоимения" },
+  { id: "verb", label: "Глаголы" },
+  { id: "number", label: "Числительные" },
+  { id: "question", label: "Вопросительные слова" },
+  { id: "other", label: "Другое" },
 ];
 
 // ─── Utils ─────────────────────────────────────────────────────────────────
@@ -128,6 +117,37 @@ function score100(errors: number, total = 10) {
 }
 function shuffle<T>(arr: T[]): T[] {
   return [...arr].sort(() => Math.random() - 0.5);
+}
+
+function progressResults(progress: Record<string, unknown>): ResultData[] {
+  return Array.isArray(progress.results) ? progress.results as ResultData[] : [];
+}
+
+function knownWordIds(progress: Record<string, unknown>): Set<string> {
+  const known = progress.knownWords && typeof progress.knownWords === "object"
+    ? progress.knownWords as Record<string, unknown>
+    : {};
+  const ids = new Set(Object.keys(known).filter((id) => known[id]));
+
+  // Compatibility with the previous static app progress shape: { [wordId]: { known: n } }.
+  Object.entries(progress).forEach(([id, value]) => {
+    if (value && typeof value === "object" && "known" in value && Number((value as { known?: unknown }).known) > 0) {
+      ids.add(id);
+    }
+  });
+  return ids;
+}
+
+function categoryRows(progress: Record<string, unknown>) {
+  const known = knownWordIds(progress);
+  return CATEGORY_DEFS.map((category) => {
+    const words = WORDS.filter((word) => word.type === category.id);
+    return {
+      ...category,
+      learned: words.filter((word) => known.has(word.id)).length,
+      total: words.length,
+    };
+  });
 }
 
 // ─── Primitives ────────────────────────────────────────────────────────────
@@ -423,11 +443,18 @@ function RegisterScreen({ onRegister, onGo }: { onRegister: (payload: AuthPayloa
 }
 
 // ─── Home ──────────────────────────────────────────────────────────────────
-function HomeScreen({ onStart, username }: { onStart: (t: LessonType) => void; username: string }) {
+function HomeScreen({ onStart, username, progress }: { onStart: (t: LessonType) => void; username: string; progress: Record<string, unknown> }) {
   const [method, setMethod]   = useState<LessonType>("flashcard");
-  const [cats, setCats]       = useState(new Set(["nouns", "verbs"]));
+  const [cats, setCats]       = useState(new Set<WordType>(["noun", "verb"]));
+  const results = progressResults(progress);
+  const known = knownWordIds(progress);
+  const excellent = results.filter((result) => result.score >= 90).length;
+  const avgScore = results.length
+    ? (results.reduce((sum, result) => sum + result.score, 0) / results.length / 20).toFixed(1)
+    : "0";
+  const categories = categoryRows(progress);
 
-  const toggle = (id: string) =>
+  const toggle = (id: WordType) =>
     setCats(prev => {
       const n = new Set(prev);
       if (n.has(id)) { if (n.size > 1) n.delete(id); } else n.add(id);
@@ -461,10 +488,10 @@ function HomeScreen({ onStart, username }: { onStart: (t: LessonType) => void; u
           <h2 className="text-xs font-bold text-zinc-400 uppercase tracking-widest mb-3">Прогресс</h2>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             {[
-              { v: "29", sub: "из 59",  label: "Слов выучено",     c: "text-emerald-600" },
-              { v: "12", sub: undefined, label: "Уроков пройдено",  c: "text-blue-600" },
-              { v: "7",  sub: undefined, label: "Отличных уроков",  c: "text-amber-500" },
-              { v: "4.2",sub: "из 5",   label: "Средний балл",     c: "text-violet-600" },
+              { v: String(known.size), sub: `из ${WORDS.length}`,  label: "Слов выучено",     c: "text-emerald-600" },
+              { v: String(results.length), sub: undefined, label: "Уроков пройдено",  c: "text-blue-600" },
+              { v: String(excellent),  sub: undefined, label: "Отличных уроков",  c: "text-amber-500" },
+              { v: avgScore, sub: "из 5",   label: "Средний балл",     c: "text-violet-600" },
             ].map(s => (
               <div key={s.label} className="bg-white rounded-2xl p-4 border border-zinc-100 shadow-sm">
                 <div className={cn("text-2xl font-bold leading-none", s.c)}>{s.v}</div>
@@ -502,7 +529,7 @@ function HomeScreen({ onStart, username }: { onStart: (t: LessonType) => void; u
         <section>
           <h2 className="text-xs font-bold text-zinc-400 uppercase tracking-widest mb-3">Что учить</h2>
           <div className="flex flex-col gap-2">
-            {CATEGORIES.map(cat => {
+            {categories.map(cat => {
               const sel = cats.has(cat.id);
               return (
                 <button
@@ -542,18 +569,21 @@ function HomeScreen({ onStart, username }: { onStart: (t: LessonType) => void; u
 
 // ─── Flashcard Lesson ──────────────────────────────────────────────────────
 function FlashcardLesson({ onComplete }: { onComplete: (r: ResultData) => void }) {
+  const [deck] = useState(() => shuffle(FLASHCARDS).slice(0, 10));
+  const [dirs] = useState(() => Array.from({ length: 10 }, () => Math.random() > .5 ? 1 : 0));
   const [idx, setIdx]         = useState(0);
   const [flipped, setFlipped] = useState(false);
   const [known, setKnown]     = useState(0);
+  const [knownIds, setKnownIds] = useState<string[]>([]);
   const [repeat, setRepeat]   = useState(0);
   const [errors, setErrors]   = useState(0);
   const t0 = useRef(Date.now());
 
-  const card = FLASHCARDS[idx];
-  const dir  = CARD_DIRS[idx]; // 1 = uz→ru
-  const total = FLASHCARDS.length;
+  const card = deck[idx];
+  const dir  = dirs[idx]; // 1 = uz→ru
+  const total = deck.length;
 
-  function finish(extraErr: boolean) {
+  function finish(extraErr: boolean, nextKnownIds = knownIds) {
     const e = errors + (extraErr ? 1 : 0);
     const k = known + (extraErr ? 0 : 1);
     onComplete({
@@ -562,13 +592,21 @@ function FlashcardLesson({ onComplete }: { onComplete: (r: ResultData) => void }
       errors: e,
       score: score100(e, total),
       wordsReinforced: k,
+      wordIds: nextKnownIds,
     });
   }
 
   function act(isKnown: boolean) {
     if (!flipped) { setFlipped(true); return; }
-    if (isKnown) setKnown(k => k + 1); else { setRepeat(r => r + 1); setErrors(e => e + 1); }
-    if (idx + 1 >= total) { finish(!isKnown); return; }
+    const nextKnownIds = isKnown ? [...knownIds, card.id] : knownIds;
+    if (isKnown) {
+      setKnown(k => k + 1);
+      setKnownIds(nextKnownIds);
+    } else {
+      setRepeat(r => r + 1);
+      setErrors(e => e + 1);
+    }
+    if (idx + 1 >= total) { finish(!isKnown, nextKnownIds); return; }
     setFlipped(false);
     setTimeout(() => setIdx(i => i + 1), 60);
   }
@@ -596,7 +634,7 @@ function FlashcardLesson({ onComplete }: { onComplete: (r: ResultData) => void }
               transformStyle: "preserve-3d",
               transform: flipped ? "rotateY(180deg)" : "rotateY(0deg)",
             }}
-            onClick={() => !flipped && setFlipped(true)}
+            onClick={() => setFlipped(value => !value)}
           >
             {/* Front */}
             <div className="absolute inset-0 bg-white rounded-3xl border border-zinc-100 shadow-sm flex flex-col overflow-hidden"
@@ -658,8 +696,9 @@ function PairsLesson({ onComplete }: { onComplete: (r: ResultData) => void }) {
   const TOTAL = 10;
 
   useEffect(() => {
-    setLeftArr(shuffle(PAIRS_WORDS));
-    setRightArr(shuffle(PAIRS_WORDS));
+    const roundWords = shuffle(PAIRS_WORDS).slice(0, 7);
+    setLeftArr(shuffle(roundWords));
+    setRightArr(shuffle(roundWords));
     setStates({});
     setSelLeft(null);
     setMatched(0);
@@ -699,10 +738,17 @@ function PairsLesson({ onComplete }: { onComplete: (r: ResultData) => void }) {
       setSelLeft(null);
       setTimeout(() => {
         setStates(prev => ({ ...prev, [`l${id}`]: "disabled", [`r${id}`]: "disabled" }));
-        if (newMatched >= PAIRS_WORDS.length) {
+        if (newMatched >= leftArr.length) {
           setTimeout(() => {
             if (round + 1 >= TOTAL) {
-              onComplete({ lessonType: "pairs", timeSeconds: Math.round((Date.now() - t0.current) / 1000), errors, score: score100(errors, TOTAL), wordsReinforced: 7 });
+              onComplete({
+                lessonType: "pairs",
+                timeSeconds: Math.round((Date.now() - t0.current) / 1000),
+                errors,
+                score: score100(errors, TOTAL),
+                wordsReinforced: leftArr.length,
+                wordIds: leftArr.map((word) => word.id),
+              });
             } else {
               setRound(r => r + 1);
             }
@@ -746,7 +792,7 @@ function PairsLesson({ onComplete }: { onComplete: (r: ResultData) => void }) {
 
       <div className="flex-1 flex flex-col max-w-lg mx-auto w-full px-4 py-5 gap-4">
         <p className="text-center text-sm text-zinc-400">
-          Выбери пару · осталось {PAIRS_WORDS.length - matched}
+          Выбери пару · осталось {leftArr.length - matched}
         </p>
 
         <div className="flex gap-3 flex-1">
@@ -1048,9 +1094,17 @@ export default function App() {
     setScreen("result");
     if (token) {
       const previous = Array.isArray(progress.results) ? progress.results : [];
+      const previousKnown = progress.knownWords && typeof progress.knownWords === "object"
+        ? progress.knownWords as Record<string, boolean>
+        : {};
+      const knownWords = { ...previousKnown };
+      (r.wordIds || []).forEach((id) => {
+        knownWords[id] = true;
+      });
       const nextProgress = {
         ...progress,
         username,
+        knownWords,
         results: [...previous, { ...r, finishedAt: new Date().toISOString() }].slice(-100),
       };
       setProgress(nextProgress);
@@ -1060,7 +1114,7 @@ export default function App() {
 
   if (screen === "login")    return <LoginScreen    onLogin={acceptAuth} onGo={() => setScreen("register")} />;
   if (screen === "register") return <RegisterScreen onRegister={acceptAuth} onGo={() => setScreen("login")} />;
-  if (screen === "home")     return <HomeScreen     onStart={startLesson} username={username} />;
+  if (screen === "home")     return <HomeScreen     onStart={startLesson} username={username} progress={progress} />;
   if (screen === "flashcard") return <FlashcardLesson onComplete={finish} />;
   if (screen === "pairs")    return <PairsLesson    onComplete={finish} />;
   if (screen === "tenses")   return <TensesLesson   onComplete={finish} />;

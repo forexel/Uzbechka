@@ -156,7 +156,12 @@ function buildTenseBank(size = 10000): TensesEx[] {
     const objectRu = firstRu(object.ru);
     const objectUz = object.uz;
     const actionRu = ruVerb(verb.stem, mode);
-    const ruCore = `${pronoun.ru} ${negative ? "не " : ""}${actionRu} ${objectRu}`;
+    const timeCue = mode === "present_yap"
+      ? "сейчас "
+      : mode === "past_di"
+        ? (i % 2 === 0 ? "вчера " : "на прошлом уроке ")
+        : (i % 2 === 0 ? "обычно " : "завтра ");
+    const ruCore = `${pronoun.ru} ${timeCue}${negative ? "не " : ""}${actionRu} ${objectRu}`;
     const ru = `${sentenceCase(ruCore)}${question ? "?" : "."}`;
 
     const personChip = mode === "past_di" ? pronoun.past : mode === "present_future" ? pronoun.future : pronoun.present;
@@ -194,9 +199,9 @@ const CATEGORY_DEFS: { id: WordType; label: string }[] = [
 ];
 
 const TENSE_MODE_DEFS: { id: TenseMode; label: string; desc: string }[] = [
-  { id: "present_yap", label: "Настоящее -yap", desc: "qilyapman, boryapsiz" },
-  { id: "past_di", label: "Прошедшее -di", desc: "qildim, yedingizmi" },
-  { id: "present_future", label: "Настоящее-будущее", desc: "boraman, yechasiz" },
+  { id: "present_yap", label: "Настоящее -yap", desc: "Пройдено: действие сейчас, в процессе. qilyapman" },
+  { id: "past_di", label: "Прошедшее -di", desc: "Пройдено: конкретно сделал/было. qildim, yedingizmi" },
+  { id: "present_future", label: "Настоящее-будущее -a/-y", desc: "Следующее: обычно делает или сделает. boraman, yechasiz" },
 ];
 
 // ─── Utils ─────────────────────────────────────────────────────────────────
@@ -993,6 +998,7 @@ function TensesLesson({ onComplete, modes }: { onComplete: (r: ResultData) => vo
   const t0 = useRef(Date.now());
   const TOTAL = exercises.length;
   const ex = exercises[idx];
+  const tenseInfo = TENSE_MODE_DEFS.find(item => item.id === ex.tense);
   const slots = affixSlots.length === ex.correct_chips.length
     ? affixSlots
     : Array.from({ length: ex.correct_chips.length }, () => null);
@@ -1074,6 +1080,7 @@ function TensesLesson({ onComplete, modes }: { onComplete: (r: ResultData) => vo
         <div className="bg-white rounded-2xl p-5 border border-zinc-100 shadow-sm">
           <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-2">По-русски</p>
           <p className="text-xl font-bold text-zinc-900">{ex.ru}</p>
+          {tenseInfo && <p className="text-xs text-zinc-400 mt-2">{tenseInfo.label}: {tenseInfo.desc}</p>}
           {ex.negative && <span className="inline-block mt-2 text-xs bg-red-50 text-red-500 font-semibold px-2 py-0.5 rounded-lg">отрицание</span>}
           {ex.question && <span className="inline-block mt-2 ml-1 text-xs bg-amber-50 text-amber-600 font-semibold px-2 py-0.5 rounded-lg">вопрос</span>}
         </div>

@@ -28,8 +28,8 @@
       <div class="auth-form" id="authForm">
         <input id="authUsername" autocomplete="username" placeholder="логин">
         <input id="authPassword" autocomplete="current-password" type="password" placeholder="пароль">
-        <button id="loginBtn" class="primary">Войти</button>
-        <button id="registerBtn">Регистрация</button>
+        <button id="authSubmitBtn" class="primary">Войти</button>
+        <button id="authSwitchBtn" class="link-button" type="button">Регистрация</button>
       </div>
       <button id="logoutBtn" class="hidden">Выйти</button>
       <div class="auth-error" id="authError"></div>
@@ -47,7 +47,7 @@
           <span>1</span>
           <div>
             <h2>Что учить</h2>
-            <p>Выбери типы слов, количество карточек и направление.</p>
+            <p>Выбери типы слов. В уроке будет 10 карточек в обе стороны.</p>
           </div>
         </div>
         <fieldset class="checks choice-grid">
@@ -59,18 +59,6 @@
           <label><input type="checkbox" value="question" checked> вопросы</label>
           <label><input type="checkbox" value="other"> другое</label>
         </fieldset>
-        <div class="setup-controls">
-          <label>Карточек
-            <input id="cardLimit" type="number" min="1" max="80" value="10">
-          </label>
-          <label>Направление
-            <select id="cardDirection">
-              <option value="uz-ru">Узбекский -> русский</option>
-              <option value="ru-uz">Русский -> узбекский</option>
-              <option value="mixed">Вперемешку</option>
-            </select>
-          </label>
-        </div>
         <button id="newCards" class="primary wide">Начать обучение</button>
       </div>
 

@@ -160,6 +160,16 @@ h1 {
   padding: 7px 10px;
 }
 
+.auth-form .link-button {
+  min-height: auto;
+  padding: 4px;
+  border: 0;
+  background: transparent;
+  color: var(--green);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 .auth-error {
   grid-column: 1 / -1;
   color: var(--red);
@@ -208,6 +218,12 @@ body:not(.authenticated) .auth-form input,
 body:not(.authenticated) .auth-form button {
   width: 100%;
   min-height: 44px;
+}
+
+body:not(.authenticated) .auth-form .link-button {
+  min-height: 28px;
+  justify-self: center;
+  width: auto;
 }
 
 .tab.active {
@@ -799,7 +815,7 @@ body.pairs-process .progress-line {
 
   .auth-form {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     gap: 6px;
   }
 
@@ -814,6 +830,10 @@ body.pairs-process .progress-line {
     min-height: 34px;
     padding: 6px 8px;
     font-size: 13px;
+  }
+
+  .auth-form .link-button {
+    min-height: 28px;
   }
 
   .tab {

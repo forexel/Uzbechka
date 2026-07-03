@@ -40,7 +40,8 @@ const store = {
 
 const auth = {
   token: localStorage.getItem("uzbek-trainer-token") || "",
-  username: localStorage.getItem("uzbek-trainer-username") || ""
+  username: localStorage.getItem("uzbek-trainer-username") || "",
+  mode: "login"
 };
 
 let cardDeck = [];
@@ -91,17 +92,24 @@ function renderAuth() {
     $("logoutBtn").classList.remove("hidden");
   } else {
     document.body.classList.remove("authenticated", "process-mode", "cards-process", "pairs-process", "tenses-process");
-    $("authTitle").textContent = "Вход";
-    $("authStatus").textContent = "Войдите или зарегистрируйтесь, чтобы открыть тренажер.";
+    const isRegister = auth.mode === "register";
+    $("authTitle").textContent = isRegister ? "Регистрация" : "Вход";
+    $("authStatus").textContent = isRegister
+      ? "Создайте логин и пароль для сохранения прогресса."
+      : "Введите логин и пароль, чтобы продолжить обучение.";
+    $("authSubmitBtn").textContent = isRegister ? "Зарегистрироваться" : "Войти";
+    $("authSwitchBtn").textContent = isRegister ? "Уже есть аккаунт? Войти" : "Регистрация";
+    $("authPassword").autocomplete = isRegister ? "new-password" : "current-password";
     $("authForm").classList.remove("hidden");
     $("logoutBtn").classList.add("hidden");
   }
 }
 
-async function authRequest(path) {
+async function authRequest() {
   showAuthError("");
   const username = $("authUsername").value.trim();
   const password = $("authPassword").value;
+  const path = auth.mode === "register" ? "/api/register" : "/api/login";
   try {
     const response = await fetch(path, {
       method: "POST",
@@ -177,7 +185,7 @@ function showSetup(mode) {
 
 function startCards() {
   const types = selectedCardTypes();
-  const limit = Math.max(1, Math.min(80, Number($("cardLimit").value) || 10));
+  const limit = 10;
   const pool = WORDS.filter((word) => types.includes(word.type));
   cardDeck = shuffle(pool).slice(0, limit);
   cardIndex = 0;
@@ -189,8 +197,6 @@ function startCards() {
 }
 
 function cardDirection() {
-  const dir = $("cardDirection").value;
-  if (dir !== "mixed") return dir;
   return Math.random() > .5 ? "uz-ru" : "ru-uz";
 }
 
@@ -520,8 +526,12 @@ $("newPairs").addEventListener("click", startPairs);
 $("pairAgain").addEventListener("click", startPairs);
 $("newTense").addEventListener("click", startTense);
 $("nextTense").addEventListener("click", startTense);
-$("loginBtn").addEventListener("click", () => authRequest("/api/login"));
-$("registerBtn").addEventListener("click", () => authRequest("/api/register"));
+$("authSubmitBtn").addEventListener("click", authRequest);
+$("authSwitchBtn").addEventListener("click", () => {
+  auth.mode = auth.mode === "register" ? "login" : "register";
+  showAuthError("");
+  renderAuth();
+});
 $("logoutBtn").addEventListener("click", logout);
 document.querySelectorAll(".back-setup").forEach((button) => {
   button.addEventListener("click", () => showSetup(button.dataset.target));

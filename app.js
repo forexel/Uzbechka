@@ -229,23 +229,44 @@ function surfaceVerb(stem, suffixes) {
   return stem + suffixes.filter((item) => item !== "—").join("");
 }
 
+function capitalize(text) {
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
+function isQuestionPolarity(polarity) {
+  return polarity === "question" || polarity === "negativeQuestion";
+}
+
+function isNegativePolarity(polarity) {
+  return polarity === "negative" || polarity === "negativeQuestion";
+}
+
+function buildRussianSentence(template, pronoun, pronounIndex, tense, polarity) {
+  const subject = pronoun.ru.split("/")[0];
+  const negative = isNegativePolarity(polarity) ? " не" : "";
+  const punctuation = isQuestionPolarity(polarity) ? "?" : ".";
+  const verb = template.ruVerb[tense][pronounIndex];
+  return `${capitalize(subject)} ${template.contextRu[tense]}${negative} ${verb} ${template.objectRu}${punctuation}`;
+}
+
 function startTense() {
-  const verbs = WORDS.filter((word) => word.type === "verb" && !word.uz.includes(" "));
-  const verb = shuffle(verbs)[0];
-  const pronoun = shuffle(PRONOUNS)[0];
+  const template = shuffle(TENSE_SENTENCE_PARTS)[0];
+  const verb = WORDS.find((word) => word.uz === template.verb);
+  const pronounIndex = Math.floor(Math.random() * PRONOUNS.length);
+  const pronoun = PRONOUNS[pronounIndex];
   const tenseValue = $("tenseMode").value;
   const polarityValue = $("tensePolarity").value;
   const tense = tenseValue === "mixed" ? shuffle(Object.keys(TENSES))[0] : tenseValue;
-  const polarity = polarityValue === "mixed" ? shuffle(["positive", "negative", "question"])[0] : polarityValue;
+  const polarity = polarityValue === "mixed" ? shuffle(["positive", "negative", "question", "negativeQuestion"])[0] : polarityValue;
   const stem = verbStem(verb.uz);
   const suffixes = [];
-  if (polarity === "negative") suffixes.push("ma");
+  if (isNegativePolarity(polarity)) suffixes.push("ma");
   suffixes.push(markerFor(stem, tense));
   suffixes.push(pronoun[tense]);
-  if (polarity === "question") suffixes.push("mi");
+  if (isQuestionPolarity(polarity)) suffixes.push("mi");
 
   enterProcess("tenses");
-  tenseTask = { verb, pronoun, tense, polarity, stem, suffixes };
+  tenseTask = { verb, template, pronoun, pronounIndex, tense, polarity, stem, suffixes };
   selectedPronoun = null;
   selectedSuffixes = [];
   tenseAnswered = false;
@@ -253,15 +274,11 @@ function startTense() {
 }
 
 function renderTense() {
-  const { verb, pronoun, tense, polarity, stem, suffixes } = tenseTask;
-  const formLabel = {
-    positive: "утверждение",
-    negative: "отрицание",
-    question: "вопрос"
-  }[polarity];
-  $("tenseRu").textContent = `Собери: ${pronoun.ru} / ${TENSES[tense].ru} / ${verb.ru} / ${formLabel}`;
+  const { template, pronoun, pronounIndex, tense, polarity, stem, suffixes } = tenseTask;
+  $("tenseRu").textContent = buildRussianSentence(template, pronoun, pronounIndex, tense, polarity);
+  $("tenseMiddle").textContent = `${template.contextUz[tense]} ${template.objectUz}`;
   $("verbStem").textContent = stem;
-  $("pronounSlot").textContent = "выбери";
+  $("pronounSlot").textContent = "___";
   $("pronounSlot").classList.remove("filled");
   $("suffixSlots").innerHTML = suffixes.map((_, index) => `<div class="suffix-slot" data-index="${index}">+</div>`).join("");
   $("tenseResult").textContent = "";
@@ -311,12 +328,12 @@ function checkTenseComplete() {
   const suffixOk = selectedSuffixes.every((item, index) => item === tenseTask.suffixes[index]);
   const result = $("tenseResult");
   if (pronounOk && suffixOk) {
-    const uz = `${tenseTask.pronoun.uz} ${surfaceVerb(tenseTask.stem, tenseTask.suffixes)}`;
+    const uz = `${tenseTask.pronoun.uz} ${tenseTask.template.contextUz[tenseTask.tense]} ${tenseTask.template.objectUz} ${surfaceVerb(tenseTask.stem, tenseTask.suffixes)}`;
     result.textContent = `Верно: ${uz}`;
     result.className = "tense-result ok";
     tenseDone += 1;
   } else {
-    const right = `${tenseTask.pronoun.uz} + ${tenseTask.stem} + ${tenseTask.suffixes.join(" + ")}`;
+    const right = `${tenseTask.pronoun.uz} ... ${tenseTask.stem} + ${tenseTask.suffixes.join(" + ")}`;
     result.textContent = `Проверь структуру: ${right}`;
     result.className = "tense-result bad";
   }

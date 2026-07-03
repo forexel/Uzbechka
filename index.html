@@ -155,6 +155,7 @@
               <option value="positive">Утверждение</option>
               <option value="negative">Отрицание</option>
               <option value="question">Вопрос</option>
+              <option value="negativeQuestion">Отрицательный вопрос</option>
             </select>
           </label>
         </div>
@@ -171,11 +172,9 @@
         </div>
         <div class="tense-task">
           <div class="sentence-ru" id="tenseRu"></div>
-          <div class="builder">
-            <div class="slot-row">
-              <span class="slot-label">Кто</span>
-              <button class="slot" id="pronounSlot">выбери</button>
-            </div>
+          <div class="sentence-uz" id="tenseUzSentence">
+            <button class="slot" id="pronounSlot">местоимение</button>
+            <span id="tenseMiddle"></span>
             <div class="verb-build">
               <span id="verbStem"></span>
               <div id="suffixSlots" class="suffix-slots"></div>

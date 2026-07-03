@@ -459,6 +459,30 @@ body.pairs-process .progress-line {
   font-weight: 650;
 }
 
+.sentence-uz {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: white;
+  padding: 12px;
+  font-size: 19px;
+  font-weight: 650;
+}
+
+.sentence-uz .slot {
+  width: auto;
+  min-width: 92px;
+}
+
+.sentence-uz .verb-build {
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
 .builder {
   display: grid;
   grid-template-columns: minmax(160px, 220px) 1fr;
@@ -761,5 +785,30 @@ body.pairs-process .progress-line {
     font-size: 15px;
     line-height: 1.15;
     overflow-wrap: anywhere;
+  }
+
+  .sentence-ru {
+    min-height: 46px;
+    padding: 10px;
+    font-size: 16px;
+  }
+
+  .sentence-uz {
+    padding: 10px;
+    gap: 6px;
+    font-size: 16px;
+  }
+
+  .sentence-uz .slot {
+    min-width: 76px;
+  }
+
+  #verbStem {
+    font-size: 19px;
+  }
+
+  .suffix-slot {
+    min-width: 48px;
+    min-height: 36px;
   }
 }

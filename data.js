@@ -158,7 +158,24 @@ const WORDS = [
   ["other","Yaxshimisiz?","яхшимисиз","как вы?","?","yaxshi + mi + siz"],
   ["other","Ishlar qanday?","ишлар кандай","как дела?","?","Дела как?"],
   ["other","Boʻladi!","булади","ладно, договорились","✓","Договорились"],
-  ["other","Qarang!","каранг","смотрите","◎","От qaramoq"]
+  ["other","Qarang!","каранг","смотрите","◎","От qaramoq"],
+
+  ["other","oz","оз","мало","🔻","Мало по количеству"],
+  ["other","kam","кам","мало, недостаточно","⚠️","Недостаточно, нехватка"],
+  ["other","koʻp","куп","много","🔺","Много"],
+  ["other","mazali","мазали","вкусный, вкусно","😋","mazali emas = невкусно"],
+  ["other","mazali emas","мазали эмас","невкусно, не вкусный","😕","Отрицание прилагательного через emas"],
+  ["other","qimmat","киммат","дорогой, дорого","💎","Дорого"],
+  ["other","arzon","арзон","дешевый, дешево","🏷️","Дешево"],
+  ["noun","mol goʻshti","мол гушти","говядина","🥩","mol + goʻsht + i"],
+  ["noun","goʻsht","гушт","мясо","🥩","Мясо"],
+  ["noun","dars","дарс","урок","📘","Урок"],
+  ["other","va","ва","и","➕","Союз и"],
+  ["other","darsdan keyin","дарсдан кейин","после урока","📘","dars + dan + keyin"],
+  ["other","darsdan oldin","дарсдан олдин","до урока","📘","dars + dan + oldin"],
+  ["other","oʻtgan hafta","утган хафта","прошлая неделя","📅","oʻtgan + hafta"],
+  ["other","har kuni","хар куни","каждый день","📆","har + kun + i"],
+  ["noun","kechki ovqat","кечки овкат","ужин","🍽️","Вечерняя еда"]
 ].map((w, index) => ({
   id: `${w[0]}-${index}`,
   type: w[0],
@@ -234,3 +251,66 @@ const TENSES = {
   past: { label: "прошедшее", marker: "di", ru: "вчера" },
   habitual: { label: "обычно/скоро", marker: "a/y", ru: "обычно" }
 };
+
+const TENSE_SENTENCE_PARTS = [
+  {
+    verb: "sanamoq",
+    objectUz: "pul",
+    objectRu: "деньги",
+    contextUz: { present: "hozir", past: "oʻtgan hafta darsdan keyin", habitual: "har kuni" },
+    contextRu: { present: "сейчас", past: "на прошлой неделе после урока", habitual: "каждый день" },
+    ruVerb: {
+      present: ["считаю", "считаешь", "считает", "считаем", "считаете", "считают"],
+      past: ["считал", "считал", "считал", "считали", "считали", "считали"],
+      habitual: ["считаю", "считаешь", "считает", "считаем", "считаете", "считают"]
+    }
+  },
+  {
+    verb: "yemoq",
+    objectUz: "kechki ovqatga mol goʻshti",
+    objectRu: "говядину на ужин",
+    contextUz: { present: "hozir", past: "kecha", habitual: "bugun" },
+    contextRu: { present: "сейчас", past: "вчера", habitual: "сегодня" },
+    ruVerb: {
+      present: ["ем", "ешь", "ест", "едим", "едите", "едят"],
+      past: ["ел", "ел", "ел", "ели", "ели", "ели"],
+      habitual: ["ем", "ешь", "ест", "едим", "едите", "едят"]
+    }
+  },
+  {
+    verb: "koʻrmoq",
+    objectUz: "hujjatni",
+    objectRu: "документ",
+    contextUz: { present: "hozir", past: "kecha ofisda", habitual: "har kuni" },
+    contextRu: { present: "сейчас", past: "вчера в офисе", habitual: "каждый день" },
+    ruVerb: {
+      present: ["вижу", "видишь", "видит", "видим", "видите", "видят"],
+      past: ["видел", "видел", "видел", "видели", "видели", "видели"],
+      habitual: ["вижу", "видишь", "видит", "видим", "видите", "видят"]
+    }
+  },
+  {
+    verb: "ichmoq",
+    objectUz: "choy",
+    objectRu: "чай",
+    contextUz: { present: "hozir", past: "ertalab", habitual: "har kuni" },
+    contextRu: { present: "сейчас", past: "утром", habitual: "каждый день" },
+    ruVerb: {
+      present: ["пью", "пьешь", "пьет", "пьем", "пьете", "пьют"],
+      past: ["пил", "пил", "пил", "пили", "пили", "пили"],
+      habitual: ["пью", "пьешь", "пьет", "пьем", "пьете", "пьют"]
+    }
+  },
+  {
+    verb: "rejalashtirmoq",
+    objectUz: "sayohat",
+    objectRu: "путешествие",
+    contextUz: { present: "hozir", past: "kecha", habitual: "bugun" },
+    contextRu: { present: "сейчас", past: "вчера", habitual: "сегодня" },
+    ruVerb: {
+      present: ["планирую", "планируешь", "планирует", "планируем", "планируете", "планируют"],
+      past: ["планировал", "планировал", "планировал", "планировали", "планировали", "планировали"],
+      habitual: ["планирую", "планируешь", "планирует", "планируем", "планируете", "планируют"]
+    }
+  }
+];

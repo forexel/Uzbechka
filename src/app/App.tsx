@@ -482,7 +482,7 @@ function HomeScreen({ onStart, username, progress }: { onStart: (t: LessonType) 
         </div>
       </div>
 
-      <div className="max-w-2xl mx-auto px-5 pt-6 space-y-7" style={{ paddingBottom: "calc(32px + env(safe-area-inset-bottom))" }}>
+      <div className="max-w-2xl mx-auto px-5 pt-6 space-y-7" style={{ paddingBottom: "calc(116px + env(safe-area-inset-bottom))" }}>
         {/* Stats */}
         <section>
           <h2 className="text-xs font-bold text-zinc-400 uppercase tracking-widest mb-3">Прогресс</h2>
@@ -559,9 +559,16 @@ function HomeScreen({ onStart, username, progress }: { onStart: (t: LessonType) 
           </div>
         </section>
 
-        <Btn full size="lg" onClick={() => onStart(method)}>
-          <Zap className="w-5 h-5" /> Начать урок
-        </Btn>
+        <div
+          className="fixed inset-x-0 bottom-0 z-20 bg-[#F7F6F1]/95 px-5 pt-3 backdrop-blur-sm border-t border-zinc-100"
+          style={{ paddingBottom: "calc(16px + env(safe-area-inset-bottom))" }}
+        >
+          <div className="max-w-2xl mx-auto">
+            <Btn full size="lg" onClick={() => onStart(method)}>
+              <Zap className="w-5 h-5" /> Начать урок
+            </Btn>
+          </div>
+        </div>
       </div>
     </div>
   );

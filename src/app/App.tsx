@@ -1159,6 +1159,15 @@ function PairsLesson({
   function clickPair(side: PairSide, id: number) {
     const st = gs(side, id);
     if (st === "disabled" || st === "correct") return;
+    if (selection?.side === side && selection.id === id) {
+      setSelection(null);
+      setStates(prev => {
+        const n = { ...prev };
+        n[`${side}${id}`] = "idle";
+        return n;
+      });
+      return;
+    }
     if (!selection || selection.side === side) {
       selectOnly(side, id);
       return;

@@ -777,7 +777,7 @@ function RegisterScreen({ onRegister, onGo }: { onRegister: (payload: AuthPayloa
 // ─── Home ──────────────────────────────────────────────────────────────────
 function HomeScreen({ onStart, username, progress }: { onStart: (t: LessonType, tenseModes?: TenseMode[]) => void; username: string; progress: Record<string, unknown> }) {
   const [method, setMethod]   = useState<LessonType>("flashcard");
-  const [cats, setCats]       = useState(new Set<WordType>(["noun", "verb"]));
+  const [cats, setCats]       = useState(new Set<WordType>(["noun"]));
   const [tenseModes, setTenseModes] = useState(new Set<TenseMode>(["present_yap", "past_di"]));
   const results = progressResults(progress);
   const known = knownWordIds(progress);

@@ -613,6 +613,40 @@ function CardImage({ card }: { card: typeof FLASHCARDS[0] }) {
   );
 }
 
+function FlashcardFace({
+  card,
+  text,
+  showPron,
+  muted,
+}: {
+  card: typeof FLASHCARDS[0];
+  text: string;
+  showPron: boolean;
+  muted?: boolean;
+}) {
+  return (
+    <div className={cn(
+      "absolute inset-0 bg-white rounded-[28px] border flex flex-col overflow-hidden",
+      muted
+        ? "border-zinc-100 shadow-[0_16px_48px_rgba(24,24,27,0.08)]"
+        : "border-emerald-100 shadow-[0_16px_48px_rgba(5,150,105,0.12)]"
+    )}>
+      <div className="p-4"><CardImage card={card} /></div>
+      <div className="flex-1 flex flex-col items-center justify-center px-6 pb-6 gap-2">
+        <p className={cn(
+          "text-3xl font-bold text-center leading-tight",
+          muted ? "text-zinc-900" : "text-emerald-700"
+        )}>
+          {text}
+        </p>
+        {showPron && <p className="text-base font-mono text-zinc-500 mt-1">[{card.pron}]</p>}
+        {!muted && <p className="text-sm text-zinc-400 mt-1 text-center">{card.hint}</p>}
+        {muted && <p className="text-sm text-zinc-400">Вспомни перевод и переверни</p>}
+      </div>
+    </div>
+  );
+}
+
 // ─── Login ─────────────────────────────────────────────────────────────────
 function LoginScreen({ onLogin, onGo }: { onLogin: (payload: AuthPayload) => void; onGo: () => void }) {
   const [login, setLogin] = useState("");
@@ -929,6 +963,10 @@ function FlashcardLesson({ onComplete }: { onComplete: (r: ResultData) => void }
   const card = deck[idx];
   const dir  = dirs[idx]; // 1 = uz→ru
   const total = deck.length;
+  const frontText = dir ? card.uz : card.ru;
+  const backText = dir ? card.ru : card.uz;
+  const frontIsUz = Boolean(dir);
+  const backIsUz = !dir;
 
   function finish(extraErr: boolean, nextKnownIds = knownIds) {
     const e = errors + (extraErr ? 1 : 0);
@@ -974,30 +1012,30 @@ function FlashcardLesson({ onComplete }: { onComplete: (r: ResultData) => void }
 
       <div className="flex-1 flex flex-col items-center justify-center max-w-md mx-auto w-full px-5 py-6 gap-5">
         {/* Card */}
-        <div className="w-full min-h-[430px] max-h-[560px] h-[min(64dvh,560px)]">
+        <div className="w-full min-h-[430px] max-h-[560px] h-[min(64dvh,560px)]" style={{ perspective: "1200px" }}>
           <div
-            className={cn(
-              "relative w-full h-full cursor-pointer drop-shadow-sm bg-white rounded-[28px] border flex flex-col overflow-hidden transition-all duration-200",
-              flipped
-                ? "border-emerald-100 shadow-[0_16px_48px_rgba(5,150,105,0.12)]"
-                : "border-zinc-100 shadow-[0_16px_48px_rgba(24,24,27,0.08)]"
-            )}
+            className="relative w-full h-full cursor-pointer transition-[transform] duration-500"
+            style={{
+              transformStyle: "preserve-3d",
+              transform: flipped ? "rotateY(180deg)" : "rotateY(0deg)",
+            }}
             onClick={() => setFlipped(value => !value)}
           >
-            <div className="p-4"><CardImage card={card} /></div>
-            <div className="flex-1 flex flex-col items-center justify-center px-6 pb-6 gap-2">
-              <p className="text-xs font-bold text-zinc-400 uppercase tracking-widest">
-                {flipped ? (dir ? "Русский" : "Uzbek") : (dir ? "Uzbek" : "Русский")}
-              </p>
-              <p className={cn(
-                "text-3xl font-bold text-center leading-tight",
-                flipped ? "text-emerald-700" : "text-zinc-900"
-              )}>
-                {flipped ? (dir ? card.ru : card.uz) : (dir ? card.uz : card.ru)}
-              </p>
-              {flipped && !dir && <p className="text-sm font-mono text-zinc-500 mt-1">[{card.pron}]</p>}
-              {flipped && <p className="text-sm text-zinc-400 mt-1 text-center">{card.hint}</p>}
-              {!flipped && <p className="text-sm text-zinc-400">Вспомни перевод и нажми для проверки</p>}
+            <div
+              className="absolute inset-0"
+              style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden" }}
+            >
+              <FlashcardFace card={card} text={frontText} showPron={frontIsUz} muted />
+            </div>
+            <div
+              className="absolute inset-0"
+              style={{
+                backfaceVisibility: "hidden",
+                WebkitBackfaceVisibility: "hidden",
+                transform: "rotateY(180deg)",
+              }}
+            >
+              <FlashcardFace card={card} text={backText} showPron={backIsUz} />
             </div>
           </div>
         </div>

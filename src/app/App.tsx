@@ -810,7 +810,7 @@ function HomeScreen({
 }) {
   const [method, setMethod]   = useState<LessonType>("flashcard");
   const [cats, setCats]       = useState(new Set<WordType>(["noun"]));
-  const [tenseModes, setTenseModes] = useState(new Set<TenseMode>(["present_yap", "past_di"]));
+  const [tenseModes, setTenseModes] = useState(new Set<TenseMode>(["present_yap"]));
   const results = progressResults(progress);
   const known = knownWordIds(progress);
   const excellent = results.filter((result) => result.score >= 90).length;
@@ -1556,7 +1556,7 @@ function ResultScreen({ result, onAgain, onHome }: { result: ResultData; onAgain
 export default function App() {
   const [screen, setScreen]         = useState<Screen>(() => localStorage.getItem("uzbek-trainer-token") ? "home" : "login");
   const [lessonType, setLessonType] = useState<LessonType>("flashcard");
-  const [selectedTenseModes, setSelectedTenseModes] = useState<TenseMode[]>(["present_yap", "past_di"]);
+  const [selectedTenseModes, setSelectedTenseModes] = useState<TenseMode[]>(["present_yap"]);
   const [selectedWordTypes, setSelectedWordTypes] = useState<WordType[]>(["noun"]);
   const [result, setResult]         = useState<ResultData | null>(null);
   const [token, setToken]           = useState(() => localStorage.getItem("uzbek-trainer-token") || "");

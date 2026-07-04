@@ -71,6 +71,11 @@ def token_hash(token):
 
 
 class Handler(SimpleHTTPRequestHandler):
+  extensions_map = {
+    **SimpleHTTPRequestHandler.extensions_map,
+    ".webp": "image/webp",
+  }
+
   def __init__(self, *args, **kwargs):
     super().__init__(*args, directory=str(STATIC_ROOT), **kwargs)
 

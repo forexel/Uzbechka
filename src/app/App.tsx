@@ -419,6 +419,29 @@ function categoryRows(progress: Record<string, unknown>) {
   });
 }
 
+function wordsForTypes(types: WordType[]) {
+  const allowed = new Set(types.length ? types : ["noun"]);
+  return FLASHCARDS.filter((word) => allowed.has(word.type));
+}
+
+function lessonWords(types: WordType[], progress: Record<string, unknown>, count: number) {
+  const selected = wordsForTypes(types);
+  const known = knownWordIds(progress);
+  const newWords = shuffle(selected.filter((word) => !known.has(word.id)));
+  const repeatWords = shuffle(selected.filter((word) => known.has(word.id)));
+  const deck = [...newWords.slice(0, count)];
+
+  if (deck.length < count) {
+    deck.push(...repeatWords.filter((word) => !deck.some((item) => item.id === word.id)).slice(0, count - deck.length));
+  }
+
+  while (deck.length < count && selected.length > 0) {
+    deck.push(...shuffle(selected).slice(0, count - deck.length));
+  }
+
+  return deck.slice(0, count);
+}
+
 // ─── Primitives ────────────────────────────────────────────────────────────
 interface BtnProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "primary" | "secondary" | "ghost" | "danger" | "success" | "amber";
@@ -775,7 +798,13 @@ function RegisterScreen({ onRegister, onGo }: { onRegister: (payload: AuthPayloa
 }
 
 // ─── Home ──────────────────────────────────────────────────────────────────
-function HomeScreen({ onStart, username, progress }: { onStart: (t: LessonType, tenseModes?: TenseMode[]) => void; username: string; progress: Record<string, unknown> }) {
+function HomeScreen({
+  onStart, username, progress,
+}: {
+  onStart: (t: LessonType, tenseModes?: TenseMode[], wordTypes?: WordType[]) => void;
+  username: string;
+  progress: Record<string, unknown>;
+}) {
   const [method, setMethod]   = useState<LessonType>("flashcard");
   const [cats, setCats]       = useState(new Set<WordType>(["noun"]));
   const [tenseModes, setTenseModes] = useState(new Set<TenseMode>(["present_yap", "past_di"]));
@@ -938,7 +967,7 @@ function HomeScreen({ onStart, username, progress }: { onStart: (t: LessonType, 
           style={{ paddingBottom: "calc(16px + env(safe-area-inset-bottom))" }}
         >
           <div className="max-w-2xl mx-auto">
-            <Btn full size="lg" onClick={() => onStart(method, Array.from(tenseModes))}>
+            <Btn full size="lg" onClick={() => onStart(method, Array.from(tenseModes), Array.from(cats))}>
               <Zap className="w-5 h-5" /> Начать урок
             </Btn>
           </div>
@@ -949,8 +978,14 @@ function HomeScreen({ onStart, username, progress }: { onStart: (t: LessonType, 
 }
 
 // ─── Flashcard Lesson ──────────────────────────────────────────────────────
-function FlashcardLesson({ onComplete }: { onComplete: (r: ResultData) => void }) {
-  const [deck] = useState(() => shuffle(FLASHCARDS).slice(0, 10));
+function FlashcardLesson({
+  onComplete, wordTypes, progress,
+}: {
+  onComplete: (r: ResultData) => void;
+  wordTypes: WordType[];
+  progress: Record<string, unknown>;
+}) {
+  const [deck] = useState(() => lessonWords(wordTypes, progress, 10));
   const [dirs] = useState(() => Array.from({ length: 10 }, () => Math.random() > .5 ? 1 : 0));
   const [idx, setIdx]         = useState(0);
   const [flipped, setFlipped] = useState(false);
@@ -1057,7 +1092,13 @@ function FlashcardLesson({ onComplete }: { onComplete: (r: ResultData) => void }
 // ─── Pairs Lesson ──────────────────────────────────────────────────────────
 type PairState = "idle" | "selected" | "correct" | "error" | "disabled";
 
-function PairsLesson({ onComplete }: { onComplete: (r: ResultData) => void }) {
+function PairsLesson({
+  onComplete, wordTypes, progress,
+}: {
+  onComplete: (r: ResultData) => void;
+  wordTypes: WordType[];
+  progress: Record<string, unknown>;
+}) {
   const [round, setRound]       = useState(0);
   const [errors, setErrors]     = useState(0);
   const [score, setScore]       = useState(0);
@@ -1071,7 +1112,7 @@ function PairsLesson({ onComplete }: { onComplete: (r: ResultData) => void }) {
   const TOTAL = 10;
 
   useEffect(() => {
-    const roundWords = shuffle(PAIRS_WORDS).slice(0, 7);
+    const roundWords = lessonWords(wordTypes, progress, 7);
     setLeftArr(shuffle(roundWords));
     setRightArr(shuffle(roundWords));
     setStates({});
@@ -1497,6 +1538,7 @@ export default function App() {
   const [screen, setScreen]         = useState<Screen>(() => localStorage.getItem("uzbek-trainer-token") ? "home" : "login");
   const [lessonType, setLessonType] = useState<LessonType>("flashcard");
   const [selectedTenseModes, setSelectedTenseModes] = useState<TenseMode[]>(["present_yap", "past_di"]);
+  const [selectedWordTypes, setSelectedWordTypes] = useState<WordType[]>(["noun"]);
   const [result, setResult]         = useState<ResultData | null>(null);
   const [token, setToken]           = useState(() => localStorage.getItem("uzbek-trainer-token") || "");
   const [username, setUsername]     = useState(() => localStorage.getItem("uzbek-trainer-username") || "");
@@ -1524,9 +1566,10 @@ export default function App() {
     setScreen("home");
   }
 
-  function startLesson(t: LessonType, tenseModes?: TenseMode[]) {
+  function startLesson(t: LessonType, tenseModes?: TenseMode[], wordTypes?: WordType[]) {
     setLessonType(t);
     if (t === "tenses" && tenseModes?.length) setSelectedTenseModes(tenseModes);
+    if (t !== "tenses" && wordTypes?.length) setSelectedWordTypes(wordTypes);
     setScreen(t);
   }
   function finish(r: ResultData) {
@@ -1555,8 +1598,8 @@ export default function App() {
   if (screen === "login")    return <LoginScreen    onLogin={acceptAuth} onGo={() => setScreen("register")} />;
   if (screen === "register") return <RegisterScreen onRegister={acceptAuth} onGo={() => setScreen("login")} />;
   if (screen === "home")     return <HomeScreen     onStart={startLesson} username={username} progress={progress} />;
-  if (screen === "flashcard") return <FlashcardLesson onComplete={finish} />;
-  if (screen === "pairs")    return <PairsLesson    onComplete={finish} />;
+  if (screen === "flashcard") return <FlashcardLesson onComplete={finish} wordTypes={selectedWordTypes} progress={progress} />;
+  if (screen === "pairs")    return <PairsLesson    onComplete={finish} wordTypes={selectedWordTypes} progress={progress} />;
   if (screen === "tenses")   return <TensesLesson   onComplete={finish} modes={selectedTenseModes} />;
   if (screen === "result" && result)
     return <ResultScreen result={result} onAgain={() => setScreen(lessonType)} onHome={() => setScreen("home")} />;

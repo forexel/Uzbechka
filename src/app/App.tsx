@@ -70,6 +70,8 @@ const FLASHCARDS: LearningWord[] = WORDS.map((word) => ({
 
 const PAIRS_WORDS = FLASHCARDS;
 
+type PronounUz = "men" | "sen" | "u" | "biz" | "siz";
+
 interface TensesEx {
   tense: TenseMode;
   ru: string;
@@ -82,7 +84,7 @@ interface TensesEx {
   question?: boolean;
 }
 
-const PRONOUNS = [
+const PRONOUNS: { uz: PronounUz; ru: string; present: string; past: string; future: string }[] = [
   { uz: "men", ru: "Я", present: "man", past: "m", future: "man" },
   { uz: "sen", ru: "Ты", present: "san", past: "ng", future: "san" },
   { uz: "u", ru: "Он/она", present: "ti", past: "", future: "di" },
@@ -90,49 +92,214 @@ const PRONOUNS = [
   { uz: "siz", ru: "Вы", present: "siz", past: "ngiz", future: "siz" },
 ];
 
-const RU_VERBS: Record<string, { present: string; past: string; future: string }> = {
-  "oʻqi": { present: "читает", past: "читал", future: "прочитает" },
-  "yoz": { present: "пишет", past: "писал", future: "напишет" },
-  "ich": { present: "пьет", past: "пил", future: "выпьет" },
-  "ye": { present: "ест", past: "ел", future: "съест" },
-  "ishla": { present: "работает", past: "работал", future: "будет работать" },
-  "saqla": { present: "сохраняет", past: "сохранил", future: "сохранит" },
-  "sana": { present: "считает", past: "считал", future: "посчитает" },
-  "koʻr": { present: "видит", past: "видел", future: "увидит" },
-  "soʻra": { present: "спрашивает", past: "спросил", future: "спросит" },
-  "tanla": { present: "выбирает", past: "выбрал", future: "выберет" },
-  "yech": { present: "решает", past: "решил", future: "решит" },
-  "bor": { present: "идет", past: "ходил", future: "пойдет" },
-  "qayt": { present: "возвращается", past: "вернулся", future: "вернется" },
-  "kel": { present: "приходит", past: "пришел", future: "придет" },
-  "kut": { present: "ждет", past: "ждал", future: "подождет" },
-  "yasha": { present: "живет", past: "жил", future: "будет жить" },
-  "uchrash": { present: "встречается", past: "встретился", future: "встретится" },
+type RuForms = Record<PronounUz, string>;
+
+interface TenseScenario {
+  stem: string;
+  uz: Record<TenseMode, string>;
+  ruObject: string;
+  verbs: Record<TenseMode, RuForms>;
+}
+
+const RU_SUBJECT: Record<PronounUz, string> = {
+  men: "Я",
+  sen: "Ты",
+  u: "Он",
+  biz: "Мы",
+  siz: "Вы",
 };
 
-function firstRu(text: string) {
-  return text.split(",")[0].trim().toLowerCase();
-}
+const TENSE_CUES: Record<TenseMode, { uz: string; ru: string }> = {
+  present_yap: { uz: "hozir", ru: "сейчас" },
+  past_di: { uz: "kecha", ru: "вчера" },
+  present_future: { uz: "ertaga", ru: "завтра" },
+};
 
-function cleanPhrase(text: string) {
-  return text.replace(/[!?.,]+$/g, "").trim();
-}
-
-function verbStem(verb: string) {
-  if (verb === "yemoq") return "ye";
-  return verb.replace(/moq$/i, "");
-}
+const TENSE_SCENARIOS: TenseScenario[] = [
+  {
+    stem: "oʻqi",
+    uz: { present_yap: "kitob oʻqi", past_di: "kitob oʻqi", present_future: "kitob oʻqi" },
+    ruObject: "книгу",
+    verbs: {
+      present_yap: { men: "читаю", sen: "читаешь", u: "читает", biz: "читаем", siz: "читаете" },
+      past_di: { men: "читал", sen: "читал", u: "читал", biz: "читали", siz: "читали" },
+      present_future: { men: "прочитаю", sen: "прочитаешь", u: "прочитает", biz: "прочитаем", siz: "прочитаете" },
+    },
+  },
+  {
+    stem: "yoz",
+    uz: { present_yap: "reja yoz", past_di: "reja yoz", present_future: "reja yoz" },
+    ruObject: "план",
+    verbs: {
+      present_yap: { men: "пишу", sen: "пишешь", u: "пишет", biz: "пишем", siz: "пишете" },
+      past_di: { men: "писал", sen: "писал", u: "писал", biz: "писали", siz: "писали" },
+      present_future: { men: "напишу", sen: "напишешь", u: "напишет", biz: "напишем", siz: "напишете" },
+    },
+  },
+  {
+    stem: "ich",
+    uz: { present_yap: "choy ich", past_di: "choy ich", present_future: "choy ich" },
+    ruObject: "чай",
+    verbs: {
+      present_yap: { men: "пью", sen: "пьешь", u: "пьет", biz: "пьем", siz: "пьете" },
+      past_di: { men: "пил", sen: "пил", u: "пил", biz: "пили", siz: "пили" },
+      present_future: { men: "выпью", sen: "выпьешь", u: "выпьет", biz: "выпьем", siz: "выпьете" },
+    },
+  },
+  {
+    stem: "ye",
+    uz: { present_yap: "ovqat ye", past_di: "ovqat ye", present_future: "ovqat ye" },
+    ruObject: "еду",
+    verbs: {
+      present_yap: { men: "ем", sen: "ешь", u: "ест", biz: "едим", siz: "едите" },
+      past_di: { men: "ел", sen: "ел", u: "ел", biz: "ели", siz: "ели" },
+      present_future: { men: "поем", sen: "поешь", u: "поест", biz: "поедим", siz: "поедите" },
+    },
+  },
+  {
+    stem: "ishla",
+    uz: { present_yap: "ofisda ishla", past_di: "ofisda ishla", present_future: "ofisda ishla" },
+    ruObject: "в офисе",
+    verbs: {
+      present_yap: { men: "работаю", sen: "работаешь", u: "работает", biz: "работаем", siz: "работаете" },
+      past_di: { men: "работал", sen: "работал", u: "работал", biz: "работали", siz: "работали" },
+      present_future: { men: "буду работать", sen: "будешь работать", u: "будет работать", biz: "будем работать", siz: "будете работать" },
+    },
+  },
+  {
+    stem: "saqla",
+    uz: { present_yap: "hujjat saqla", past_di: "hujjat saqla", present_future: "hujjat saqla" },
+    ruObject: "документ",
+    verbs: {
+      present_yap: { men: "сохраняю", sen: "сохраняешь", u: "сохраняет", biz: "сохраняем", siz: "сохраняете" },
+      past_di: { men: "сохранил", sen: "сохранил", u: "сохранил", biz: "сохранили", siz: "сохранили" },
+      present_future: { men: "сохраню", sen: "сохранишь", u: "сохранит", biz: "сохраним", siz: "сохраните" },
+    },
+  },
+  {
+    stem: "sana",
+    uz: { present_yap: "pul sana", past_di: "pul sana", present_future: "pul sana" },
+    ruObject: "деньги",
+    verbs: {
+      present_yap: { men: "считаю", sen: "считаешь", u: "считает", biz: "считаем", siz: "считаете" },
+      past_di: { men: "считал", sen: "считал", u: "считал", biz: "считали", siz: "считали" },
+      present_future: { men: "посчитаю", sen: "посчитаешь", u: "посчитает", biz: "посчитаем", siz: "посчитаете" },
+    },
+  },
+  {
+    stem: "koʻr",
+    uz: { present_yap: "odam koʻr", past_di: "odam koʻr", present_future: "odam koʻr" },
+    ruObject: "человека",
+    verbs: {
+      present_yap: { men: "вижу", sen: "видишь", u: "видит", biz: "видим", siz: "видите" },
+      past_di: { men: "видел", sen: "видел", u: "видел", biz: "видели", siz: "видели" },
+      present_future: { men: "увижу", sen: "увидишь", u: "увидит", biz: "увидим", siz: "увидите" },
+    },
+  },
+  {
+    stem: "soʻra",
+    uz: { present_yap: "rahbardan soʻra", past_di: "rahbardan soʻra", present_future: "rahbardan soʻra" },
+    ruObject: "руководителя",
+    verbs: {
+      present_yap: { men: "спрашиваю", sen: "спрашиваешь", u: "спрашивает", biz: "спрашиваем", siz: "спрашиваете" },
+      past_di: { men: "спросил", sen: "спросил", u: "спросил", biz: "спросили", siz: "спросили" },
+      present_future: { men: "спрошу", sen: "спросишь", u: "спросит", biz: "спросим", siz: "спросите" },
+    },
+  },
+  {
+    stem: "tanla",
+    uz: { present_yap: "ovqat tanla", past_di: "ovqat tanla", present_future: "ovqat tanla" },
+    ruObject: "еду",
+    verbs: {
+      present_yap: { men: "выбираю", sen: "выбираешь", u: "выбирает", biz: "выбираем", siz: "выбираете" },
+      past_di: { men: "выбрал", sen: "выбрал", u: "выбрал", biz: "выбрали", siz: "выбрали" },
+      present_future: { men: "выберу", sen: "выберешь", u: "выберет", biz: "выберем", siz: "выберете" },
+    },
+  },
+  {
+    stem: "yech",
+    uz: { present_yap: "masala yech", past_di: "masala yech", present_future: "masala yech" },
+    ruObject: "задачу",
+    verbs: {
+      present_yap: { men: "решаю", sen: "решаешь", u: "решает", biz: "решаем", siz: "решаете" },
+      past_di: { men: "решил", sen: "решил", u: "решил", biz: "решили", siz: "решили" },
+      present_future: { men: "решу", sen: "решишь", u: "решит", biz: "решим", siz: "решите" },
+    },
+  },
+  {
+    stem: "bor",
+    uz: { present_yap: "ishga bor", past_di: "ishga bor", present_future: "ishga bor" },
+    ruObject: "на работу",
+    verbs: {
+      present_yap: { men: "иду", sen: "идешь", u: "идет", biz: "идем", siz: "идете" },
+      past_di: { men: "ходил", sen: "ходил", u: "ходил", biz: "ходили", siz: "ходили" },
+      present_future: { men: "пойду", sen: "пойдешь", u: "пойдет", biz: "пойдем", siz: "пойдете" },
+    },
+  },
+  {
+    stem: "qayt",
+    uz: { present_yap: "ofisdan qayt", past_di: "ofisdan qayt", present_future: "ofisdan qayt" },
+    ruObject: "из офиса",
+    verbs: {
+      present_yap: { men: "возвращаюсь", sen: "возвращаешься", u: "возвращается", biz: "возвращаемся", siz: "возвращаетесь" },
+      past_di: { men: "вернулся", sen: "вернулся", u: "вернулся", biz: "вернулись", siz: "вернулись" },
+      present_future: { men: "вернусь", sen: "вернешься", u: "вернется", biz: "вернемся", siz: "вернетесь" },
+    },
+  },
+  {
+    stem: "kel",
+    uz: { present_yap: "maktabga kel", past_di: "maktabga kel", present_future: "maktabga kel" },
+    ruObject: "в школу",
+    verbs: {
+      present_yap: { men: "прихожу", sen: "приходишь", u: "приходит", biz: "приходим", siz: "приходите" },
+      past_di: { men: "пришел", sen: "пришел", u: "пришел", biz: "пришли", siz: "пришли" },
+      present_future: { men: "приду", sen: "придешь", u: "придет", biz: "придем", siz: "придете" },
+    },
+  },
+  {
+    stem: "kut",
+    uz: { present_yap: "doʻst kut", past_di: "doʻst kut", present_future: "doʻst kut" },
+    ruObject: "друга",
+    verbs: {
+      present_yap: { men: "жду", sen: "ждешь", u: "ждет", biz: "ждем", siz: "ждете" },
+      past_di: { men: "ждал", sen: "ждал", u: "ждал", biz: "ждали", siz: "ждали" },
+      present_future: { men: "подожду", sen: "подождешь", u: "подождет", biz: "подождем", siz: "подождете" },
+    },
+  },
+  {
+    stem: "uchrash",
+    uz: { present_yap: "darsdan keyin uchrash", past_di: "darsdan keyin uchrash", present_future: "darsdan keyin uchrash" },
+    ruObject: "после урока",
+    verbs: {
+      present_yap: { men: "встречаюсь", sen: "встречаешься", u: "встречается", biz: "встречаемся", siz: "встречаетесь" },
+      past_di: { men: "встретился", sen: "встретился", u: "встретился", biz: "встретились", siz: "встретились" },
+      present_future: { men: "встречусь", sen: "встретишься", u: "встретится", biz: "встретимся", siz: "встретитесь" },
+    },
+  },
+  {
+    stem: "och",
+    uz: { present_yap: "hujjat och", past_di: "hujjat och", present_future: "hujjat och" },
+    ruObject: "документ",
+    verbs: {
+      present_yap: { men: "открываю", sen: "открываешь", u: "открывает", biz: "открываем", siz: "открываете" },
+      past_di: { men: "открыл", sen: "открыл", u: "открыл", biz: "открыли", siz: "открыли" },
+      present_future: { men: "открою", sen: "откроешь", u: "откроет", biz: "откроем", siz: "откроете" },
+    },
+  },
+  {
+    stem: "yop",
+    uz: { present_yap: "hujjat yop", past_di: "hujjat yop", present_future: "hujjat yop" },
+    ruObject: "документ",
+    verbs: {
+      present_yap: { men: "закрываю", sen: "закрываешь", u: "закрывает", biz: "закрываем", siz: "закрываете" },
+      past_di: { men: "закрыл", sen: "закрыл", u: "закрыл", biz: "закрыли", siz: "закрыли" },
+      present_future: { men: "закрою", sen: "закроешь", u: "закроет", biz: "закроем", siz: "закроете" },
+    },
+  },
+];
 
 function sentenceCase(text: string) {
   return text.charAt(0).toUpperCase() + text.slice(1);
-}
-
-function ruVerb(stem: string, tense: TenseMode) {
-  const forms = RU_VERBS[stem];
-  if (!forms) return tense === "past_di" ? "сделал действие" : tense === "present_future" ? "сделает действие" : "делает действие";
-  if (tense === "past_di") return forms.past;
-  if (tense === "present_future") return forms.future;
-  return forms.present;
 }
 
 function makeTenseChips(correct: string[], mode: TenseMode) {
@@ -144,83 +311,31 @@ function makeTenseChips(correct: string[], mode: TenseMode) {
   return Array.from(new Set([...correct, ...shuffle(extras).slice(0, 5)]));
 }
 
-function typedWords(type: WordType) {
-  return WORDS.filter(word => word.type === type);
-}
-
 function pick<T>(items: T[], index: number) {
   return items[Math.abs(index) % items.length];
 }
 
-function makeObjectPhrase(i: number, nouns: Word[], numbers: Word[], pronouns: Word[]) {
-  const noun = pick(nouns, i * 29 + 7);
-  const number = pick(numbers, i * 11 + 5);
-  const pronounObject = pick(pronouns.filter(word => /ni$|ga$|da$/.test(word.uz)), i * 13 + 1);
-  const pattern = i % 5;
-
-  if (pattern === 0) {
-    return { uz: noun.uz, ru: firstRu(noun.ru) };
-  }
-  if (pattern === 1) {
-    return { uz: `${number.uz} ${noun.uz}`, ru: `${firstRu(number.ru)} ${firstRu(noun.ru)}` };
-  }
-  if (pattern === 2 && pronounObject) {
-    return { uz: pronounObject.uz, ru: firstRu(pronounObject.ru) };
-  }
-  if (pattern === 3) {
-    return { uz: `${noun.uz} haqida`, ru: `про ${firstRu(noun.ru)}` };
-  }
-  return { uz: noun.uz, ru: firstRu(noun.ru) };
-}
-
-function makeModifierPhrase(i: number, mode: TenseMode, others: Word[], questions: Word[]) {
-  const currentWords = others.filter(word => ["hozir", "bugun", "ertalab", "hozirgina"].includes(word.uz));
-  const pastWords = others.filter(word => ["kecha", "oʻtgan hafta", "darsdan keyin", "darsdan oldin"].includes(word.uz));
-  const regularWords = others.filter(word => ["har kuni", "koʻp", "oz", "kam"].includes(word.uz));
-  const questionWords = questions.filter(word => ["qachon", "qayerda", "qayerga", "nimaga", "nega"].includes(word.uz));
-  const base = mode === "present_yap"
-    ? (currentWords.length ? currentWords : others)
-    : mode === "past_di"
-      ? (pastWords.length ? pastWords : others)
-      : (regularWords.length ? regularWords : others);
-  const word = pick(base, i * 19 + 3);
-
-  if (i % 4 === 1 && questionWords.length) {
-    const q = pick(questionWords, i * 23 + 2);
-    return { uz: q.uz, ru: firstRu(q.ru) };
-  }
-
-  return { uz: cleanPhrase(word.uz), ru: firstRu(word.ru) };
-}
-
 function buildTenseBank(size = 10000): TensesEx[] {
-  const verbs = typedWords("verb").map(word => ({ ...word, stem: verbStem(word.uz) }));
-  const nouns = typedWords("noun");
-  const pronouns = typedWords("pronoun");
-  const questions = typedWords("question");
-  const numbers = typedWords("number");
-  const others = typedWords("other");
   const modes: TenseMode[] = ["present_yap", "past_di", "present_future"];
 
   return Array.from({ length: size }, (_, i) => {
     const mode = modes[i % modes.length];
-    const pronoun = PRONOUNS[i % PRONOUNS.length];
-    const verb = verbs[(i * 17 + 3) % verbs.length];
-    const negative = i % 5 === 2;
-    const question = i % 4 === 1;
-    const object = makeObjectPhrase(i, nouns, numbers, pronouns);
-    const modifier = makeModifierPhrase(i, mode, others, questions);
-    const actionRu = ruVerb(verb.stem, mode);
-    const ruCore = question && ["когда", "где", "куда", "почему"].includes(modifier.ru)
-      ? `${modifier.ru} ${pronoun.ru.toLowerCase()} ${negative ? "не " : ""}${actionRu} ${object.ru}`
-      : `${pronoun.ru} ${modifier.ru} ${negative ? "не " : ""}${actionRu} ${object.ru}`;
+    const pronoun = PRONOUNS[(i * 7 + 2) % PRONOUNS.length];
+    const scenario = TENSE_SCENARIOS[(i * 17 + Math.floor(i / modes.length)) % TENSE_SCENARIOS.length];
+    const variant = i % 8;
+    const negative = variant === 2 || variant === 6;
+    const question = variant === 1 || variant === 5 || variant === 6;
+    const cue = TENSE_CUES[mode];
+    const subject = RU_SUBJECT[pronoun.uz];
+    const verb = scenario.verbs[mode][pronoun.uz];
+    const ruCore = `${subject} ${cue.ru} ${negative ? "не " : ""}${verb} ${scenario.ruObject}`;
     const ru = `${sentenceCase(ruCore)}${question ? "?" : "."}`;
 
     const personChip = mode === "past_di" ? pronoun.past : mode === "present_future" ? pronoun.future : pronoun.present;
     const correct = mode === "past_di"
       ? [...(negative ? ["ma"] : []), "di", ...(personChip ? [personChip] : []), ...(question ? ["mi"] : [])]
       : mode === "present_future"
-        ? [...(negative ? ["ma", "y"] : [verb.stem.endsWith("a") ? "y" : "a"]), personChip, ...(question ? ["mi"] : [])]
+        ? [...(negative ? ["ma", "y"] : [scenario.stem.endsWith("a") ? "y" : "a"]), personChip, ...(question ? ["mi"] : [])]
         : [...(negative ? ["ma"] : []), "yap", personChip, ...(question ? ["mi"] : [])];
 
     const wrongPronouns = shuffle(PRONOUNS.filter(p => p.uz !== pronoun.uz).map(p => p.uz)).slice(0, 3);
@@ -228,7 +343,7 @@ function buildTenseBank(size = 10000): TensesEx[] {
     return {
       tense: mode,
       ru,
-      uz_stem: `${modifier.uz} ${object.uz} ${verb.stem}`.replace(/\s+/g, " ").trim(),
+      uz_stem: `${cue.uz} ${scenario.uz[mode]}`.replace(/\s+/g, " ").trim(),
       pronouns: shuffle([pronoun.uz, ...wrongPronouns]),
       correct_pronoun: pronoun.uz,
       chips: makeTenseChips(correct, mode),
@@ -482,13 +597,18 @@ function AbstractCard({ card }: { card: typeof FLASHCARDS[0] }) {
 }
 
 function CardImage({ card }: { card: typeof FLASHCARDS[0] }) {
-  const [failed, setFailed] = useState(false);
-  const src = card.img ? img(card.img) : `/word-images/${card.id}.png`;
-  useEffect(() => setFailed(false), [src]);
-  if (failed) return <AbstractCard card={card} />;
+  const [fallback, setFallback] = useState<"webp" | "png" | "abstract">("webp");
+  const src = card.img ? img(card.img) : `/word-images/${card.id}.${fallback}`;
+  useEffect(() => setFallback("webp"), [card.id, card.img]);
+  if (!card.img && fallback === "abstract") return <AbstractCard card={card} />;
   return (
     <div className="w-full aspect-[4/3] rounded-3xl overflow-hidden bg-zinc-100">
-      <img src={src} alt={card.uz} className="w-full h-full object-cover" onError={() => setFailed(true)} />
+      <img
+        src={src}
+        alt={card.uz}
+        className="w-full h-full object-cover"
+        onError={() => setFallback(fallback === "webp" ? "png" : "abstract")}
+      />
     </div>
   );
 }
@@ -854,35 +974,30 @@ function FlashcardLesson({ onComplete }: { onComplete: (r: ResultData) => void }
 
       <div className="flex-1 flex flex-col items-center justify-center max-w-md mx-auto w-full px-5 py-6 gap-5">
         {/* Card */}
-        <div className="w-full min-h-[430px] max-h-[560px] h-[min(64dvh,560px)]" style={{ perspective: "1200px" }}>
+        <div className="w-full min-h-[430px] max-h-[560px] h-[min(64dvh,560px)]">
           <div
-            className="relative w-full h-full cursor-pointer transition-[transform] duration-500 drop-shadow-sm"
-            style={{
-              transformStyle: "preserve-3d",
-              transform: flipped ? "rotateY(180deg)" : "rotateY(0deg)",
-            }}
+            className={cn(
+              "relative w-full h-full cursor-pointer drop-shadow-sm bg-white rounded-[28px] border flex flex-col overflow-hidden transition-all duration-200",
+              flipped
+                ? "border-emerald-100 shadow-[0_16px_48px_rgba(5,150,105,0.12)]"
+                : "border-zinc-100 shadow-[0_16px_48px_rgba(24,24,27,0.08)]"
+            )}
             onClick={() => setFlipped(value => !value)}
           >
-            {/* Front */}
-            <div className="absolute inset-0 bg-white rounded-[28px] border border-zinc-100 shadow-[0_16px_48px_rgba(24,24,27,0.08)] flex flex-col overflow-hidden"
-              style={{ backfaceVisibility: "hidden" }}>
-              <div className="p-4"><CardImage card={card} /></div>
-              <div className="flex-1 flex flex-col items-center justify-center px-6 pb-6 gap-2">
-                <p className="text-xs font-bold text-zinc-400 uppercase tracking-widest">{dir ? "Uzbek" : "Русский"}</p>
-                <p className="text-3xl font-bold text-zinc-900 text-center leading-tight">{dir ? card.uz : card.ru}</p>
-                <p className="text-sm text-zinc-400">Нажми, чтобы перевернуть</p>
-              </div>
-            </div>
-            {/* Back */}
-            <div className="absolute inset-0 bg-white rounded-[28px] border border-emerald-100 shadow-[0_16px_48px_rgba(5,150,105,0.12)] flex flex-col overflow-hidden"
-              style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}>
-              <div className="p-4"><CardImage card={card} /></div>
-              <div className="flex-1 flex flex-col items-center justify-center px-6 pb-6 gap-1">
-                <p className="text-base text-zinc-400 line-through">{dir ? card.uz : card.ru}</p>
-                <p className="text-3xl font-bold text-emerald-700 text-center mt-1">{dir ? card.ru : card.uz}</p>
-                <p className="text-sm font-mono text-zinc-500 mt-1">[{card.pron}]</p>
-                <p className="text-sm text-zinc-400 mt-1 text-center">{card.hint}</p>
-              </div>
+            <div className="p-4"><CardImage card={card} /></div>
+            <div className="flex-1 flex flex-col items-center justify-center px-6 pb-6 gap-2">
+              <p className="text-xs font-bold text-zinc-400 uppercase tracking-widest">
+                {flipped ? (dir ? "Русский" : "Uzbek") : (dir ? "Uzbek" : "Русский")}
+              </p>
+              <p className={cn(
+                "text-3xl font-bold text-center leading-tight",
+                flipped ? "text-emerald-700" : "text-zinc-900"
+              )}>
+                {flipped ? (dir ? card.ru : card.uz) : (dir ? card.uz : card.ru)}
+              </p>
+              {flipped && !dir && <p className="text-sm font-mono text-zinc-500 mt-1">[{card.pron}]</p>}
+              {flipped && <p className="text-sm text-zinc-400 mt-1 text-center">{card.hint}</p>}
+              {!flipped && <p className="text-sm text-zinc-400">Вспомни перевод и нажми для проверки</p>}
             </div>
           </div>
         </div>

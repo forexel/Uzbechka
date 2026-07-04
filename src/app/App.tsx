@@ -1360,11 +1360,6 @@ function TensesLesson({ onComplete, modes }: { onComplete: (r: ResultData) => vo
             {ex.question && <span className="text-zinc-700 font-semibold">?</span>}
           </div>
 
-          {checked && (!cOk || pBad) && (
-            <p className="text-xs text-emerald-600 mt-3 font-semibold">
-              Правильно: {ex.correct_pronoun} {ex.uz_stem}{ex.correct_chips.join("")}{ex.question ? "?" : "."}
-            </p>
-          )}
         </div>
 
         {/* Pronouns */}

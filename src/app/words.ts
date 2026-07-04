@@ -826,18 +826,180 @@ export const WORDS: Word[] = [
     "type": "pronoun",
     "uz": "menda",
     "pron": "менда",
-    "ru": "у меня есть",
+    "ru": "у меня, во мне",
     "visual": "🎒",
-    "hint": "иметь: menda ... bor"
+    "hint": "men + da; иметь: menda ... bor"
   },
   {
     "id": "pronoun-91",
     "type": "pronoun",
     "uz": "sizda",
     "pron": "сизда",
-    "ru": "у вас есть",
+    "ru": "у вас, в вас",
     "visual": "💼",
-    "hint": "иметь: sizda ... bor"
+    "hint": "siz + da; иметь: sizda ... bor"
+  },
+  {
+    "id": "pronoun-259",
+    "type": "pronoun",
+    "uz": "sening",
+    "pron": "сенинг",
+    "ru": "твой, твоя, твое; у тебя",
+    "visual": "👉",
+    "hint": "sen + ning"
+  },
+  {
+    "id": "pronoun-260",
+    "type": "pronoun",
+    "uz": "uning",
+    "pron": "унинг",
+    "ru": "его, ее; у него, у нее",
+    "visual": "👤",
+    "hint": "u + ning"
+  },
+  {
+    "id": "pronoun-261",
+    "type": "pronoun",
+    "uz": "bizning",
+    "pron": "бизнинг",
+    "ru": "наш, наша, наше; у нас",
+    "visual": "👥",
+    "hint": "biz + ning"
+  },
+  {
+    "id": "pronoun-262",
+    "type": "pronoun",
+    "uz": "sizning",
+    "pron": "сизнинг",
+    "ru": "ваш, ваша, ваше; у вас",
+    "visual": "🤵",
+    "hint": "siz + ning"
+  },
+  {
+    "id": "pronoun-263",
+    "type": "pronoun",
+    "uz": "ularning",
+    "pron": "уларнинг",
+    "ru": "их; у них",
+    "visual": "👥",
+    "hint": "ular + ning"
+  },
+  {
+    "id": "pronoun-264",
+    "type": "pronoun",
+    "uz": "bizni",
+    "pron": "бизни",
+    "ru": "нас",
+    "visual": "👥",
+    "hint": "biz + ni"
+  },
+  {
+    "id": "pronoun-265",
+    "type": "pronoun",
+    "uz": "sizni",
+    "pron": "сизни",
+    "ru": "вас",
+    "visual": "🤵",
+    "hint": "siz + ni"
+  },
+  {
+    "id": "pronoun-266",
+    "type": "pronoun",
+    "uz": "ularni",
+    "pron": "уларни",
+    "ru": "их",
+    "visual": "👥",
+    "hint": "ular + ni"
+  },
+  {
+    "id": "pronoun-267",
+    "type": "pronoun",
+    "uz": "senda",
+    "pron": "сенда",
+    "ru": "у тебя, в тебе",
+    "visual": "👉",
+    "hint": "sen + da"
+  },
+  {
+    "id": "pronoun-268",
+    "type": "pronoun",
+    "uz": "unda",
+    "pron": "унда",
+    "ru": "у него, у нее; в нем, в ней",
+    "visual": "👤",
+    "hint": "u + da"
+  },
+  {
+    "id": "pronoun-269",
+    "type": "pronoun",
+    "uz": "bizda",
+    "pron": "бизда",
+    "ru": "у нас, в нас",
+    "visual": "👥",
+    "hint": "biz + da"
+  },
+  {
+    "id": "pronoun-270",
+    "type": "pronoun",
+    "uz": "ularda",
+    "pron": "уларда",
+    "ru": "у них, в них",
+    "visual": "👥",
+    "hint": "ular + da"
+  },
+  {
+    "id": "pronoun-271",
+    "type": "pronoun",
+    "uz": "mendan",
+    "pron": "мендан",
+    "ru": "от меня, из меня",
+    "visual": "🧍",
+    "hint": "men + dan"
+  },
+  {
+    "id": "pronoun-272",
+    "type": "pronoun",
+    "uz": "sendan",
+    "pron": "сендан",
+    "ru": "от тебя, из тебя",
+    "visual": "👉",
+    "hint": "sen + dan"
+  },
+  {
+    "id": "pronoun-273",
+    "type": "pronoun",
+    "uz": "undan",
+    "pron": "ундан",
+    "ru": "от него, от нее; из него, из нее",
+    "visual": "👤",
+    "hint": "u + dan"
+  },
+  {
+    "id": "pronoun-274",
+    "type": "pronoun",
+    "uz": "bizdan",
+    "pron": "биздан",
+    "ru": "от нас, из нас",
+    "visual": "👥",
+    "hint": "biz + dan"
+  },
+  {
+    "id": "pronoun-275",
+    "type": "pronoun",
+    "uz": "sizdan",
+    "pron": "сиздан",
+    "ru": "от вас, из вас",
+    "visual": "🤵",
+    "hint": "siz + dan"
+  },
+  {
+    "id": "pronoun-276",
+    "type": "pronoun",
+    "uz": "ulardan",
+    "pron": "улардан",
+    "ru": "от них, из них",
+    "visual": "👥",
+    "hint": "ular + dan"
   },
   {
     "id": "question-92",
@@ -1588,12 +1750,12 @@ export const WORDS: Word[] = [
   },
   {
     "id": "other-175",
-    "type": "other",
+    "type": "pronoun",
     "uz": "mening",
     "pron": "менинг",
-    "ru": "мой, моя, мое",
+    "ru": "мой, моя, мое; у меня",
     "visual": "🧍",
-    "hint": "Притяжательное: мой"
+    "hint": "men + ning"
   },
   {
     "id": "other-176",

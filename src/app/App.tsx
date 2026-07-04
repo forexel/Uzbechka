@@ -621,8 +621,11 @@ function AbstractCard({ card }: { card: typeof FLASHCARDS[0] }) {
 
 function CardImage({ card }: { card: typeof FLASHCARDS[0] }) {
   const [fallback, setFallback] = useState<"webp" | "png" | "abstract">("webp");
+  const numericId = Number(card.id.split("-").at(-1));
+  const generatedPronounImage = card.id.startsWith("pronoun-") && numericId >= 75 && numericId <= 91;
   const src = card.img ? img(card.img) : `/word-images/${card.id}.${fallback}`;
   useEffect(() => setFallback("webp"), [card.id, card.img]);
+  if (card.cat === "pronoun" && !generatedPronounImage) return <AbstractCard card={card} />;
   if (!card.img && fallback === "abstract") return <AbstractCard card={card} />;
   return (
     <div className="w-full aspect-[4/3] rounded-3xl overflow-hidden bg-zinc-100">

@@ -996,6 +996,7 @@ function FlashcardLesson({
   const [knownIds, setKnownIds] = useState<string[]>([]);
   const [repeat, setRepeat]   = useState(0);
   const [errors, setErrors]   = useState(0);
+  const [slideOut, setSlideOut] = useState<"known" | "repeat" | null>(null);
   const t0 = useRef(Date.now());
 
   const card = deck[idx];
@@ -1020,7 +1021,7 @@ function FlashcardLesson({
   }
 
   function act(isKnown: boolean) {
-    if (!flipped) { setFlipped(true); return; }
+    if (slideOut) return;
     const nextKnownIds = isKnown ? [...knownIds, card.id] : knownIds;
     if (isKnown) {
       setKnown(k => k + 1);
@@ -1029,9 +1030,13 @@ function FlashcardLesson({
       setRepeat(r => r + 1);
       setErrors(e => e + 1);
     }
-    if (idx + 1 >= total) { finish(!isKnown, nextKnownIds); return; }
-    setFlipped(false);
-    setTimeout(() => setIdx(i => i + 1), 60);
+    setSlideOut(isKnown ? "known" : "repeat");
+    setTimeout(() => {
+      if (idx + 1 >= total) { finish(!isKnown, nextKnownIds); return; }
+      setFlipped(false);
+      setIdx(i => i + 1);
+      setSlideOut(null);
+    }, 260);
   }
 
   return (
@@ -1052,10 +1057,13 @@ function FlashcardLesson({
         {/* Card */}
         <div className="w-full min-h-[430px] max-h-[560px] h-[min(64dvh,560px)]" style={{ perspective: "1200px" }}>
           <div
-            className="relative w-full h-full cursor-pointer transition-[transform] duration-500"
+            className="relative w-full h-full cursor-pointer transition-all duration-300"
             style={{
               transformStyle: "preserve-3d",
-              transform: flipped ? "rotateY(180deg)" : "rotateY(0deg)",
+              opacity: slideOut ? 0 : 1,
+              transform: slideOut
+                ? `translateX(${slideOut === "known" ? "115%" : "-115%"}) rotate(${slideOut === "known" ? "5deg" : "-5deg"}) ${flipped ? "rotateY(180deg)" : "rotateY(0deg)"}`
+                : flipped ? "rotateY(180deg)" : "rotateY(0deg)",
             }}
             onClick={() => setFlipped(value => !value)}
           >
@@ -1080,10 +1088,10 @@ function FlashcardLesson({
 
         {/* Actions */}
         <div className="flex gap-3" style={{ paddingBottom: "calc(20px + env(safe-area-inset-bottom))" }}>
-          <Btn variant="danger" full size="lg" onClick={() => act(false)}>
+          <Btn variant="danger" full size="lg" disabled={Boolean(slideOut)} onClick={() => act(false)}>
             <RotateCcw className="w-5 h-5" /> Повторить
           </Btn>
-          <Btn variant="success" full size="lg" onClick={() => act(true)}>
+          <Btn variant="success" full size="lg" disabled={Boolean(slideOut)} onClick={() => act(true)}>
             <Check className="w-5 h-5" /> Знаю
           </Btn>
         </div>
@@ -1094,6 +1102,8 @@ function FlashcardLesson({
 
 // ─── Pairs Lesson ──────────────────────────────────────────────────────────
 type PairState = "idle" | "selected" | "correct" | "error" | "disabled";
+type PairSide = "l" | "r";
+type PairSelection = { side: PairSide; id: number } | null;
 
 function PairsLesson({
   onComplete, wordTypes, progress,
@@ -1106,7 +1116,7 @@ function PairsLesson({
   const [errors, setErrors]     = useState(0);
   const [score, setScore]       = useState(0);
   const [elapsed, setElapsed]   = useState(0);
-  const [selLeft, setSelLeft]   = useState<number | null>(null);
+  const [selection, setSelection] = useState<PairSelection>(null);
   const [states, setStates]     = useState<Record<string, PairState>>({});
   const [matched, setMatched]   = useState(0);
   const [leftArr, setLeftArr]   = useState<typeof PAIRS_WORDS>([]);
@@ -1119,7 +1129,7 @@ function PairsLesson({
     setLeftArr(shuffle(roundWords));
     setRightArr(shuffle(roundWords));
     setStates({});
-    setSelLeft(null);
+    setSelection(null);
     setMatched(0);
   }, [round]);
 
@@ -1128,33 +1138,39 @@ function PairsLesson({
     return () => clearInterval(t);
   }, []);
 
-  function gs(side: "l" | "r", id: number): PairState {
+  function gs(side: PairSide, id: number): PairState {
     return states[`${side}${id}`] ?? "idle";
   }
 
-  function clickLeft(id: number) {
-    const st = gs("l", id);
-    if (st === "disabled" || st === "correct") return;
-    setSelLeft(id);
+  function clearSelected(next: Record<string, PairState>) {
+    Object.keys(next).forEach(k => { if (next[k] === "selected") next[k] = "idle"; });
+  }
+
+  function selectOnly(side: PairSide, id: number) {
+    setSelection({ side, id });
     setStates(prev => {
       const n = { ...prev };
-      Object.keys(n).forEach(k => { if (k.startsWith("l") && n[k] === "selected") n[k] = "idle"; });
-      n[`l${id}`] = "selected";
+      clearSelected(n);
+      n[`${side}${id}`] = "selected";
       return n;
     });
   }
 
-  function clickRight(id: number) {
-    const st = gs("r", id);
-    if (st === "disabled" || st === "correct" || selLeft === null) return;
+  function clickPair(side: PairSide, id: number) {
+    const st = gs(side, id);
+    if (st === "disabled" || st === "correct") return;
+    if (!selection || selection.side === side) {
+      selectOnly(side, id);
+      return;
+    }
 
-    if (selLeft === id) {
+    if (selection.id === id) {
       // Correct
       setScore(s => s + 10);
       setStates(prev => ({ ...prev, [`l${id}`]: "correct", [`r${id}`]: "correct" }));
       const newMatched = matched + 1;
       setMatched(newMatched);
-      setSelLeft(null);
+      setSelection(null);
       setTimeout(() => {
         setStates(prev => ({ ...prev, [`l${id}`]: "disabled", [`r${id}`]: "disabled" }));
         if (newMatched >= leftArr.length) {
@@ -1177,11 +1193,11 @@ function PairsLesson({
     } else {
       // Wrong
       setErrors(e => e + 1);
-      const lId = selLeft;
-      setStates(prev => ({ ...prev, [`l${lId}`]: "error", [`r${id}`]: "error" }));
+      const first = selection;
+      setStates(prev => ({ ...prev, [`${first.side}${first.id}`]: "error", [`${side}${id}`]: "error" }));
       setTimeout(() => {
-        setStates(prev => ({ ...prev, [`l${lId}`]: "idle", [`r${id}`]: "idle" }));
-        setSelLeft(null);
+        setStates(prev => ({ ...prev, [`${first.side}${first.id}`]: "idle", [`${side}${id}`]: "idle" }));
+        setSelection(null);
       }, 700);
     }
   }
@@ -1220,10 +1236,10 @@ function PairsLesson({
             {leftArr.map(item => (
               <button
                 key={item.id}
-                onClick={() => clickLeft(item.id)}
+                onClick={() => clickPair("l", item.id)}
                 className={cn(
                   "w-full py-3 px-4 rounded-2xl border-2 text-sm font-semibold transition-all duration-200",
-                  cellStyle(gs("l", item.id), selLeft === item.id)
+                  cellStyle(gs("l", item.id), selection?.side === "l" && selection.id === item.id)
                 )}
               >
                 {item.uz}
@@ -1235,10 +1251,10 @@ function PairsLesson({
             {rightArr.map(item => (
               <button
                 key={item.id}
-                onClick={() => clickRight(item.id)}
+                onClick={() => clickPair("r", item.id)}
                 className={cn(
                   "w-full py-3 px-4 rounded-2xl border-2 text-sm font-semibold transition-all duration-200",
-                  cellStyle(gs("r", item.id), false)
+                  cellStyle(gs("r", item.id), selection?.side === "r" && selection.id === item.id)
                 )}
               >
                 {item.ru}

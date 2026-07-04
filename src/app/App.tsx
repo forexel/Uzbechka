@@ -1042,18 +1042,12 @@ function FlashcardLesson({ onComplete }: { onComplete: (r: ResultData) => void }
 
         {/* Actions */}
         <div className="flex gap-3" style={{ paddingBottom: "calc(20px + env(safe-area-inset-bottom))" }}>
-          {!flipped ? (
-            <Btn full size="lg" onClick={() => setFlipped(true)}>Показать перевод</Btn>
-          ) : (
-            <>
-              <Btn variant="danger" full size="lg" onClick={() => act(false)}>
-                <RotateCcw className="w-5 h-5" /> Повторить
-              </Btn>
-              <Btn variant="success" full size="lg" onClick={() => act(true)}>
-                <Check className="w-5 h-5" /> Знаю
-              </Btn>
-            </>
-          )}
+          <Btn variant="danger" full size="lg" onClick={() => act(false)}>
+            <RotateCcw className="w-5 h-5" /> Повторить
+          </Btn>
+          <Btn variant="success" full size="lg" onClick={() => act(true)}>
+            <Check className="w-5 h-5" /> Знаю
+          </Btn>
         </div>
       </div>
     </div>

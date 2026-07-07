@@ -8,7 +8,8 @@ import { WORDS, type Word, type WordType } from "./words";
 // ─── Types ─────────────────────────────────────────────────────────────────
 type Screen = "login" | "register" | "home" | "flashcard" | "pairs" | "tenses" | "result";
 type LessonType = "flashcard" | "pairs" | "tenses";
-type TenseMode = "present_yap" | "past_di" | "present_future";
+type TenseMode = "present_yap" | "past_di" | "present_future" | "past_gan";
+type BaseTenseMode = Exclude<TenseMode, "past_gan">;
 
 interface ResultData {
   lessonType: LessonType;
@@ -84,21 +85,21 @@ interface TensesEx {
   question?: boolean;
 }
 
-const PRONOUNS: { uz: PronounUz; ru: string; present: string; past: string; future: string }[] = [
-  { uz: "men", ru: "Я", present: "man", past: "m", future: "man" },
-  { uz: "sen", ru: "Ты", present: "san", past: "ng", future: "san" },
-  { uz: "u", ru: "Он/она", present: "ti", past: "", future: "di" },
-  { uz: "biz", ru: "Мы", present: "miz", past: "k", future: "miz" },
-  { uz: "siz", ru: "Вы", present: "siz", past: "ngiz", future: "siz" },
+const PRONOUNS: { uz: PronounUz; ru: string; present: string; past: string; future: string; gan: string; edi: string }[] = [
+  { uz: "men", ru: "Я", present: "man", past: "m", future: "man", gan: "man", edi: "edim" },
+  { uz: "sen", ru: "Ты", present: "san", past: "ng", future: "san", gan: "san", edi: "eding" },
+  { uz: "u", ru: "Он/она", present: "ti", past: "", future: "di", gan: "", edi: "edi" },
+  { uz: "biz", ru: "Мы", present: "miz", past: "k", future: "miz", gan: "miz", edi: "edik" },
+  { uz: "siz", ru: "Вы", present: "siz", past: "ngiz", future: "siz", gan: "siz", edi: "edingiz" },
 ];
 
 type RuForms = Record<PronounUz, string>;
 
 interface TenseScenario {
   stem: string;
-  uz: Record<TenseMode, string>;
+  uz: Record<BaseTenseMode, string>;
   ruObject: string;
-  verbs: Record<TenseMode, RuForms>;
+  verbs: Record<BaseTenseMode, RuForms>;
 }
 
 const RU_SUBJECT: Record<PronounUz, string> = {
@@ -109,7 +110,7 @@ const RU_SUBJECT: Record<PronounUz, string> = {
   siz: "Вы",
 };
 
-const TENSE_CUES: Record<TenseMode, { uz: string; ru: string }> = {
+const TENSE_CUES: Record<BaseTenseMode, { uz: string; ru: string }> = {
   present_yap: { uz: "hozir", ru: "сейчас" },
   past_di: { uz: "kecha", ru: "вчера" },
   present_future: { uz: "ertaga", ru: "завтра" },
@@ -298,17 +299,86 @@ const TENSE_SCENARIOS: TenseScenario[] = [
   },
 ];
 
+interface GanScenario {
+  stem: string;
+  uz: string;
+  ruObject: string;
+  experience: RuForms;
+  remotePast: RuForms;
+}
+
+const GAN_SCENARIOS: GanScenario[] = [
+  {
+    stem: "oʻqi",
+    uz: "bu kitobni oʻqi",
+    ruObject: "эту книгу",
+    experience: { men: "читал", sen: "читал", u: "читал", biz: "читали", siz: "читали" },
+    remotePast: { men: "уже читал", sen: "уже читал", u: "уже читал", biz: "уже читали", siz: "уже читали" },
+  },
+  {
+    stem: "yasha",
+    uz: "bu yerda yasha",
+    ruObject: "здесь",
+    experience: { men: "жил", sen: "жил", u: "жил", biz: "жили", siz: "жили" },
+    remotePast: { men: "уже жил", sen: "уже жил", u: "уже жил", biz: "уже жили", siz: "уже жили" },
+  },
+  {
+    stem: "ishla",
+    uz: "bu sohada ishla",
+    ruObject: "в этой сфере",
+    experience: { men: "работал", sen: "работал", u: "работал", biz: "работали", siz: "работали" },
+    remotePast: { men: "уже работал", sen: "уже работал", u: "уже работал", biz: "уже работали", siz: "уже работали" },
+  },
+  {
+    stem: "koʻr",
+    uz: "bu filmni koʻr",
+    ruObject: "этот фильм",
+    experience: { men: "видел", sen: "видел", u: "видел", biz: "видели", siz: "видели" },
+    remotePast: { men: "уже видел", sen: "уже видел", u: "уже видел", biz: "уже видели", siz: "уже видели" },
+  },
+  {
+    stem: "yeb koʻr",
+    uz: "bu taomni yeb koʻr",
+    ruObject: "это блюдо",
+    experience: { men: "пробовал", sen: "пробовал", u: "пробовал", biz: "пробовали", siz: "пробовали" },
+    remotePast: { men: "уже пробовал", sen: "уже пробовал", u: "уже пробовал", biz: "уже пробовали", siz: "уже пробовали" },
+  },
+  {
+    stem: "ek",
+    uz: "bu daraxtni ek",
+    ruObject: "это дерево",
+    experience: { men: "сажал", sen: "сажал", u: "сажал", biz: "сажали", siz: "сажали" },
+    remotePast: { men: "уже сажал", sen: "уже сажал", u: "уже сажал", biz: "уже сажали", siz: "уже сажали" },
+  },
+  {
+    stem: "eshit",
+    uz: "bu qoʻshiqni eshit",
+    ruObject: "эту песню",
+    experience: { men: "слышал", sen: "слышал", u: "слышал", biz: "слышали", siz: "слышали" },
+    remotePast: { men: "уже слышал", sen: "уже слышал", u: "уже слышал", biz: "уже слышали", siz: "уже слышали" },
+  },
+  {
+    stem: "tani",
+    uz: "bu yigitni tani",
+    ruObject: "этого парня",
+    experience: { men: "знал", sen: "знал", u: "знал", biz: "знали", siz: "знали" },
+    remotePast: { men: "уже знал", sen: "уже знал", u: "уже знал", biz: "уже знали", siz: "уже знали" },
+  },
+];
+
 function sentenceCase(text: string) {
   return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
 function makeTenseChips(correct: string[], mode: TenseMode) {
-  const extras = mode === "past_di"
-    ? ["di", "m", "ng", "ngiz", "k", "mi", "ma"]
+  const extras = mode === "past_gan"
+    ? ["gan", "ma", "man", "san", "miz", "siz", "lar", "edim", "eding", "edi", "edik", "edingiz", "edilar", "mi", "di", "m", "ng", "ngiz", "k", "yap", "a", "y"]
+    : mode === "past_di"
+      ? ["di", "m", "ng", "ngiz", "k", "mi", "ma", "man", "san", "miz", "siz", "gan", "edim"]
     : mode === "present_future"
-      ? ["a", "y", "man", "san", "di", "miz", "siz", "mi", "ma"]
-      : ["ma", "yap", "man", "san", "ti", "miz", "siz", "mi", "di"];
-  return Array.from(new Set([...correct, ...shuffle(extras).slice(0, 5)]));
+      ? ["a", "y", "man", "san", "di", "miz", "siz", "mi", "ma", "yap", "gan", "m", "ng"]
+      : ["ma", "yap", "man", "san", "ti", "miz", "siz", "mi", "di", "a", "y", "gan", "edim"];
+  return Array.from(new Set([...correct, ...shuffle(extras).slice(0, 9)]));
 }
 
 function pick<T>(items: T[], index: number) {
@@ -316,11 +386,45 @@ function pick<T>(items: T[], index: number) {
 }
 
 function buildTenseBank(size = 10000): TensesEx[] {
-  const modes: TenseMode[] = ["present_yap", "past_di", "present_future"];
+  const modes: TenseMode[] = ["present_yap", "past_di", "present_future", "past_gan"];
 
   return Array.from({ length: size }, (_, i) => {
     const mode = modes[i % modes.length];
     const pronoun = PRONOUNS[(i * 7 + 2) % PRONOUNS.length];
+    if (mode === "past_gan") {
+      const scenario = GAN_SCENARIOS[(i * 13 + Math.floor(i / modes.length)) % GAN_SCENARIOS.length];
+      const variant = i % 6;
+      const remotePast = variant >= 3;
+      const negative = variant === 1 || variant === 4;
+      const question = variant === 2 || variant === 5;
+      const cue = remotePast
+        ? pick([{ uz: "oʻshanda", ru: "тогда" }, { uz: "yoshligimda", ru: "в детстве" }, { uz: "koʻp yillar oldin", ru: "много лет назад" }], i)
+        : negative
+          ? { uz: "hech qachon", ru: "никогда" }
+          : pick([{ uz: "oldin", ru: "раньше" }, { uz: "avval", ru: "прежде" }, { uz: "qayerdadir", ru: "где-то раньше" }], i);
+      const subject = RU_SUBJECT[pronoun.uz];
+      const verb = (remotePast ? scenario.remotePast : scenario.experience)[pronoun.uz];
+      const ruCore = remotePast && negative
+        ? `${subject} ${cue.ru} еще не ${scenario.experience[pronoun.uz]} ${scenario.ruObject}`
+        : `${subject} ${cue.ru} ${negative ? "не " : ""}${verb} ${scenario.ruObject}`;
+      const correct = remotePast
+        ? [...(negative ? ["ma"] : []), "gan", pronoun.edi, ...(question ? ["mi"] : [])]
+        : [...(negative ? ["ma"] : []), "gan", ...(pronoun.gan ? [pronoun.gan] : []), ...(question ? ["mi"] : [])];
+      const wrongPronouns = shuffle(PRONOUNS.filter(p => p.uz !== pronoun.uz).map(p => p.uz)).slice(0, 3);
+
+      return {
+        tense: mode,
+        ru: `${sentenceCase(ruCore)}${question ? "?" : "."}`,
+        uz_stem: `${cue.uz} ${scenario.uz}`.replace(/\s+/g, " ").trim(),
+        pronouns: shuffle([pronoun.uz, ...wrongPronouns]),
+        correct_pronoun: pronoun.uz,
+        chips: makeTenseChips(correct, mode),
+        correct_chips: correct,
+        negative,
+        question,
+      };
+    }
+
     const scenario = TENSE_SCENARIOS[(i * 17 + Math.floor(i / modes.length)) % TENSE_SCENARIOS.length];
     const variant = i % 8;
     const negative = variant === 2 || variant === 6;
@@ -369,6 +473,7 @@ const TENSE_MODE_DEFS: { id: TenseMode; label: string; desc: string }[] = [
   { id: "present_yap", label: "Настоящее -yap", desc: "Пройдено: действие сейчас, в процессе. qilyapman" },
   { id: "past_di", label: "Прошедшее -di", desc: "Пройдено: конкретно сделал/было. qildim, yedingizmi" },
   { id: "present_future", label: "Настоящее-будущее -a/-y", desc: "Следующее: обычно делает или сделает. boraman, yechasiz" },
+  { id: "past_gan", label: "Опыт и давнопрошедшее -gan", desc: "Новая тема: ko‘rganman = видел когда-то, ko‘rgan edim = уже видел тогда" },
 ];
 
 // ─── Utils ─────────────────────────────────────────────────────────────────
@@ -625,6 +730,7 @@ function CardImage({ card }: { card: typeof FLASHCARDS[0] }) {
   const generatedPronounImage = card.id.startsWith("pronoun-") && numericId >= 75 && numericId <= 91;
   const src = card.img ? img(card.img) : `/word-images/${card.id}.${fallback}`;
   useEffect(() => setFallback("webp"), [card.id, card.img]);
+  if (card.id.startsWith("lesson-")) return <AbstractCard card={card} />;
   if (card.cat === "pronoun" && !generatedPronounImage) return <AbstractCard card={card} />;
   if (!card.img && fallback === "abstract") return <AbstractCard card={card} />;
   return (

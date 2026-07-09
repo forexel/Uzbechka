@@ -166,6 +166,14 @@ const COMMON_PHRASES: PhraseEx[] = [
   { id: "phrase-92", ru: "Сколько вам лет?", uz: "Yoshingiz nechida?", words: ["Yoshingiz", "nechida"], distractors: ["qachon", "qancha", "rahmat"] },
 ];
 
+const PHRASE_WORD_BANK = Array.from(new Set(COMMON_PHRASES.flatMap(phrase => [...phrase.words, ...phrase.distractors])));
+
+function phraseChipsFor(exercise: PhraseEx) {
+  const chips = Array.from(new Set([...exercise.words, ...exercise.distractors]));
+  const extras = shuffle(PHRASE_WORD_BANK.filter(word => !chips.includes(word)));
+  return shuffle([...chips, ...extras.slice(0, Math.max(0, 10 - chips.length))]);
+}
+
 type PronounUz = "men" | "sen" | "u" | "biz" | "siz";
 
 interface TensesEx {
@@ -1742,9 +1750,12 @@ function PhrasesLesson({ onComplete }: { onComplete: (r: ResultData) => void }) 
   const [exercises] = useState(() => shuffle(COMMON_PHRASES).slice(0, 10));
   const [idx, setIdx] = useState(0);
   const [slots, setSlots] = useState<(string | null)[]>(() => Array.from({ length: exercises[0].words.length }, () => null));
-  const [phraseChips, setPhraseChips] = useState(() => shuffle([...exercises[0].words, ...exercises[0].distractors]));
+  const [phraseChips, setPhraseChips] = useState(() => phraseChipsFor(exercises[0]));
   const [checked, setChecked] = useState(false);
+  const [passed, setPassed] = useState(false);
+  const [attempts, setAttempts] = useState(0);
   const [errors, setErrors] = useState(0);
+  const [passedCount, setPassedCount] = useState(0);
   const t0 = useRef(Date.now());
   const TOTAL = exercises.length;
   const ex = exercises[idx];
@@ -1753,8 +1764,10 @@ function PhrasesLesson({ onComplete }: { onComplete: (r: ResultData) => void }) 
 
   function reset(nextIdx: number) {
     setSlots(Array.from({ length: exercises[nextIdx].words.length }, () => null));
-    setPhraseChips(shuffle([...exercises[nextIdx].words, ...exercises[nextIdx].distractors]));
+    setPhraseChips(phraseChipsFor(exercises[nextIdx]));
     setChecked(false);
+    setPassed(false);
+    setAttempts(0);
   }
 
   function placeWord(word: string) {
@@ -1765,14 +1778,22 @@ function PhrasesLesson({ onComplete }: { onComplete: (r: ResultData) => void }) 
   }
 
   function clearSlot(index: number) {
-    if (checked) return;
+    if (passed || attempts >= 3) return;
+    if (checked && currentSlots[index] === ex.words[index]) return;
     setSlots(currentSlots.map((slot, slotIndex) => slotIndex === index ? null : slot));
+    setChecked(false);
   }
 
   function check() {
-    setChecked(true);
     const ok = JSON.stringify(currentSlots) === JSON.stringify(ex.words);
-    if (!ok) setErrors(prev => prev + 1);
+    setChecked(true);
+    if (ok) {
+      setPassed(true);
+      setPassedCount(prev => prev + 1);
+      return;
+    }
+    setAttempts(prev => prev + 1);
+    setErrors(prev => prev + 1);
   }
 
   function next() {
@@ -1782,7 +1803,7 @@ function PhrasesLesson({ onComplete }: { onComplete: (r: ResultData) => void }) 
         timeSeconds: Math.round((Date.now() - t0.current) / 1000),
         errors,
         score: score100(errors, TOTAL),
-        wordsReinforced: idx + 1,
+        wordsReinforced: passedCount,
       });
       return;
     }
@@ -1797,9 +1818,12 @@ function PhrasesLesson({ onComplete }: { onComplete: (r: ResultData) => void }) 
         onBack={() => onComplete({ lessonType: "phrases", timeSeconds: 0, errors, score: 1, wordsReinforced: idx })}
         center={<span className="text-sm font-semibold text-zinc-500">{idx + 1}/{TOTAL}</span>}
         right={
-          <span className="flex items-center gap-1 text-sm font-bold text-red-500">
-            <X className="w-3.5 h-3.5"/>{errors}
-          </span>
+          <div className="flex items-center gap-3">
+            <span className="text-sm font-semibold text-zinc-500">{attempts}/3</span>
+            <span className="flex items-center gap-1 text-sm font-bold text-red-500">
+              <X className="w-3.5 h-3.5"/>{errors}
+            </span>
+          </div>
         }
       />
       <ProgressStrip value={idx} max={TOTAL} />
@@ -1841,8 +1865,6 @@ function PhrasesLesson({ onComplete }: { onComplete: (r: ResultData) => void }) 
           <div className="flex flex-wrap gap-2">
             {phraseChips.map((word, index) => {
               const used = currentSlots.includes(word);
-              const needed = ex.words.includes(word);
-              const wrongUsed = checked && used && !needed;
               return (
                 <button
                   key={`${word}-${index}`}
@@ -1851,8 +1873,7 @@ function PhrasesLesson({ onComplete }: { onComplete: (r: ResultData) => void }) 
                   onClick={() => placeWord(word)}
                   className={cn(
                     "px-4 py-2.5 rounded-xl border-2 font-semibold text-sm transition-all",
-                    wrongUsed ? "border-red-400 bg-red-50 text-red-600"
-                    : used ? "border-zinc-100 bg-zinc-50 text-zinc-300"
+                    used ? "border-zinc-100 bg-zinc-50 text-zinc-300"
                     : "border-zinc-200 bg-white text-zinc-700 hover:border-zinc-300 hover:bg-zinc-50"
                   )}
                 >
@@ -1866,9 +1887,13 @@ function PhrasesLesson({ onComplete }: { onComplete: (r: ResultData) => void }) 
         <div className="mt-auto" style={{ paddingBottom: "calc(24px + env(safe-area-inset-bottom))" }}>
           {!checked ? (
             <Btn full size="lg" disabled={!filled} onClick={check}>Проверить</Btn>
-          ) : (
+          ) : passed || attempts >= 3 ? (
             <Btn full size="lg" onClick={next}>
               {idx + 1 >= TOTAL ? "Завершить урок" : "Следующее →"}
+            </Btn>
+          ) : (
+            <Btn full size="lg" variant="secondary" disabled>
+              Исправьте красные карточки
             </Btn>
           )}
         </div>

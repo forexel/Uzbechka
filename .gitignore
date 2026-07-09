@@ -2,3 +2,6 @@ __pycache__/
 data/
 *.sqlite3
 node_modules/
+.env
+.env.*
+!.env.example

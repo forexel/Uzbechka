@@ -2,7 +2,7 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
 import { resolve } from "node:path";
 
 const root = resolve(import.meta.dirname, "..");
-const defaultEnvPath = "/Users/d.yudin/apps/Kindlysupport_posting/.env";
+const defaultEnvPath = resolve(root, ".env");
 const envPath = process.env.OPENROUTER_ENV || defaultEnvPath;
 const outDir = resolve(root, "public/word-images");
 const limit = Number(process.env.LIMIT || "5");

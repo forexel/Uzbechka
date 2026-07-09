@@ -730,7 +730,6 @@ function CardImage({ card }: { card: typeof FLASHCARDS[0] }) {
   const generatedPronounImage = card.id.startsWith("pronoun-") && numericId >= 75 && numericId <= 91;
   const src = card.img ? img(card.img) : `/word-images/${card.id}.${fallback}`;
   useEffect(() => setFallback("webp"), [card.id, card.img]);
-  if (card.id.startsWith("lesson-")) return <AbstractCard card={card} />;
   if (card.cat === "pronoun" && !generatedPronounImage) return <AbstractCard card={card} />;
   if (!card.img && fallback === "abstract") return <AbstractCard card={card} />;
   return (

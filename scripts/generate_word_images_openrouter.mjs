@@ -11,6 +11,7 @@ const onlyMissing = process.env.OVERWRITE !== "1";
 const requestedModel = process.env.OPENROUTER_IMAGE_MODEL || "";
 const timeoutMs = Number(process.env.OPENROUTER_TIMEOUT_MS || "180000");
 const maxAttempts = Number(process.env.OPENROUTER_IMAGE_ATTEMPTS || "3");
+const onlyIds = new Set((process.env.ONLY_IDS || "").split(",").map((id) => id.trim()).filter(Boolean));
 
 function parseEnv(path) {
   const env = {};
@@ -37,9 +38,19 @@ function parseWords() {
 }
 
 function promptFor(word) {
+  const specialPrompt = {
+    "lesson-263": "Show a friendly person standing exactly here, next to a clear location pin marker on the ground, suggesting the meaning 'here / in this place'.",
+    "lesson-265": "Show a clean visual metaphor for a professional field or industry: three small work areas around one person choosing a career direction, with tools but absolutely no text.",
+    "lesson-275": "Show that something existed in the past: a warm memory scene with one clear object present and visible, like a chair in an old room, with a subtle past-time feeling.",
+    "lesson-276": "Show that something was absent in the past: an empty place where an expected object should be, with a gentle absence metaphor, no red crosses and no text.",
+    "lesson-284": "Show the idea 'such / this kind': two similar everyday objects side by side, one person pointing to one of them as an example, no text.",
+    "lesson-286": "Show 'in my youth / when I was young': a young teenager in a warm memory-like scene, with a subtle past-time feeling, no text.",
+    "lesson-287": "Show 'in childhood': a small child playing with simple toys in a warm safe room, no text.",
+  }[word.id];
   return [
     `Create an educational flashcard illustration for the concept: "${word.ru}".`,
     `Internal metadata, do not draw it: Uzbek vocabulary item is "${word.uz}".`,
+    specialPrompt ? `Specific scene: ${specialPrompt}` : "",
     "Style: clean soft 3D clay/vector illustration, warm off-white background, centered subject, friendly but not childish.",
     "Absolutely no text anywhere in the image. No labels, no captions, no words, no letters, no written numbers, no watermark, no signs with writing.",
     "The output must be a square 1:1 image. Keep the important subject centered with safe margins.",
@@ -51,7 +62,7 @@ function promptFor(word) {
         : word.type === "question"
           ? "Show a simple situation where this question word is naturally asked."
           : "Use one clear object or simple everyday scene.",
-  ].join(" ");
+  ].filter(Boolean).join(" ");
 }
 
 function extractImagePayload(raw) {
@@ -151,7 +162,9 @@ if (!apiKey) {
 
 mkdirSync(outDir, { recursive: true });
 const words = parseWords();
-const batch = words.slice(offset, Number.isFinite(limit) && limit > 0 ? offset + limit : undefined);
+const batch = words
+  .slice(offset, Number.isFinite(limit) && limit > 0 ? offset + limit : undefined)
+  .filter((word) => onlyIds.size === 0 || onlyIds.has(word.id));
 
 console.log(`Generating ${batch.length} word images using ${model}`);
 for (const word of batch) {

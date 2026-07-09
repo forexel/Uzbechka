@@ -6,8 +6,8 @@ import {
 import { WORDS, type Word, type WordType } from "./words";
 
 // ─── Types ─────────────────────────────────────────────────────────────────
-type Screen = "login" | "register" | "home" | "flashcard" | "pairs" | "tenses" | "result";
-type LessonType = "flashcard" | "pairs" | "tenses";
+type Screen = "login" | "register" | "home" | "flashcard" | "pairs" | "tenses" | "phrases" | "result";
+type LessonType = "flashcard" | "pairs" | "tenses" | "phrases";
 type TenseMode = "present_yap" | "past_di" | "present_future" | "past_gan";
 type BaseTenseMode = Exclude<TenseMode, "past_gan">;
 
@@ -71,6 +71,33 @@ const FLASHCARDS: LearningWord[] = WORDS.map((word) => ({
 
 const PAIRS_WORDS = FLASHCARDS;
 
+const COMMON_PHRASES: PhraseEx[] = [
+  { id: "phrase-1", ru: "Здравствуйте.", uz: "Assalomu alaykum.", words: ["Assalomu", "alaykum"], distractors: ["Rahmat", "xayr", "nima"] },
+  { id: "phrase-2", ru: "И вам здравствуйте.", uz: "Vaalaykum assalom.", words: ["Vaalaykum", "assalom"], distractors: ["Salom", "siz", "yaxshi"] },
+  { id: "phrase-3", ru: "Привет.", uz: "Salom.", words: ["Salom"], distractors: ["Xayr", "Rahmat", "Mayli"] },
+  { id: "phrase-4", ru: "До свидания.", uz: "Xayr.", words: ["Xayr"], distractors: ["Salom", "Iltimos", "ha"] },
+  { id: "phrase-5", ru: "До встречи.", uz: "Koʻrishguncha.", words: ["Koʻrishguncha"], distractors: ["Bugun", "Rahmat", "qayerda"] },
+  { id: "phrase-6", ru: "Спасибо.", uz: "Rahmat.", words: ["Rahmat"], distractors: ["Marhamat", "Xayr", "yoʻq"] },
+  { id: "phrase-7", ru: "Большое спасибо.", uz: "Katta rahmat.", words: ["Katta", "rahmat"], distractors: ["kichkina", "salom", "emas"] },
+  { id: "phrase-8", ru: "Пожалуйста.", uz: "Marhamat.", words: ["Marhamat"], distractors: ["Rahmat", "Uzr", "qachon"] },
+  { id: "phrase-9", ru: "Извините.", uz: "Kechirasiz.", words: ["Kechirasiz"], distractors: ["Bilasiz", "Rahmat", "men"] },
+  { id: "phrase-10", ru: "Простите.", uz: "Uzr.", words: ["Uzr"], distractors: ["Ular", "Salom", "bor"] },
+  { id: "phrase-11", ru: "Как вы?", uz: "Yaxshimisiz?", words: ["Yaxshimisiz"], distractors: ["Yaxshi", "nima", "siz"] },
+  { id: "phrase-12", ru: "Я хорошо.", uz: "Men yaxshiman.", words: ["Men", "yaxshiman"], distractors: ["siz", "yomon", "qayerda"] },
+  { id: "phrase-13", ru: "Как дела?", uz: "Ishlar qanday?", words: ["Ishlar", "qanday"], distractors: ["qachon", "rahmat", "men"] },
+  { id: "phrase-14", ru: "Дела хорошо.", uz: "Ishlar yaxshi.", words: ["Ishlar", "yaxshi"], distractors: ["yomon", "nima", "xayr"] },
+  { id: "phrase-15", ru: "Как вас зовут?", uz: "Ismingiz nima?", words: ["Ismingiz", "nima"], distractors: ["qayerda", "rahmat", "men"] },
+  { id: "phrase-16", ru: "Меня зовут Владислав.", uz: "Mening ismim Vladislav.", words: ["Mening", "ismim", "Vladislav"], distractors: ["sizning", "qanday", "xayr"] },
+  { id: "phrase-17", ru: "Рад познакомиться.", uz: "Tanishganimdan xursandman.", words: ["Tanishganimdan", "xursandman"], distractors: ["rahmat", "kecha", "bor"] },
+  { id: "phrase-18", ru: "Пожалуйста, повторите.", uz: "Iltimos, takrorlang.", words: ["Iltimos", "takrorlang"], distractors: ["Rahmat", "yozing", "xayr"] },
+  { id: "phrase-19", ru: "Да, договорились.", uz: "Ha, boʻladi.", words: ["Ha", "boʻladi"], distractors: ["yoʻq", "emas", "qachon"] },
+  { id: "phrase-20", ru: "Ладно.", uz: "Mayli.", words: ["Mayli"], distractors: ["Salom", "Rahmat", "qayerga"] },
+  { id: "phrase-21", ru: "Увидимся завтра.", uz: "Ertaga koʻrishamiz.", words: ["Ertaga", "koʻrishamiz"], distractors: ["kecha", "boramiz", "rahmat"] },
+  { id: "phrase-22", ru: "Доброе утро.", uz: "Xayrli tong.", words: ["Xayrli", "tong"], distractors: ["kech", "salom", "bugun"] },
+  { id: "phrase-23", ru: "Добрый вечер.", uz: "Xayrli kech.", words: ["Xayrli", "kech"], distractors: ["tong", "rahmat", "qayerda"] },
+  { id: "phrase-24", ru: "Спокойной ночи.", uz: "Xayrli tun.", words: ["Xayrli", "tun"], distractors: ["kun", "salom", "mayli"] },
+];
+
 type PronounUz = "men" | "sen" | "u" | "biz" | "siz";
 
 interface TensesEx {
@@ -83,6 +110,14 @@ interface TensesEx {
   correct_chips: string[];
   negative?: boolean;
   question?: boolean;
+}
+
+interface PhraseEx {
+  id: string;
+  ru: string;
+  uz: string;
+  words: string[];
+  distractors: string[];
 }
 
 const PRONOUNS: { uz: PronounUz; ru: string; present: string; past: string; future: string; gan: string; edi: string }[] = [
@@ -941,6 +976,7 @@ function HomeScreen({
     { id: "flashcard", label: "Карточки",   desc: "Узб ↔ Рус",         emoji: "🃏" },
     { id: "pairs",     label: "Пары",        desc: "Соединяй слова",    emoji: "🔗" },
     { id: "tenses",    label: "Времена",     desc: "Аффиксы глагола",   emoji: "⏱" },
+    { id: "phrases",   label: "Фразы",       desc: "Собери порядок",    emoji: "💬" },
   ];
 
   return (
@@ -981,7 +1017,7 @@ function HomeScreen({
         {/* Method */}
         <section>
           <h2 className="text-xs font-bold text-zinc-400 uppercase tracking-widest mb-3">Методика</h2>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             {methods.map(m => (
               <button
                 key={m.id}
@@ -1033,6 +1069,19 @@ function HomeScreen({
                   </button>
                 );
               })}
+            </div>
+          </section>
+        ) : method === "phrases" ? (
+          <section>
+            <h2 className="text-xs font-bold text-zinc-400 uppercase tracking-widest mb-3">Что учить</h2>
+            <div className="bg-white rounded-2xl p-4 border border-zinc-100 shadow-sm">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <div className="text-sm font-bold text-zinc-800">Общие фразы</div>
+                  <p className="text-xs text-zinc-400 mt-1 leading-tight">Приветствия, прощания, благодарность и короткие бытовые реплики.</p>
+                </div>
+                <span className="text-xs text-zinc-400 font-mono flex-shrink-0">{COMMON_PHRASES.length}</span>
+              </div>
             </div>
           </section>
         ) : (
@@ -1620,10 +1669,150 @@ function TensesLesson({ onComplete, modes }: { onComplete: (r: ResultData) => vo
   );
 }
 
+// ─── Common Phrases Lesson ─────────────────────────────────────────────────
+function PhrasesLesson({ onComplete }: { onComplete: (r: ResultData) => void }) {
+  const [exercises] = useState(() => shuffle(COMMON_PHRASES).slice(0, 10));
+  const [idx, setIdx] = useState(0);
+  const [slots, setSlots] = useState<(string | null)[]>(() => Array.from({ length: exercises[0].words.length }, () => null));
+  const [phraseChips, setPhraseChips] = useState(() => shuffle([...exercises[0].words, ...exercises[0].distractors]));
+  const [checked, setChecked] = useState(false);
+  const [errors, setErrors] = useState(0);
+  const t0 = useRef(Date.now());
+  const TOTAL = exercises.length;
+  const ex = exercises[idx];
+  const currentSlots = slots.length === ex.words.length ? slots : Array.from({ length: ex.words.length }, () => null);
+  const filled = currentSlots.every(Boolean);
+
+  function reset(nextIdx: number) {
+    setSlots(Array.from({ length: exercises[nextIdx].words.length }, () => null));
+    setPhraseChips(shuffle([...exercises[nextIdx].words, ...exercises[nextIdx].distractors]));
+    setChecked(false);
+  }
+
+  function placeWord(word: string) {
+    if (checked || currentSlots.includes(word)) return;
+    const emptyIndex = currentSlots.findIndex(slot => !slot);
+    if (emptyIndex < 0) return;
+    setSlots(currentSlots.map((slot, index) => index === emptyIndex ? word : slot));
+  }
+
+  function clearSlot(index: number) {
+    if (checked) return;
+    setSlots(currentSlots.map((slot, slotIndex) => slotIndex === index ? null : slot));
+  }
+
+  function check() {
+    setChecked(true);
+    const ok = JSON.stringify(currentSlots) === JSON.stringify(ex.words);
+    if (!ok) setErrors(prev => prev + 1);
+  }
+
+  function next() {
+    if (idx + 1 >= TOTAL) {
+      onComplete({
+        lessonType: "phrases",
+        timeSeconds: Math.round((Date.now() - t0.current) / 1000),
+        errors,
+        score: score100(errors, TOTAL),
+        wordsReinforced: idx + 1,
+      });
+      return;
+    }
+    const nextIdx = idx + 1;
+    setIdx(nextIdx);
+    reset(nextIdx);
+  }
+
+  return (
+    <div className="min-h-[100dvh] bg-[#F7F6F1] flex flex-col">
+      <LessonTopBar
+        onBack={() => onComplete({ lessonType: "phrases", timeSeconds: 0, errors, score: 1, wordsReinforced: idx })}
+        center={<span className="text-sm font-semibold text-zinc-500">{idx + 1}/{TOTAL}</span>}
+        right={
+          <span className="flex items-center gap-1 text-sm font-bold text-red-500">
+            <X className="w-3.5 h-3.5"/>{errors}
+          </span>
+        }
+      />
+      <ProgressStrip value={idx} max={TOTAL} />
+
+      <div className="flex-1 flex flex-col max-w-lg mx-auto w-full px-5 py-6 gap-5">
+        <div className="bg-white rounded-2xl p-5 border border-zinc-100 shadow-sm">
+          <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-2">По-русски</p>
+          <p className="text-xl font-bold text-zinc-900">{ex.ru}</p>
+        </div>
+
+        <div className="bg-white rounded-2xl p-5 border border-zinc-100 shadow-sm">
+          <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-3">Собери фразу по-узбекски</p>
+          <div className="flex flex-wrap gap-2">
+            {currentSlots.map((word, slotIndex) => {
+              const ok = checked && word === ex.words[slotIndex];
+              const bad = checked && word !== ex.words[slotIndex];
+              return (
+                <button
+                  key={slotIndex}
+                  type="button"
+                  onClick={() => clearSlot(slotIndex)}
+                  className={cn(
+                    "min-h-[44px] min-w-[92px] px-4 py-2 rounded-xl border-2 font-bold text-sm transition-all",
+                    !word ? "border-dashed border-zinc-300 text-zinc-400 bg-white"
+                    : ok ? "border-emerald-400 bg-emerald-50 text-emerald-700"
+                    : bad ? "border-red-400 bg-red-50 text-red-600"
+                    : "border-amber-400 bg-amber-50 text-amber-800"
+                  )}
+                >
+                  {word ?? "___"}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div>
+          <p className="text-xs font-bold text-zinc-400 mb-2">Слова</p>
+          <div className="flex flex-wrap gap-2">
+            {phraseChips.map((word, index) => {
+              const used = currentSlots.includes(word);
+              const needed = ex.words.includes(word);
+              const wrongUsed = checked && used && !needed;
+              return (
+                <button
+                  key={`${word}-${index}`}
+                  type="button"
+                  disabled={used || checked}
+                  onClick={() => placeWord(word)}
+                  className={cn(
+                    "px-4 py-2.5 rounded-xl border-2 font-semibold text-sm transition-all",
+                    wrongUsed ? "border-red-400 bg-red-50 text-red-600"
+                    : used ? "border-zinc-100 bg-zinc-50 text-zinc-300"
+                    : "border-zinc-200 bg-white text-zinc-700 hover:border-zinc-300 hover:bg-zinc-50"
+                  )}
+                >
+                  {word}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="mt-auto" style={{ paddingBottom: "calc(24px + env(safe-area-inset-bottom))" }}>
+          {!checked ? (
+            <Btn full size="lg" disabled={!filled} onClick={check}>Проверить</Btn>
+          ) : (
+            <Btn full size="lg" onClick={next}>
+              {idx + 1 >= TOTAL ? "Завершить урок" : "Следующее →"}
+            </Btn>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Result ────────────────────────────────────────────────────────────────
 function ResultScreen({ result, onAgain, onHome }: { result: ResultData; onAgain: () => void; onHome: () => void }) {
   const isBest = result.score >= 90;
-  const names: Record<LessonType, string> = { flashcard: "Карточки", pairs: "Пары", tenses: "Времена" };
+  const names: Record<LessonType, string> = { flashcard: "Карточки", pairs: "Пары", tenses: "Времена", phrases: "Фразы" };
 
   return (
     <div className="min-h-[100dvh] bg-[#F7F6F1] flex flex-col items-center justify-center px-5 py-10">
@@ -1734,6 +1923,7 @@ export default function App() {
   if (screen === "flashcard") return <FlashcardLesson onComplete={finish} wordTypes={selectedWordTypes} progress={progress} />;
   if (screen === "pairs")    return <PairsLesson    onComplete={finish} wordTypes={selectedWordTypes} progress={progress} />;
   if (screen === "tenses")   return <TensesLesson   onComplete={finish} modes={selectedTenseModes} />;
+  if (screen === "phrases")  return <PhrasesLesson  onComplete={finish} />;
   if (screen === "result" && result)
     return <ResultScreen result={result} onAgain={() => setScreen(lessonType)} onHome={() => setScreen("home")} />;
   return null;

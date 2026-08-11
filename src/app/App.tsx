@@ -164,6 +164,18 @@ const COMMON_PHRASES: PhraseEx[] = [
   { id: "phrase-90", ru: "Куда вы идете?", uz: "Qayerga ketyapsiz?", words: ["Qayerga", "ketyapsiz"], distractors: ["qayerda", "kelayapsiz", "rahmat"] },
   { id: "phrase-91", ru: "Где вы живете?", uz: "Qayerda yashaysiz?", words: ["Qayerda", "yashaysiz"], distractors: ["qayerga", "ishlaysiz", "rahmat"] },
   { id: "phrase-92", ru: "Сколько вам лет?", uz: "Yoshingiz nechida?", words: ["Yoshingiz", "nechida"], distractors: ["qachon", "qancha", "rahmat"] },
+  { id: "phrase-93", ru: "Что это?", uz: "Bu nima?", words: ["Bu", "nima"], distractors: ["qachon", "qayerda", "rahmat"] },
+  { id: "phrase-94", ru: "Я сейчас провожу урок.", uz: "Men hozir dars o‘tyapman.", words: ["Men", "hozir", "dars", "o‘tyapman"], distractors: ["kecha", "ish", "uxladim"] },
+  { id: "phrase-95", ru: "Будем больше говорить по-узбекски.", uz: "Ko‘proq o‘zbekcha gapiramiz.", words: ["Ko‘proq", "o‘zbekcha", "gapiramiz"], distractors: ["ruscha", "kamroq", "yozamiz"] },
+  { id: "phrase-96", ru: "Сколько часов Вы спали вчера?", uz: "Kecha necha soat uxladingiz?", words: ["Kecha", "necha", "soat", "uxladingiz"], distractors: ["qachon", "ishdan", "keldingiz"] },
+  { id: "phrase-97", ru: "Я вчера спал семь часов.", uz: "Men kecha yetti soat uxladim.", words: ["Men", "kecha", "yetti", "soat", "uxladim"], distractors: ["sakkiz", "bugun", "ketdim"] },
+  { id: "phrase-98", ru: "Во сколько?", uz: "Soat nechada?", words: ["Soat", "nechada"], distractors: ["qachon", "qayerda", "kecha"] },
+  { id: "phrase-99", ru: "В девять часов.", uz: "Soat to‘qqizda.", words: ["Soat", "to‘qqizda"], distractors: ["yettida", "nechada", "kecha"] },
+  { id: "phrase-100", ru: "Когда Вы ушли с работы?", uz: "Siz ishdan qachon ketdingiz?", words: ["Siz", "ishdan", "qachon", "ketdingiz"], distractors: ["ishga", "keldingiz", "hozir"] },
+  { id: "phrase-101", ru: "Я ушёл с работы в семь часов.", uz: "Men ishdan soat yettida ketdim.", words: ["Men", "ishdan", "soat", "yettida", "ketdim"], distractors: ["to‘qqizda", "keldim", "ishga"] },
+  { id: "phrase-102", ru: "Что Вы сейчас делаете?", uz: "Siz hozir nima qilyapsiz?", words: ["Siz", "hozir", "nima", "qilyapsiz"], distractors: ["kecha", "qachon", "uxladingiz"] },
+  { id: "phrase-103", ru: "Вы любите плов?", uz: "Siz oshni yaxshi ko‘rasizmi?", words: ["Siz", "oshni", "yaxshi", "ko‘rasizmi"], distractors: ["ichasizmi", "yomon", "rahmat"] },
+  { id: "phrase-104", ru: "Я спал восемь часов.", uz: "Men sakkiz soat uxladim.", words: ["Men", "sakkiz", "soat", "uxladim"], distractors: ["yetti", "kecha", "ketdim"] },
 ];
 
 const PHRASE_WORD_BANK = Array.from(new Set(COMMON_PHRASES.flatMap(phrase => [...phrase.words, ...phrase.distractors])));

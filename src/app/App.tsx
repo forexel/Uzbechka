@@ -11,8 +11,11 @@ type LessonType = "flashcard" | "pairs" | "tenses" | "phrases";
 type TenseMode = "present_yap" | "past_di" | "present_future" | "past_gan";
 type BaseTenseMode = Exclude<TenseMode, "past_gan">;
 type WordGroupId =
-  | "noun_a1"
-  | "noun_a2"
+  | "noun_core"
+  | "noun_people_home"
+  | "noun_food_body"
+  | "noun_city_work"
+  | "noun_abstract"
   | "verb_basic"
   | "verb_daily"
   | "verb_complex"
@@ -633,14 +636,25 @@ const NUMBER_ORDINAL = uzSet([
   "yettinchi", "sakkizinchi", "toʻqqizinchi", "oʻninchi",
 ]);
 
-const NOUN_A1 = uzSet([
-  "odam", "kishi", "uy", "xona", "koʻcha", "bank", "yordam", "ish", "ofis", "institut",
-  "maktab", "kitob", "hujjat", "pul", "kun", "hafta", "oy", "yil", "soat", "daqiqa",
-  "soniya", "oila", "ota", "ona", "aka", "uka", "opa", "singil", "bola", "erkak", "ayol",
-  "doʻst", "ism", "til", "shahar", "mamlakat", "doʻkon", "bozor", "mehmonxona", "bekat",
-  "aeroport", "suv", "sut", "olma", "meva", "sabzavot", "tuxum", "guruch", "shoʻrva",
-  "tuz", "shakar", "bosh", "qoʻl", "oyoq", "koʻz", "quloq", "ogʻiz", "choy", "non",
-  "ovqat", "taom", "goʻsht", "oshxona", "dorixona", "qoʻshiq", "film", "oʻyin", "daraxt",
+const NOUN_CORE = uzSet(["odam", "kishi", "uy", "ish", "pul", "kun", "soat", "suv", "choy", "non", "kitob", "hujjat"]);
+const NOUN_PEOPLE_HOME = uzSet([
+  "oila", "ota", "ona", "aka", "uka", "opa", "singil", "bola", "erkak", "ayol", "doʻst",
+  "ism", "xona", "stol", "stul", "devor", "narsa", "qoʻshni",
+]);
+const NOUN_FOOD_BODY = uzSet([
+  "ovqat", "taom", "goʻsht", "mol goʻshti", "suv", "sut", "olma", "meva", "sabzavot",
+  "tuxum", "guruch", "shoʻrva", "tuz", "shakar", "qahva", "choy", "non", "bosh", "qoʻl",
+  "oyoq", "koʻz", "quloq", "ogʻiz",
+]);
+const NOUN_CITY_WORK = uzSet([
+  "koʻcha", "bank", "ofis", "institut", "maktab", "shahar", "mamlakat", "doʻkon", "bozor",
+  "mehmonxona", "bekat", "aeroport", "kafe", "mashina", "kompyuter", "rahbar", "boshliq",
+  "ishchi", "xodim", "ishxona", "oshxona", "dorixona", "tez yordam", "yigʻilish", "buyurtma",
+]);
+const NOUN_ABSTRACT = uzSet([
+  "yordam", "foyda", "sayohat", "masala", "reja", "komanda", "maosh", "oylik", "sotuv",
+  "qoʻngʻiroq", "til", "bogʻ", "yoʻl", "daraxt", "qoʻshiq", "film", "oʻyin", "soha",
+  "yoʻnalish", "yillarim", "taʼtil", "holat", "resurs", "hisob", "maqsad",
 ]);
 const VERB_BASIC = uzSet([
   "kirmoq", "chiqmoq", "kelmoq", "bormoq", "ketmoq", "qaytmoq", "olmoq", "bermoq",
@@ -675,8 +689,11 @@ const OTHER_SERVICE = uzSet([
 ]);
 
 const WORD_GROUP_DEFS: { id: WordGroupId; category: WordType; label: string; desc: string; fallback?: boolean; match: (word: Word) => boolean }[] = [
-  { id: "noun_a1", category: "noun", label: "A1: базовые", desc: "Дом, работа, еда, семья, город", match: word => NOUN_A1.has(normalizeUz(word.uz)) },
-  { id: "noun_a2", category: "noun", label: "A2: расширение", desc: "Рабочие, учебные и абстрактные слова", fallback: true, match: word => !NOUN_A1.has(normalizeUz(word.uz)) },
+  { id: "noun_core", category: "noun", label: "Супер простые", desc: "12 самых частых и наглядных слов", match: word => NOUN_CORE.has(normalizeUz(word.uz)) },
+  { id: "noun_people_home", category: "noun", label: "Люди и дом", desc: "Семья, комната, простые предметы", match: word => NOUN_PEOPLE_HOME.has(normalizeUz(word.uz)) },
+  { id: "noun_food_body", category: "noun", label: "Еда и тело", desc: "Еда, напитки, части тела", match: word => NOUN_FOOD_BODY.has(normalizeUz(word.uz)) },
+  { id: "noun_city_work", category: "noun", label: "Город и работа", desc: "Места, транспорт, офис, люди на работе", match: word => NOUN_CITY_WORK.has(normalizeUz(word.uz)) },
+  { id: "noun_abstract", category: "noun", label: "Сложнее", desc: "Учебные, рабочие и абстрактные слова", fallback: true, match: word => !NOUN_CORE.has(normalizeUz(word.uz)) && !NOUN_PEOPLE_HOME.has(normalizeUz(word.uz)) && !NOUN_FOOD_BODY.has(normalizeUz(word.uz)) && !NOUN_CITY_WORK.has(normalizeUz(word.uz)) },
   { id: "pronoun_basic", category: "pronoun", label: "Базовые", desc: "Я, ты, он/она, мы, вы, они", match: word => PRONOUN_BASIC.has(normalizeUz(word.uz)) },
   { id: "pronoun_cases", category: "pronoun", label: "Падежи", desc: "Мне, меня, у меня, мой, от меня", fallback: true, match: word => !PRONOUN_BASIC.has(normalizeUz(word.uz)) },
   { id: "verb_basic", category: "verb", label: "Легкие", desc: "Частые действия на каждый день", match: word => VERB_BASIC.has(normalizeUz(word.uz)) },
@@ -1164,7 +1181,7 @@ function HomeScreen({
 }) {
   const [method, setMethod]   = useState<LessonType>("flashcard");
   const [cats, setCats]       = useState(new Set<WordType>(["noun"]));
-  const [wordGroups, setWordGroups] = useState(new Set<WordGroupId>(["noun_a1"]));
+  const [wordGroups, setWordGroups] = useState(new Set<WordGroupId>(["noun_core"]));
   const [tenseModes, setTenseModes] = useState(new Set<TenseMode>(["present_yap"]));
   const results = progressResults(progress);
   const known = knownWordIds(progress);
@@ -2159,7 +2176,7 @@ export default function App() {
   const [lessonType, setLessonType] = useState<LessonType>("flashcard");
   const [selectedTenseModes, setSelectedTenseModes] = useState<TenseMode[]>(["present_yap"]);
   const [selectedWordTypes, setSelectedWordTypes] = useState<WordType[]>(["noun"]);
-  const [selectedWordGroups, setSelectedWordGroups] = useState<WordGroupId[]>(["noun_a1"]);
+  const [selectedWordGroups, setSelectedWordGroups] = useState<WordGroupId[]>(["noun_core"]);
   const [result, setResult]         = useState<ResultData | null>(null);
   const [token, setToken]           = useState(() => localStorage.getItem("uzbek-trainer-token") || "");
   const [username, setUsername]     = useState(() => localStorage.getItem("uzbek-trainer-username") || "");

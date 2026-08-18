@@ -10,6 +10,23 @@ type Screen = "login" | "register" | "home" | "flashcard" | "pairs" | "tenses" |
 type LessonType = "flashcard" | "pairs" | "tenses" | "phrases";
 type TenseMode = "present_yap" | "past_di" | "present_future" | "past_gan";
 type BaseTenseMode = Exclude<TenseMode, "past_gan">;
+type WordGroupId =
+  | "noun_a1"
+  | "noun_a2"
+  | "verb_basic"
+  | "verb_daily"
+  | "verb_complex"
+  | "pronoun_basic"
+  | "pronoun_cases"
+  | "number_1_10"
+  | "number_large"
+  | "number_time"
+  | "number_ordinal"
+  | "question_basic"
+  | "question_cases"
+  | "other_time"
+  | "other_descriptive"
+  | "other_service";
 
 interface ResultData {
   lessonType: LessonType;
@@ -592,6 +609,90 @@ const CATEGORY_DEFS: { id: WordType; label: string }[] = [
   { id: "other", label: "Другое" },
 ];
 
+const normalizeUz = (value: string) => value
+  .toLowerCase()
+  .replace(/[ʻ‘’`']/g, "'")
+  .replace(/\s+/g, " ")
+  .trim();
+
+function uzSet(items: string[]) {
+  return new Set(items.map(normalizeUz));
+}
+
+const PRONOUN_BASIC = uzSet(["men", "sen", "u", "biz", "siz", "ular"]);
+const NUMBER_SIMPLE = uzSet(["nol", "bir", "ikki", "uch", "toʻrt", "besh", "olti", "yetti", "sakkiz", "toʻqqiz", "oʻn"]);
+const NUMBER_LARGE = uzSet(["yigirma", "oʻttiz", "qirq", "ellik", "oltmish", "yetmish", "sakson", "toʻqson", "yuz", "ming", "million"]);
+const NUMBER_TIME = uzSet([
+  "sakkiz soat", "yetti soat", "soat nechada", "soat toʻqqizda", "uch kun", "ikki oy", "bir yil",
+  "uch soat", "soat uch", "ikki yildan keyin", "uch kundan keyin", "ikki oydan keyin",
+  "bir haftadan keyin", "uch marta", "uch ming soʻm", "besh yuz ming soʻm", "bir million soʻm",
+  "oʻn sakkiz yildan keyin",
+]);
+const NUMBER_ORDINAL = uzSet([
+  "birinchi", "ikkinchi", "uchinchi", "toʻrtinchi", "beshinchi", "oltinchi",
+  "yettinchi", "sakkizinchi", "toʻqqizinchi", "oʻninchi",
+]);
+
+const NOUN_A1 = uzSet([
+  "odam", "kishi", "uy", "xona", "koʻcha", "bank", "yordam", "ish", "ofis", "institut",
+  "maktab", "kitob", "hujjat", "pul", "kun", "hafta", "oy", "yil", "soat", "daqiqa",
+  "soniya", "oila", "ota", "ona", "aka", "uka", "opa", "singil", "bola", "erkak", "ayol",
+  "doʻst", "ism", "til", "shahar", "mamlakat", "doʻkon", "bozor", "mehmonxona", "bekat",
+  "aeroport", "suv", "sut", "olma", "meva", "sabzavot", "tuxum", "guruch", "shoʻrva",
+  "tuz", "shakar", "bosh", "qoʻl", "oyoq", "koʻz", "quloq", "ogʻiz", "choy", "non",
+  "ovqat", "taom", "goʻsht", "oshxona", "dorixona", "qoʻshiq", "film", "oʻyin", "daraxt",
+]);
+const VERB_BASIC = uzSet([
+  "kirmoq", "chiqmoq", "kelmoq", "bormoq", "ketmoq", "qaytmoq", "olmoq", "bermoq",
+  "ichmoq", "yemoq", "uxlamoq", "ishlamoq", "yashamoq", "oʻqimoq", "yozmoq", "qilmoq",
+  "gapirmoq", "aytmoq", "bilmoq", "tushunmoq",
+]);
+const VERB_DAILY = uzSet([
+  "kutmoq", "koʻrmoq", "qaramoq", "soʻramoq", "yordam bermoq", "tayyorlamoq", "pishmoq",
+  "pishirmoq", "sevmoq", "yaxshi ko'rmoq", "tinglamoq", "ochmoq", "yopmoq", "oʻtirmoq",
+  "sanamoq", "saqlamoq", "tanlamoq", "uchrashmoq",
+]);
+const QUESTION_BASIC = uzSet(["nima", "kim", "qachon", "qayerda", "qayerga", "qayerdan", "qanday", "qancha", "necha", "nechta", "nega"]);
+const QUESTION_CASES = uzSet(["nimani", "kimni", "nimaga"]);
+const OTHER_TIME = uzSet([
+  "bugun", "bugungi", "kecha", "ertaga", "hozir", "hozirgina", "ertalab", "kunduzi",
+  "kechqurun", "kechasi", "tun", "oldin", "avval", "koʻp yillar oldin", "oʻshanda",
+  "har doim", "hech qachon", "keyingi", "boshida", "dushanba", "seshanba", "chorshanba",
+  "payshanba", "juma", "shanba", "yakshanba",
+]);
+const OTHER_DESCRIPTIVE = uzSet([
+  "katta", "kichkina", "kichik", "yaxshi", "yomon", "qiziq", "qiziqarli", "uzoq", "oz",
+  "kam", "koʻp", "koʻproq", "mazali", "mazali emas", "qimmat", "arzon", "ajoyib", "qiyin",
+  "oson", "zerikarli", "tinch", "zoʻr", "bunday", "islomiy", "anʼanaviy", "chiroyli",
+  "issiq", "sovuq", "tez", "sekin", "oq", "qora", "qizil", "koʻk", "yashil", "sariq",
+  "yangi", "eski",
+]);
+const OTHER_SERVICE = uzSet([
+  "ha", "yoʻq", "bor", "emas", "bor edi", "yoʻq edi", "va", "iltimos", "uzr", "xayr",
+  "uchun", "haqida", "marta", "ta", "dona", "boshqa", "keyin", "dan", "gacha", "foiz",
+  "yarim", "chorak", "oʻzbekcha", "bu yerda", "u yerda", "men bilan", "darsdan keyin",
+  "darsdan oldin", "oʻtgan hafta", "har kuni", "yoshligimda", "bolaligimda",
+]);
+
+const WORD_GROUP_DEFS: { id: WordGroupId; category: WordType; label: string; desc: string; fallback?: boolean; match: (word: Word) => boolean }[] = [
+  { id: "noun_a1", category: "noun", label: "A1: базовые", desc: "Дом, работа, еда, семья, город", match: word => NOUN_A1.has(normalizeUz(word.uz)) },
+  { id: "noun_a2", category: "noun", label: "A2: расширение", desc: "Рабочие, учебные и абстрактные слова", fallback: true, match: word => !NOUN_A1.has(normalizeUz(word.uz)) },
+  { id: "pronoun_basic", category: "pronoun", label: "Базовые", desc: "Я, ты, он/она, мы, вы, они", match: word => PRONOUN_BASIC.has(normalizeUz(word.uz)) },
+  { id: "pronoun_cases", category: "pronoun", label: "Падежи", desc: "Мне, меня, у меня, мой, от меня", fallback: true, match: word => !PRONOUN_BASIC.has(normalizeUz(word.uz)) },
+  { id: "verb_basic", category: "verb", label: "Легкие", desc: "Частые действия на каждый день", match: word => VERB_BASIC.has(normalizeUz(word.uz)) },
+  { id: "verb_daily", category: "verb", label: "Обычные", desc: "Учеба, работа, просьбы, быт", match: word => VERB_DAILY.has(normalizeUz(word.uz)) },
+  { id: "verb_complex", category: "verb", label: "Сложные", desc: "Составные и менее частотные глаголы", fallback: true, match: word => !VERB_BASIC.has(normalizeUz(word.uz)) && !VERB_DAILY.has(normalizeUz(word.uz)) },
+  { id: "number_1_10", category: "number", label: "1-10", desc: "Первые числа без перегруза", match: word => NUMBER_SIMPLE.has(normalizeUz(word.uz)) },
+  { id: "number_large", category: "number", label: "До миллиона", desc: "Десятки, сто, тысяча, миллион", match: word => NUMBER_LARGE.has(normalizeUz(word.uz)) },
+  { id: "number_time", category: "number", label: "Время и счет", desc: "Часы, дни, суммы, разы", match: word => NUMBER_TIME.has(normalizeUz(word.uz)) },
+  { id: "number_ordinal", category: "number", label: "Порядковые", desc: "Первый, второй, третий...", match: word => NUMBER_ORDINAL.has(normalizeUz(word.uz)) },
+  { id: "question_basic", category: "question", label: "Базовые", desc: "Что, кто, где, куда, когда", match: word => QUESTION_BASIC.has(normalizeUz(word.uz)) },
+  { id: "question_cases", category: "question", label: "Падежные", desc: "Кого, что, чему/зачем", fallback: true, match: word => QUESTION_CASES.has(normalizeUz(word.uz)) || !QUESTION_BASIC.has(normalizeUz(word.uz)) },
+  { id: "other_time", category: "other", label: "Время", desc: "Сегодня, завтра, дни недели", match: word => OTHER_TIME.has(normalizeUz(word.uz)) },
+  { id: "other_descriptive", category: "other", label: "Описания", desc: "Хороший, сложно, дорого, цвета", match: word => OTHER_DESCRIPTIVE.has(normalizeUz(word.uz)) },
+  { id: "other_service", category: "other", label: "Служебные", desc: "Да/нет, после, до, частицы, фразы", fallback: true, match: word => OTHER_SERVICE.has(normalizeUz(word.uz)) || (!OTHER_TIME.has(normalizeUz(word.uz)) && !OTHER_DESCRIPTIVE.has(normalizeUz(word.uz))) },
+];
+
 const TENSE_MODE_DEFS: { id: TenseMode; label: string; desc: string }[] = [
   { id: "present_yap", label: "Настоящее -yap", desc: "Пройдено: действие сейчас, в процессе. qilyapman" },
   { id: "past_di", label: "Прошедшее -di", desc: "Пройдено: конкретно сделал/было. qildim, yedingizmi" },
@@ -647,13 +748,38 @@ function categoryRows(progress: Record<string, unknown>) {
   });
 }
 
-function wordsForTypes(types: WordType[]) {
-  const allowed = new Set(types.length ? types : ["noun"]);
-  return FLASHCARDS.filter((word) => allowed.has(word.type));
+function groupsForCategory(category: WordType) {
+  return WORD_GROUP_DEFS.filter((group) => group.category === category);
 }
 
-function lessonWords(types: WordType[], progress: Record<string, unknown>, count: number) {
-  const selected = wordsForTypes(types);
+function defaultGroupFor(category: WordType): WordGroupId | undefined {
+  return groupsForCategory(category)[0]?.id;
+}
+
+function groupRows(progress: Record<string, unknown>, category: WordType) {
+  const known = knownWordIds(progress);
+  return groupsForCategory(category).map((group) => {
+    const words = WORDS.filter((word) => word.type === group.category && group.match(word));
+    return {
+      ...group,
+      learned: words.filter((word) => known.has(word.id)).length,
+      total: words.length,
+    };
+  }).filter((group) => group.total > 0);
+}
+
+function wordsForTypes(types: WordType[], groups: WordGroupId[] = []) {
+  const allowed = new Set(types.length ? types : ["noun"]);
+  const activeGroups = WORD_GROUP_DEFS.filter((group) => groups.includes(group.id));
+  if (!activeGroups.length) return FLASHCARDS.filter((word) => allowed.has(word.type));
+  return FLASHCARDS.filter((word) =>
+    allowed.has(word.type) &&
+    activeGroups.some((group) => group.category === word.type && group.match(word))
+  );
+}
+
+function lessonWords(types: WordType[], progress: Record<string, unknown>, count: number, groups: WordGroupId[] = []) {
+  const selected = wordsForTypes(types, groups);
   const known = knownWordIds(progress);
   const newWords = shuffle(selected.filter((word) => !known.has(word.id)));
   const repeatWords = shuffle(selected.filter((word) => known.has(word.id)));
@@ -1032,12 +1158,13 @@ function RegisterScreen({ onRegister, onGo }: { onRegister: (payload: AuthPayloa
 function HomeScreen({
   onStart, username, progress,
 }: {
-  onStart: (t: LessonType, tenseModes?: TenseMode[], wordTypes?: WordType[]) => void;
+  onStart: (t: LessonType, tenseModes?: TenseMode[], wordTypes?: WordType[], wordGroups?: WordGroupId[]) => void;
   username: string;
   progress: Record<string, unknown>;
 }) {
   const [method, setMethod]   = useState<LessonType>("flashcard");
   const [cats, setCats]       = useState(new Set<WordType>(["noun"]));
+  const [wordGroups, setWordGroups] = useState(new Set<WordGroupId>(["noun_a1"]));
   const [tenseModes, setTenseModes] = useState(new Set<TenseMode>(["present_yap"]));
   const results = progressResults(progress);
   const known = knownWordIds(progress);
@@ -1047,12 +1174,44 @@ function HomeScreen({
     : "0";
   const categories = categoryRows(progress);
 
+  const selectedWordCount = wordsForTypes(Array.from(cats), Array.from(wordGroups)).length;
+
   const toggle = (id: WordType) =>
     setCats(prev => {
       const n = new Set(prev);
-      if (n.has(id)) { if (n.size > 1) n.delete(id); } else n.add(id);
+      if (n.has(id)) {
+        if (n.size > 1) {
+          n.delete(id);
+          setWordGroups(groupPrev => {
+            const nextGroups = new Set(groupPrev);
+            groupsForCategory(id).forEach(group => nextGroups.delete(group.id));
+            return nextGroups;
+          });
+        }
+      } else {
+        n.add(id);
+        const defaultGroup = defaultGroupFor(id);
+        if (defaultGroup) {
+          setWordGroups(groupPrev => new Set([...groupPrev, defaultGroup]));
+        }
+      }
       return n;
     });
+  const toggleGroup = (groupId: WordGroupId) => {
+    const group = WORD_GROUP_DEFS.find(item => item.id === groupId);
+    if (!group) return;
+    setCats(prev => new Set([...prev, group.category]));
+    setWordGroups(prev => {
+      const next = new Set(prev);
+      if (next.has(groupId)) {
+        const siblingSelected = groupsForCategory(group.category).some(item => item.id !== groupId && next.has(item.id));
+        if (siblingSelected) next.delete(groupId);
+      } else {
+        next.add(groupId);
+      }
+      return next;
+    });
+  };
   const toggleTense = (id: TenseMode) =>
     setTenseModes(prev => {
       const n = new Set(prev);
@@ -1179,28 +1338,55 @@ function HomeScreen({
               {categories.map(cat => {
                 const sel = cats.has(cat.id);
                 return (
-                  <button
-                    key={cat.id}
-                    onClick={() => toggle(cat.id)}
-                    className={cn(
-                      "flex items-center gap-4 p-4 rounded-2xl border-2 bg-white transition-all text-left",
-                      sel ? "border-emerald-400 bg-emerald-50/60" : "border-zinc-100 hover:border-zinc-200"
-                    )}
-                  >
-                    <div className={cn(
-                      "w-5 h-5 rounded-md border-2 flex items-center justify-center flex-shrink-0 transition-all",
-                      sel ? "bg-emerald-600 border-emerald-600" : "border-zinc-300 bg-white"
-                    )}>
-                      {sel && <Check className="w-3 h-3 text-white" strokeWidth={3} />}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between mb-1.5">
-                        <span className={cn("text-sm font-semibold", sel ? "text-zinc-800" : "text-zinc-500")}>{cat.label}</span>
-                        <span className="text-xs text-zinc-400 ml-2 flex-shrink-0 font-mono">{cat.learned}/{cat.total}</span>
+                  <div key={cat.id} className="flex flex-col gap-2">
+                    <button
+                      onClick={() => toggle(cat.id)}
+                      className={cn(
+                        "flex items-center gap-4 p-4 rounded-2xl border-2 bg-white transition-all text-left",
+                        sel ? "border-emerald-400 bg-emerald-50/60" : "border-zinc-100 hover:border-zinc-200"
+                      )}
+                    >
+                      <div className={cn(
+                        "w-5 h-5 rounded-md border-2 flex items-center justify-center flex-shrink-0 transition-all",
+                        sel ? "bg-emerald-600 border-emerald-600" : "border-zinc-300 bg-white"
+                      )}>
+                        {sel && <Check className="w-3 h-3 text-white" strokeWidth={3} />}
                       </div>
-                      <Bar value={cat.learned} max={cat.total} green={sel} />
-                    </div>
-                  </button>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between mb-1.5">
+                          <span className={cn("text-sm font-semibold", sel ? "text-zinc-800" : "text-zinc-500")}>{cat.label}</span>
+                          <span className="text-xs text-zinc-400 ml-2 flex-shrink-0 font-mono">{cat.learned}/{cat.total}</span>
+                        </div>
+                        <Bar value={cat.learned} max={cat.total} green={sel} />
+                      </div>
+                    </button>
+                    {sel && (
+                      <div className="grid grid-cols-1 gap-2 pl-9 sm:grid-cols-2">
+                        {groupRows(progress, cat.id).map(group => {
+                          const groupSel = wordGroups.has(group.id);
+                          return (
+                            <button
+                              key={group.id}
+                              type="button"
+                              onClick={() => toggleGroup(group.id)}
+                              className={cn(
+                                "rounded-2xl border px-3 py-2.5 text-left transition-all",
+                                groupSel
+                                  ? "border-emerald-300 bg-emerald-50"
+                                  : "border-zinc-100 bg-white hover:border-zinc-200"
+                              )}
+                            >
+                              <div className="flex items-center justify-between gap-2">
+                                <span className={cn("text-xs font-bold", groupSel ? "text-emerald-700" : "text-zinc-600")}>{group.label}</span>
+                                <span className="text-[11px] font-mono text-zinc-400">{group.learned}/{group.total}</span>
+                              </div>
+                              <p className="mt-1 text-[11px] leading-tight text-zinc-400">{group.desc}</p>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
                 );
               })}
             </div>
@@ -1212,7 +1398,12 @@ function HomeScreen({
           style={{ paddingBottom: "calc(16px + env(safe-area-inset-bottom))" }}
         >
           <div className="max-w-2xl mx-auto">
-            <Btn full size="lg" onClick={() => onStart(method, Array.from(tenseModes), Array.from(cats))}>
+            <Btn
+              full
+              size="lg"
+              disabled={method === "tenses" ? tenseModes.size === 0 : method !== "phrases" && selectedWordCount === 0}
+              onClick={() => onStart(method, Array.from(tenseModes), Array.from(cats), Array.from(wordGroups))}
+            >
               <Zap className="w-5 h-5" /> Начать урок
             </Btn>
           </div>
@@ -1224,13 +1415,14 @@ function HomeScreen({
 
 // ─── Flashcard Lesson ──────────────────────────────────────────────────────
 function FlashcardLesson({
-  onComplete, wordTypes, progress,
+  onComplete, wordTypes, wordGroups, progress,
 }: {
   onComplete: (r: ResultData) => void;
   wordTypes: WordType[];
+  wordGroups: WordGroupId[];
   progress: Record<string, unknown>;
 }) {
-  const [deck] = useState(() => lessonWords(wordTypes, progress, 10));
+  const [deck] = useState(() => lessonWords(wordTypes, progress, 10, wordGroups));
   const [dirs] = useState(() => Array.from({ length: 10 }, () => Math.random() > .5 ? 1 : 0));
   const [idx, setIdx]         = useState(0);
   const [flipped, setFlipped] = useState(false);
@@ -1348,10 +1540,11 @@ type PairSide = "l" | "r";
 type PairSelection = { side: PairSide; id: number } | null;
 
 function PairsLesson({
-  onComplete, wordTypes, progress,
+  onComplete, wordTypes, wordGroups, progress,
 }: {
   onComplete: (r: ResultData) => void;
   wordTypes: WordType[];
+  wordGroups: WordGroupId[];
   progress: Record<string, unknown>;
 }) {
   const [round, setRound]       = useState(0);
@@ -1367,13 +1560,13 @@ function PairsLesson({
   const TOTAL = 10;
 
   useEffect(() => {
-    const roundWords = lessonWords(wordTypes, progress, 7);
+    const roundWords = lessonWords(wordTypes, progress, 7, wordGroups);
     setLeftArr(shuffle(roundWords));
     setRightArr(shuffle(roundWords));
     setStates({});
     setSelection(null);
     setMatched(0);
-  }, [round]);
+  }, [round, progress, wordGroups, wordTypes]);
 
   useEffect(() => {
     const t = setInterval(() => setElapsed(Math.round((Date.now() - t0.current) / 1000)), 1000);
@@ -1966,6 +2159,7 @@ export default function App() {
   const [lessonType, setLessonType] = useState<LessonType>("flashcard");
   const [selectedTenseModes, setSelectedTenseModes] = useState<TenseMode[]>(["present_yap"]);
   const [selectedWordTypes, setSelectedWordTypes] = useState<WordType[]>(["noun"]);
+  const [selectedWordGroups, setSelectedWordGroups] = useState<WordGroupId[]>(["noun_a1"]);
   const [result, setResult]         = useState<ResultData | null>(null);
   const [token, setToken]           = useState(() => localStorage.getItem("uzbek-trainer-token") || "");
   const [username, setUsername]     = useState(() => localStorage.getItem("uzbek-trainer-username") || "");
@@ -1993,10 +2187,13 @@ export default function App() {
     setScreen("home");
   }
 
-  function startLesson(t: LessonType, tenseModes?: TenseMode[], wordTypes?: WordType[]) {
+  function startLesson(t: LessonType, tenseModes?: TenseMode[], wordTypes?: WordType[], wordGroups?: WordGroupId[]) {
     setLessonType(t);
     if (t === "tenses" && tenseModes?.length) setSelectedTenseModes(tenseModes);
-    if (t !== "tenses" && wordTypes?.length) setSelectedWordTypes(wordTypes);
+    if (t !== "tenses" && wordTypes?.length) {
+      setSelectedWordTypes(wordTypes);
+      setSelectedWordGroups(wordGroups?.length ? wordGroups : wordTypes.map(defaultGroupFor).filter(Boolean) as WordGroupId[]);
+    }
     setScreen(t);
   }
   function finish(r: ResultData) {
@@ -2025,8 +2222,8 @@ export default function App() {
   if (screen === "login")    return <LoginScreen    onLogin={acceptAuth} onGo={() => setScreen("register")} />;
   if (screen === "register") return <RegisterScreen onRegister={acceptAuth} onGo={() => setScreen("login")} />;
   if (screen === "home")     return <HomeScreen     onStart={startLesson} username={username} progress={progress} />;
-  if (screen === "flashcard") return <FlashcardLesson onComplete={finish} wordTypes={selectedWordTypes} progress={progress} />;
-  if (screen === "pairs")    return <PairsLesson    onComplete={finish} wordTypes={selectedWordTypes} progress={progress} />;
+  if (screen === "flashcard") return <FlashcardLesson onComplete={finish} wordTypes={selectedWordTypes} wordGroups={selectedWordGroups} progress={progress} />;
+  if (screen === "pairs")    return <PairsLesson    onComplete={finish} wordTypes={selectedWordTypes} wordGroups={selectedWordGroups} progress={progress} />;
   if (screen === "tenses")   return <TensesLesson   onComplete={finish} modes={selectedTenseModes} />;
   if (screen === "phrases")  return <PhrasesLesson  onComplete={finish} />;
   if (screen === "result" && result)

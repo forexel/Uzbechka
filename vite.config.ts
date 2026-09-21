@@ -17,6 +17,9 @@ function figmaAssetResolver() {
 }
 
 export default defineConfig({
+  // Some image files may be offloaded by macOS. CI/deploy builds can skip
+  // copying the unchanged public catalog and update only the app bundle.
+  publicDir: process.env.SKIP_PUBLIC_COPY === '1' ? false : 'public',
   plugins: [
     figmaAssetResolver(),
     // The React and Tailwind plugins are both required for Make, even if

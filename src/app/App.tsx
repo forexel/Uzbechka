@@ -15,10 +15,12 @@ type WordGroupId =
   | "noun_people_home"
   | "noun_food_body"
   | "noun_city_work"
+  | "noun_lesson_2"
   | "noun_abstract"
   | "verb_basic"
   | "verb_daily"
   | "verb_complex"
+  | "verb_lesson_2"
   | "pronoun_basic"
   | "pronoun_cases"
   | "number_1_10"
@@ -29,7 +31,8 @@ type WordGroupId =
   | "question_cases"
   | "other_time"
   | "other_descriptive"
-  | "other_service";
+  | "other_service"
+  | "other_lesson_2";
 
 interface ResultData {
   lessonType: LessonType;
@@ -196,6 +199,16 @@ const COMMON_PHRASES: PhraseEx[] = [
   { id: "phrase-102", ru: "Что Вы сейчас делаете?", uz: "Siz hozir nima qilyapsiz?", words: ["Siz", "hozir", "nima", "qilyapsiz"], distractors: ["kecha", "qachon", "uxladingiz"] },
   { id: "phrase-103", ru: "Вы любите плов?", uz: "Siz oshni yaxshi ko‘rasizmi?", words: ["Siz", "oshni", "yaxshi", "ko‘rasizmi"], distractors: ["ichasizmi", "yomon", "rahmat"] },
   { id: "phrase-104", ru: "Я спал восемь часов.", uz: "Men sakkiz soat uxladim.", words: ["Men", "sakkiz", "soat", "uxladim"], distractors: ["yetti", "kecha", "ketdim"] },
+  { id: "phrase-105", ru: "Это моя мама.", uz: "Bu mening onam.", words: ["Bu", "mening", "onam"], distractors: ["otam", "uning", "opa"] },
+  { id: "phrase-106", ru: "Это мой папа.", uz: "Bu mening otam.", words: ["Bu", "mening", "otam"], distractors: ["onam", "sening", "aka"] },
+  { id: "phrase-107", ru: "Это мой младший брат.", uz: "Bu mening ukam.", words: ["Bu", "mening", "ukam"], distractors: ["akam", "opam", "ular"] },
+  { id: "phrase-108", ru: "Моя семья большая.", uz: "Mening oilam katta.", words: ["Mening", "oilam", "katta"], distractors: ["kichik", "uning", "uy"] },
+  { id: "phrase-109", ru: "Сколько у тебя старших братьев?", uz: "Sening nechta akang bor?", words: ["Sening", "nechta", "akang", "bor"], distractors: ["opang", "yo‘q", "mening"] },
+  { id: "phrase-110", ru: "У меня две старшие сестры.", uz: "Menda ikkita opa bor.", words: ["Menda", "ikkita", "opa", "bor"], distractors: ["aka", "beshta", "yo‘q"] },
+  { id: "phrase-111", ru: "В моей семье пять человек.", uz: "Oilamda besh kishi bor.", words: ["Oilamda", "besh", "kishi", "bor"], distractors: ["yetti", "uyda", "yo‘q"] },
+  { id: "phrase-112", ru: "Назови мне число.", uz: "Menga raqam ayt.", words: ["Menga", "raqam", "ayt"], distractors: ["ism", "yoz", "senga"] },
+  { id: "phrase-113", ru: "Как зовут твоего дедушку?", uz: "Bobongning ismi nima?", words: ["Bobongning", "ismi", "nima"], distractors: ["buvingning", "qayerda", "nechta"] },
+  { id: "phrase-114", ru: "У тебя есть младшая сестра?", uz: "Sening singling bormi?", words: ["Sening", "singling", "bormi"], distractors: ["akang", "yo‘qmi", "mening"] },
 ];
 
 const PHRASE_WORD_BANK = Array.from(new Set(COMMON_PHRASES.flatMap(phrase => [...phrase.words, ...phrase.distractors])));
@@ -687,18 +700,29 @@ const OTHER_SERVICE = uzSet([
   "yarim", "chorak", "oʻzbekcha", "bu yerda", "u yerda", "men bilan", "darsdan keyin",
   "darsdan oldin", "oʻtgan hafta", "har kuni", "yoshligimda", "bolaligimda",
 ]);
+const LESSON_2_NOUNS = uzSet([
+  "oila", "ota", "ona", "aka", "uka", "opa", "singil", "bola", "erkak", "ayol", "uy", "qo‘l",
+  "yosh", "talaba", "o‘qituvchi", "bobo", "buvi", "er", "xotin", "o‘g‘il", "qiz", "farzand",
+  "ota-ona", "aka-uka", "opa-singil", "qarindosh", "amaki", "tog‘a", "amma", "xola", "raqam",
+  "it", "kuchuk", "ot", "o‘t", "oyna", "tovuq", "mushuk", "gul", "yostiq", "qozon", "kelin",
+  "jiyan", "qaynona", "deraza", "darvoza", "shifokor", "shifokor xonasi", "kasalxona",
+]);
+const LESSON_2_VERBS = uzSet(["burilmoq", "kelmoq"]);
+const LESSON_2_OTHER = uzSet(["ba’zan", "kulrang", "chapga", "o‘ngga", "to‘g‘riga", "-lar"]);
 
 const WORD_GROUP_DEFS: { id: WordGroupId; category: WordType; label: string; desc: string; fallback?: boolean; match: (word: Word) => boolean }[] = [
   { id: "noun_core", category: "noun", label: "Супер простые", desc: "12 самых частых и наглядных слов", match: word => NOUN_CORE.has(normalizeUz(word.uz)) },
   { id: "noun_people_home", category: "noun", label: "Люди и дом", desc: "Семья, комната, простые предметы", match: word => NOUN_PEOPLE_HOME.has(normalizeUz(word.uz)) },
   { id: "noun_food_body", category: "noun", label: "Еда и тело", desc: "Еда, напитки, части тела", match: word => NOUN_FOOD_BODY.has(normalizeUz(word.uz)) },
   { id: "noun_city_work", category: "noun", label: "Город и работа", desc: "Места, транспорт, офис, люди на работе", match: word => NOUN_CITY_WORK.has(normalizeUz(word.uz)) },
+  { id: "noun_lesson_2", category: "noun", label: "Урок 2", desc: "Семья, дом, животные и медицина", match: word => LESSON_2_NOUNS.has(normalizeUz(word.uz)) },
   { id: "noun_abstract", category: "noun", label: "Сложнее", desc: "Учебные, рабочие и абстрактные слова", fallback: true, match: word => !NOUN_CORE.has(normalizeUz(word.uz)) && !NOUN_PEOPLE_HOME.has(normalizeUz(word.uz)) && !NOUN_FOOD_BODY.has(normalizeUz(word.uz)) && !NOUN_CITY_WORK.has(normalizeUz(word.uz)) },
   { id: "pronoun_basic", category: "pronoun", label: "Базовые", desc: "Я, ты, он/она, мы, вы, они", match: word => PRONOUN_BASIC.has(normalizeUz(word.uz)) },
   { id: "pronoun_cases", category: "pronoun", label: "Падежи", desc: "Мне, меня, у меня, мой, от меня", fallback: true, match: word => !PRONOUN_BASIC.has(normalizeUz(word.uz)) },
   { id: "verb_basic", category: "verb", label: "Легкие", desc: "Частые действия на каждый день", match: word => VERB_BASIC.has(normalizeUz(word.uz)) },
   { id: "verb_daily", category: "verb", label: "Обычные", desc: "Учеба, работа, просьбы, быт", match: word => VERB_DAILY.has(normalizeUz(word.uz)) },
   { id: "verb_complex", category: "verb", label: "Сложные", desc: "Составные и менее частотные глаголы", fallback: true, match: word => !VERB_BASIC.has(normalizeUz(word.uz)) && !VERB_DAILY.has(normalizeUz(word.uz)) },
+  { id: "verb_lesson_2", category: "verb", label: "Урок 2", desc: "Движение и направления", match: word => LESSON_2_VERBS.has(normalizeUz(word.uz)) },
   { id: "number_1_10", category: "number", label: "1-10", desc: "Первые числа без перегруза", match: word => NUMBER_SIMPLE.has(normalizeUz(word.uz)) },
   { id: "number_large", category: "number", label: "До миллиона", desc: "Десятки, сто, тысяча, миллион", match: word => NUMBER_LARGE.has(normalizeUz(word.uz)) },
   { id: "number_time", category: "number", label: "Время и счет", desc: "Часы, дни, суммы, разы", match: word => NUMBER_TIME.has(normalizeUz(word.uz)) },
@@ -708,6 +732,7 @@ const WORD_GROUP_DEFS: { id: WordGroupId; category: WordType; label: string; des
   { id: "other_time", category: "other", label: "Время", desc: "Сегодня, завтра, дни недели", match: word => OTHER_TIME.has(normalizeUz(word.uz)) },
   { id: "other_descriptive", category: "other", label: "Описания", desc: "Хороший, сложно, дорого, цвета", match: word => OTHER_DESCRIPTIVE.has(normalizeUz(word.uz)) },
   { id: "other_service", category: "other", label: "Служебные", desc: "Да/нет, после, до, частицы, фразы", fallback: true, match: word => OTHER_SERVICE.has(normalizeUz(word.uz)) || (!OTHER_TIME.has(normalizeUz(word.uz)) && !OTHER_DESCRIPTIVE.has(normalizeUz(word.uz))) },
+  { id: "other_lesson_2", category: "other", label: "Урок 2", desc: "Направления, цвет и частотность", match: word => LESSON_2_OTHER.has(normalizeUz(word.uz)) },
 ];
 
 const TENSE_MODE_DEFS: { id: TenseMode; label: string; desc: string }[] = [

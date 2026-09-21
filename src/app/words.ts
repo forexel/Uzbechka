@@ -11,6 +11,7 @@ export interface Word {
   example_uz?: string;
   example_ru?: string;
   topic?: string;
+  tags?: string[];
 }
 
 export const WORDS: Word[] = [
@@ -3913,5 +3914,181 @@ export const WORDS: Word[] = [
     "example_uz": "Maqsad yaxshi.",
     "example_ru": "Цель хорошая.",
     "topic": "Lesson 11.08 / Days, Time, Work, Daily routine / A1"
+  },
+  {
+    "id": "lesson2-376", "type": "noun", "uz": "yosh", "pron": "ёш", "ru": "возраст",
+    "visual": "🎂", "hint": "Урок 2: знакомство", "topic": "Lesson 2 / Family and directions / A1", "tags": ["lesson_2", "family"]
+  },
+  {
+    "id": "lesson2-377", "type": "noun", "uz": "talaba", "pron": "талаба", "ru": "студент",
+    "visual": "🎓", "hint": "Урок 2: люди", "topic": "Lesson 2 / Family and directions / A1", "tags": ["lesson_2", "people"]
+  },
+  {
+    "id": "lesson2-378", "type": "noun", "uz": "o‘qituvchi", "pron": "укитувчи", "ru": "учитель, преподаватель",
+    "visual": "🧑‍🏫", "hint": "Урок 2: люди", "topic": "Lesson 2 / Family and directions / A1", "tags": ["lesson_2", "people"]
+  },
+  {
+    "id": "lesson2-379", "type": "noun", "uz": "bobo", "pron": "бобо", "ru": "дедушка",
+    "visual": "👴", "hint": "Урок 2: семья", "topic": "Lesson 2 / Family / A1", "tags": ["lesson_2", "family"]
+  },
+  {
+    "id": "lesson2-380", "type": "noun", "uz": "buvi", "pron": "буви", "ru": "бабушка",
+    "visual": "👵", "hint": "Урок 2: семья", "topic": "Lesson 2 / Family / A1", "tags": ["lesson_2", "family"]
+  },
+  {
+    "id": "lesson2-381", "type": "noun", "uz": "er", "pron": "эр", "ru": "муж",
+    "visual": "🤵", "hint": "Урок 2: семья", "topic": "Lesson 2 / Family / A1", "tags": ["lesson_2", "family"]
+  },
+  {
+    "id": "lesson2-382", "type": "noun", "uz": "xotin", "pron": "хотин", "ru": "жена",
+    "visual": "👰", "hint": "Урок 2: семья", "topic": "Lesson 2 / Family / A1", "tags": ["lesson_2", "family"]
+  },
+  {
+    "id": "lesson2-383", "type": "noun", "uz": "o‘g‘il", "pron": "угил", "ru": "сын",
+    "visual": "👦", "hint": "Урок 2: семья", "topic": "Lesson 2 / Family / A1", "tags": ["lesson_2", "family"]
+  },
+  {
+    "id": "lesson2-384", "type": "noun", "uz": "qiz", "pron": "киз", "ru": "дочь; девушка",
+    "visual": "👧", "hint": "Урок 2: семья", "topic": "Lesson 2 / Family / A1", "tags": ["lesson_2", "family"]
+  },
+  {
+    "id": "lesson2-385", "type": "noun", "uz": "farzand", "pron": "фарзанд", "ru": "ребёнок, потомок",
+    "visual": "🧒", "hint": "Урок 2: семья", "topic": "Lesson 2 / Family / A1", "tags": ["lesson_2", "family"]
+  },
+  {
+    "id": "lesson2-386", "type": "noun", "uz": "ota-ona", "pron": "ота-она", "ru": "родители",
+    "visual": "👨‍👩‍👧", "hint": "Урок 2: семья", "topic": "Lesson 2 / Family / A1", "tags": ["lesson_2", "family"]
+  },
+  {
+    "id": "lesson2-387", "type": "noun", "uz": "aka-uka", "pron": "ака-ука", "ru": "братья",
+    "visual": "👬", "hint": "Урок 2: семья", "topic": "Lesson 2 / Family / A1", "tags": ["lesson_2", "family"]
+  },
+  {
+    "id": "lesson2-388", "type": "noun", "uz": "opa-singil", "pron": "опа-сингил", "ru": "сёстры",
+    "visual": "👭", "hint": "Урок 2: семья", "topic": "Lesson 2 / Family / A1", "tags": ["lesson_2", "family"]
+  },
+  {
+    "id": "lesson2-389", "type": "noun", "uz": "qarindosh", "pron": "кариндош", "ru": "родственник",
+    "visual": "🫂", "hint": "Урок 2: семья", "topic": "Lesson 2 / Family / A1", "tags": ["lesson_2", "family"]
+  },
+  {
+    "id": "lesson2-390", "type": "noun", "uz": "amaki", "pron": "амаки", "ru": "дядя по отцу",
+    "visual": "👨", "hint": "Урок 2: родство", "topic": "Lesson 2 / Family / A1", "tags": ["lesson_2", "family"]
+  },
+  {
+    "id": "lesson2-391", "type": "noun", "uz": "tog‘a", "pron": "тога", "ru": "дядя по матери",
+    "visual": "👨", "hint": "Урок 2: родство", "topic": "Lesson 2 / Family / A1", "tags": ["lesson_2", "family"]
+  },
+  {
+    "id": "lesson2-392", "type": "noun", "uz": "amma", "pron": "амма", "ru": "тётя по отцу",
+    "visual": "👩", "hint": "Урок 2: родство", "topic": "Lesson 2 / Family / A1", "tags": ["lesson_2", "family"]
+  },
+  {
+    "id": "lesson2-393", "type": "noun", "uz": "xola", "pron": "хола", "ru": "тётя по матери",
+    "visual": "👩", "hint": "Урок 2: родство", "topic": "Lesson 2 / Family / A1", "tags": ["lesson_2", "family"]
+  },
+  {
+    "id": "lesson2-394", "type": "noun", "uz": "raqam", "pron": "ракам", "ru": "цифра, номер",
+    "visual": "🔢", "hint": "Урок 2: числа", "topic": "Lesson 2 / Family / A1", "tags": ["lesson_2", "numbers"]
+  },
+  {
+    "id": "lesson2-395", "type": "noun", "uz": "it", "pron": "ит", "ru": "собака",
+    "visual": "🐕", "hint": "Урок 2: животные", "topic": "Lesson 2 / Home and animals / A1", "tags": ["lesson_2", "animals"]
+  },
+  {
+    "id": "lesson2-396", "type": "noun", "uz": "kuchuk", "pron": "кучук", "ru": "щенок; собака",
+    "visual": "🐶", "hint": "Урок 2: животные", "topic": "Lesson 2 / Home and animals / A1", "tags": ["lesson_2", "animals"]
+  },
+  {
+    "id": "lesson2-397", "type": "noun", "uz": "ot", "pron": "от", "ru": "лошадь",
+    "visual": "🐎", "hint": "Не путать с o‘t — трава", "topic": "Lesson 2 / Home and animals / A1", "tags": ["lesson_2", "animals"]
+  },
+  {
+    "id": "lesson2-398", "type": "noun", "uz": "o‘t", "pron": "ут", "ru": "трава",
+    "visual": "🌿", "hint": "Не путать с ot — лошадь", "topic": "Lesson 2 / Home and animals / A1", "tags": ["lesson_2", "nature"]
+  },
+  {
+    "id": "lesson2-399", "type": "noun", "uz": "oyna", "pron": "ойна", "ru": "окно; зеркало",
+    "visual": "🪞", "hint": "По контексту: окно или зеркало", "topic": "Lesson 2 / Home and animals / A1", "tags": ["lesson_2", "home"]
+  },
+  {
+    "id": "lesson2-400", "type": "noun", "uz": "tovuq", "pron": "товук", "ru": "курица",
+    "visual": "🐔", "hint": "Урок 2: животные", "topic": "Lesson 2 / Home and animals / A1", "tags": ["lesson_2", "animals"]
+  },
+  {
+    "id": "lesson2-401", "type": "noun", "uz": "mushuk", "pron": "мушук", "ru": "кошка",
+    "visual": "🐈", "hint": "Урок 2: животные", "topic": "Lesson 2 / Home and animals / A1", "tags": ["lesson_2", "animals"]
+  },
+  {
+    "id": "lesson2-402", "type": "noun", "uz": "gul", "pron": "гул", "ru": "цветок",
+    "visual": "🌷", "hint": "Множественное число: gullar", "topic": "Lesson 2 / Home and animals / A1", "tags": ["lesson_2", "nature"]
+  },
+  {
+    "id": "lesson2-403", "type": "noun", "uz": "yostiq", "pron": "ёстик", "ru": "подушка",
+    "visual": "🛏️", "hint": "Урок 2: дом", "topic": "Lesson 2 / Home and animals / A1", "tags": ["lesson_2", "home"]
+  },
+  {
+    "id": "lesson2-404", "type": "noun", "uz": "qozon", "pron": "козон", "ru": "казан, котёл",
+    "visual": "🍲", "hint": "Урок 2: дом", "topic": "Lesson 2 / Home and animals / A1", "tags": ["lesson_2", "home"]
+  },
+  {
+    "id": "lesson2-405", "type": "noun", "uz": "kelin", "pron": "келин", "ru": "невестка; невеста",
+    "visual": "👰", "hint": "Урок 2: семья", "topic": "Lesson 2 / Family / A1", "tags": ["lesson_2", "family"]
+  },
+  {
+    "id": "lesson2-406", "type": "noun", "uz": "jiyan", "pron": "жиян", "ru": "племянник, племянница",
+    "visual": "🧒", "hint": "Урок 2: семья", "topic": "Lesson 2 / Family / A1", "tags": ["lesson_2", "family"]
+  },
+  {
+    "id": "lesson2-407", "type": "noun", "uz": "qaynona", "pron": "кайнона", "ru": "свекровь; тёща",
+    "visual": "👵", "hint": "Мать мужа или жены", "topic": "Lesson 2 / Family / A1", "tags": ["lesson_2", "family"]
+  },
+  {
+    "id": "lesson2-408", "type": "noun", "uz": "deraza", "pron": "дераза", "ru": "окно",
+    "visual": "🪟", "hint": "Множественное число: derazalar", "topic": "Lesson 2 / Home / A1", "tags": ["lesson_2", "home"]
+  },
+  {
+    "id": "lesson2-409", "type": "noun", "uz": "darvoza", "pron": "дарвоза", "ru": "ворота",
+    "visual": "🚪", "hint": "Множественное число: darvozalar", "topic": "Lesson 2 / Home / A1", "tags": ["lesson_2", "home"]
+  },
+  {
+    "id": "lesson2-410", "type": "noun", "uz": "shifokor", "pron": "шифокор", "ru": "врач",
+    "visual": "🧑‍⚕️", "hint": "Урок 2: медицина", "topic": "Lesson 2 / Medicine / A1", "tags": ["lesson_2", "medicine"]
+  },
+  {
+    "id": "lesson2-411", "type": "noun", "uz": "shifokor xonasi", "pron": "шифокор хонаси", "ru": "кабинет врача",
+    "visual": "🩺", "hint": "Буквально: комната врача", "topic": "Lesson 2 / Medicine / A1", "tags": ["lesson_2", "medicine"]
+  },
+  {
+    "id": "lesson2-412", "type": "noun", "uz": "kasalxona", "pron": "касалхона", "ru": "больница",
+    "visual": "🏥", "hint": "Урок 2: медицина", "topic": "Lesson 2 / Medicine / A1", "tags": ["lesson_2", "medicine"]
+  },
+  {
+    "id": "lesson2-413", "type": "other", "uz": "ba’zan", "pron": "баъзан", "ru": "иногда",
+    "visual": "🔁", "hint": "Наречие частоты", "topic": "Lesson 2 / Description / A1", "tags": ["lesson_2", "adverbs"]
+  },
+  {
+    "id": "lesson2-414", "type": "other", "uz": "kulrang", "pron": "кулранг", "ru": "серый",
+    "visual": "🩶", "hint": "Цвет", "topic": "Lesson 2 / Description / A1", "tags": ["lesson_2", "colors"]
+  },
+  {
+    "id": "lesson2-415", "type": "other", "uz": "chapga", "pron": "чапга", "ru": "налево, влево",
+    "visual": "⬅️", "hint": "Направление", "topic": "Lesson 2 / Directions / A1", "tags": ["lesson_2", "directions"]
+  },
+  {
+    "id": "lesson2-416", "type": "other", "uz": "o‘ngga", "pron": "унгга", "ru": "направо, вправо",
+    "visual": "➡️", "hint": "Направление", "topic": "Lesson 2 / Directions / A1", "tags": ["lesson_2", "directions"]
+  },
+  {
+    "id": "lesson2-417", "type": "other", "uz": "to‘g‘riga", "pron": "тугрига", "ru": "прямо",
+    "visual": "⬆️", "hint": "Направление движения", "topic": "Lesson 2 / Directions / A1", "tags": ["lesson_2", "directions"]
+  },
+  {
+    "id": "lesson2-418", "type": "verb", "uz": "burilmoq", "pron": "бурилмок", "ru": "поворачивать, свернуть",
+    "visual": "↪️", "hint": "Повелительная форма: buriling", "topic": "Lesson 2 / Directions / A1", "tags": ["lesson_2", "directions"]
+  },
+  {
+    "id": "lesson2-419", "type": "other", "uz": "-lar", "pron": "лар", "ru": "суффикс множественного числа",
+    "visual": "👥", "hint": "bola → bolalar, kitob → kitoblar", "topic": "Lesson 2 / Plural / A1", "tags": ["lesson_2", "grammar", "plural"]
   }
 ];
